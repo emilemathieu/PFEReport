@@ -1,0 +1,53 @@
+\section{Probabilistic programming}
+
+\subsection{What is it ?} \label{PPL_def}
+Using PL techniques to abstract inference algorithms from stats/ML such that they apply automatically and correctly to the broadest possible set of model-based reasoning applications
+
+“Probabilistic programs are usual functional or imperative programs with two added constructs: 
+(1) the ability to draw values at random from distributions, and 
+(2) the ability to condition values of variables in a program via observations.”  
+from  Gordon, Henzinger, Nori, and Rajamani “Probabilistic programming.” In Proceedings of On The Future of Software Engineering (2014).
+
+\subsection{Why is it usefull ?}
+Increase productivity: savings to be found in the amount of code that needs to written in order to prototype and develop models.
+
+remove the burden of having to develop inference code for each new model: which is error-prone and time consuming
+This is done by providing a modelling language abstraction layer in which developers can denote their models.  If done, generic inference is provided for free.
+
+\subsection{History / Existing PPLs}
+Graphical models: BUGS \cite{Bugs}, STAN \cite{Stan}
+Factor graphs: Factorie \cite{Factorie}, Infer.NET \cite{InferNET}
+
+First-Order PPLs: bounded loops = loops can be desugared to nested lets
+
+%flexibility vs performance
+High Order PPLs: Recursion / Turing complete — infinite dimensional parameter space — easy to program in, natural to express certain models, hard to perform inference in
+Anglican, Venture (graph MCMC), Church
+
+\subsection{Inference schemes}
+
+Importance Sampling: IS, SMC
+
+PMCMC: PG, PMMH, IPMCMC, PGAS
+
+Hamiltonian: HMC, HMCDA, NUTS, SGLD, SGHMC
+
+\subsection{Contributions}
+\quad During this internship I have taken the time to actually implement several inference algorithms, by contributing to two existing PPLs.
+First, I implemented \footnote{See \url{https://github.com/yebai/Turing.jl/tree/master/src/samplers}} both the Stochastic Gradient Langevin Dynamics (SGLD) and Stochastic Gradient Hamiltonian Monte Carlo (SGHMC) inference algorithms in Turing.jl \cite{Turing}, a PPL based on Julia and developed at the University of Cambridge.
+Then, I implemented \footnote{See \url{https://github.com/blei-lab/edward/pull/728}} the Dual Averaging extension of HMC \cite{HMC} for Edward \cite{Edward}, a PPL built on top of Tensorflow \cite{Tensorflow} by Blei's group at Columbia University.
+
+\subsubsection{SGLD}
+mini-batch / online setting, scale to bug dataset
+\footnote{See for instance, SGLD applied to a Bayesian logistic regression at \url{https://github.com/yebai/Turing.jl/blob/master/example-models/sgld-paper/lr_sgld.jl}}
+ \cite{SGLD}
+ 
+\subsubsection{SGHMC}
+Same setting as SGLD
+Naive version is wrong (posterior is not the invariant distribution), see \cite{SGMCMC}
+friction term
+ \cite{SGHMC}
+ 
+\subsubsection{Dual Averaging}
+In \cite{NUTS}, the authors address the issue of choosing the two hyperparameters of HMC: a step size $\epsilon$ and a desired number of steps $L$, since HMC’s performance is highly sensitive on those.
+\cite{Nesterov2009}
