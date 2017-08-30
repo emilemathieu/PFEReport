@@ -1,5 +1,7 @@
 %%% MCMC methods
 
+% HMC
+
 @article{HMC,
   added-at = {2009-04-13T13:17:23.000+0200},
   author = {Duane, Simon and Kennedy, A. D. and Pendleton, Brian J. and Roweth, Duncan},
@@ -98,6 +100,164 @@
  address = {Cambridge, MA, USA},
 } 
 
+% SMC
+
+@article{Le:2017wm,
+author = {Le, Tuan Anh and Igl, Maximilian and Jin, Tom and Rainforth, Tom and Wood, Frank},
+title = {{Auto-Encoding Sequential Monte Carlo}},
+journal = {arXiv.org},
+year = {2017},
+eprint = {1705.10306v1},
+eprinttype = {arxiv},
+eprintclass = {stat.ML},
+month = may
+}
+
+@article{Maddison:2017wp,
+author = {Maddison, Chris J and Lawson, Dieterich and Tucker, George and Heess, Nicolas and Norouzi, Mohammad and Mnih, Andriy and Doucet, Arnaud and Teh, Yee Whye},
+title = {{Filtering Variational Objectives}},
+journal = {arXiv.org},
+year = {2017},
+eprint = {1705.09279v1},
+eprinttype = {arxiv},
+eprintclass = {cs.LG},
+month = may
+}
+
+@article{Naesseth:2017tl,
+author = {Naesseth, Christian A and Linderman, Scott W and Ranganath, Rajesh and Blei, David M},
+title = {{Variational Sequential Monte Carlo}},
+journal = {arXiv.org},
+year = {2017},
+eprint = {1705.11140v1},
+eprinttype = {arxiv},
+eprintclass = {stat.ML},
+month = may
+}
+
+
+
+@article{DelMoral:2015jk,
+author = {Del Moral, Pierre and Murray, Lawrence M},
+title = {{Sequential Monte Carlo with Highly Informative Observations}},
+journal = {SIAM/ASA Journal on Uncertainty Quantification},
+year = {2015},
+volume = {3},
+number = {1},
+pages = {969--997},
+month = jan
+}
+
+% PDMP
+@article{Bierkens:2016uk,
+author = {Bierkens, Joris and Fearnhead, Paul and Roberts, Gareth},
+title = {{The Zig-Zag Process and Super-Efficient Sampling for Bayesian Analysis of Big Data}},
+journal = {arXiv.org},
+year = {2016},
+eprint = {1607.03188v1},
+eprinttype = {arxiv},
+eprintclass = {stat.CO},
+month = jul
+}
+
+@article{BouchardCote:2017gs,
+author = {Bouchard-C{\^o}t{\'e}, Alexandre and Vollmer, Sebastian J and Doucet, Arnaud},
+title = {{The Bouncy Particle Sampler: A Non-Reversible Rejection-Free Markov Chain Monte Carlo Method}},
+journal = {Journal of the American Statistical Association},
+year = {2017},
+volume = {4},
+number = {4},
+pages = {0--0},
+month = jul
+}
+
+@article{Wu:2017uz,
+author = {Wu, Changye and Robert, Christian P},
+title = {{Generalized Bouncy Particle Sampler}},
+journal = {arXiv.org},
+year = {2017},
+eprint = {1706.04781v2},
+eprinttype = {arxiv},
+eprintclass = {stat.CO},
+month = jun
+}
+
+@article{Bierkens:2017we,
+author = {Bierkens, Joris and Bouchard-C{\^o}t{\'e}, Alexandre and Doucet, Arnaud and Duncan, Andrew B and Fearnhead, Paul and Roberts, Gareth and Vollmer, Sebastian J},
+title = {{Piecewise Deterministic Markov Processes for Scalable Monte Carlo on Restricted Domains}},
+journal = {arXiv.org},
+year = {2017},
+eprint = {1701.04244v1},
+eprinttype = {arxiv},
+eprintclass = {stat.ME},
+month = jan
+}
+
+@article{Vanetti:2017ux,
+author = {Vanetti, Paul and Bouchard-C{\^o}t{\'e}, Alexandre and Deligiannidis, George and Doucet, Arnaud},
+title = {{Piecewise Deterministic Markov Chain Monte Carlo}},
+journal = {arXiv.org},
+year = {2017},
+eprint = {1707.05296v1},
+eprinttype = {arxiv},
+eprintclass = {stat.ME},
+month = jul,
+annote = {30 pages, 5 figures}
+}
+
+
+
+%%% Adversarial
+@article{Goodfellow:2014wp,
+author = {Goodfellow, Ian J and Pouget-Abadie, Jean and Mirza, Mehdi and Xu, Bing and Warde-Farley, David and Ozair, Sherjil and Courville, Aaron and Bengio, Yoshua},
+title = {{Generative Adversarial Networks}},
+journal = {arXiv.org},
+year = {2014},
+eprint = {1406.2661v1},
+eprinttype = {arxiv},
+eprintclass = {stat.ML},
+month = jun
+}
+
+@article{Dumoulin:2016td,
+author = {Dumoulin, Vincent and Belghazi, Ishmael and Ben Poole and Mastropietro, Olivier and Lamb, Alex and Arjovsky, Martin and Courville, Aaron},
+title = {{Adversarially Learned Inference}},
+journal = {arXiv.org},
+year = {2016},
+eprint = {1606.00704v3},
+eprinttype = {arxiv},
+eprintclass = {stat.ML},
+month = jun
+}
+
+@article{Donahue:2016wo,
+author = {Donahue, Jeff and Kr{\"a}henb{\"u}hl, Philipp and Darrell, Trevor},
+title = {{Adversarial Feature Learning}},
+journal = {arXiv.org},
+year = {2016},
+eprint = {1605.09782v7},
+eprinttype = {arxiv},
+eprintclass = {cs.LG},
+month = may,
+annote = {Published as a conference paper at ICLR 2017. Changelog: (v7) Table 2 results improved 1-2% due to averaging predictions over 10 crops at test time, as done in Noroozi {\&} Favaro; Table 3 VOC classification results slightly improved due to minor bugfix. (See v6 changelog for previous versions.)}
+}
+
+@inproceedings{DBLP:conf/icml/MeschederNG17,
+  author    = {Lars M. Mescheder and
+               Sebastian Nowozin and
+               Andreas Geiger},
+  title     = {Adversarial Variational Bayes: Unifying Variational Autoencoders and
+               Generative Adversarial Networks},
+  booktitle = {Proceedings of the 34th International Conference on Machine Learning,
+               {ICML} 2017, Sydney, NSW, Australia, 6-11 August 2017},
+  pages     = {2391--2400},
+  year      = {2017},
+  crossref  = {DBLP:conf/icml/2017},
+  url       = {http://proceedings.mlr.press/v70/mescheder17a.html},
+  timestamp = {Wed, 16 Aug 2017 11:08:55 +0200},
+  biburl    = {http://dblp.uni-trier.de/rec/bib/conf/icml/MeschederNG17},
+  bibsource = {dblp computer science bibliography, http://dblp.org}
+}
 
 
 %%%PPL
@@ -150,25 +310,23 @@ year = 2014,
 note = {Microsoft Research Cambridge. http://research.microsoft.com/infernet}
 }
 
+@article{Mansinghka:2014ty,
+author = {Mansinghka, Vikash and Selsam, Daniel and Perov, Yura},
+title = {{Venture: a higher-order probabilistic programming platform with programmable inference}},
+journal = {arXiv.org},
+year = {2014},
+eprint = {1404.0099v1},
+eprinttype = {arxiv},
+eprintclass = {cs.AI},
+month = apr,
+annote = {78 pages}
+}
+
 @inproceedings{Factorie,
   Author = {Andrew McCallum and Karl Schultz and Sameer Singh}, 
   Booktitle = {Neural Information Processing Systems (NIPS)}, 
   Title = { {FACTORIE}: Probabilistic Programming via Imperatively Defined Factor Graphs}, 
   Year = {2009}}
-
-
-%%%BNP
-
-@ARTICLE{DPVI,
-    author = {David M. Blei and Michael I. Jordan},
-    title = {Variational inference for Dirichlet process mixtures},
-    journal = {Bayesian Analysis},
-    year = {2005},
-    volume = {1},
-    pages = {121--144}
-}
-
-%%%MISC
 
 @inproceedings{Tensorflow,
 title = {TensorFlow: A system for large-scale machine learning},
@@ -179,3 +337,290 @@ booktitle = {12th USENIX Symposium on Operating Systems Design and Implementatio
 pages = {265--283}
 }
 
+@inproceedings{wood-aistats-2014,
+  author = {Wood, Frank and van de Meent, Jan Willem and Mansinghka, Vikash},
+  booktitle = {Proceedings of the 17th International conference on Artificial Intelligence and Statistics},
+  title = {A New Approach to Probabilistic Programming Inference},
+  pages = {1024-1032},
+  year = {2014}
+}
+
+@misc{dippl,
+  title = {{The Design and Implementation of Probabilistic Programming Languages}},
+  author = {Goodman, Noah D and Stuhlm\"{u}ller, Andreas},
+  year = {2014},
+  howpublished = {\url{http://dippl.org}},
+  note = {Accessed: 2017-8-29}
+}
+
+@article{Goodman:2012uq,
+author = {Goodman, Noah and Mansinghka, Vikash and Roy, Daniel M and Bonawitz, Keith and Tenenbaum, Joshua B},
+title = {{Church: a language for generative models}},
+journal = {arXiv.org},
+year = {2012},
+eprint = {1206.3255v2},
+eprinttype = {arxiv},
+eprintclass = {cs.PL},
+month = jun,
+annote = {Minor revisions. Fixed errors in author list}
+}
+
+
+% Amortization
+@article{Wingate:2013tq,
+author = {Wingate, David and Weber, Theophane},
+title = {{Automated Variational Inference in Probabilistic Programming}},
+journal = {arXiv.org},
+year = {2013},
+eprint = {1301.1299v1},
+eprinttype = {arxiv},
+eprintclass = {stat.ML},
+month = jan
+}
+
+@article{Ritchie:2016ve,
+author = {Ritchie, Daniel and Horsfall, Paul and Goodman, Noah D},
+title = {{Deep Amortized Inference for Probabilistic Programs}},
+journal = {arXiv.org},
+year = {2016},
+eprint = {1610.05735v1},
+eprinttype = {arxiv},
+eprintclass = {cs.AI},
+month = oct
+}
+
+@article{Le:2016te,
+author = {Le, Tuan Anh and Baydin, Atilim Gunes and Wood, Frank},
+title = {{Inference Compilation and Universal Probabilistic Programming}},
+journal = {arXiv.org},
+year = {2016},
+eprint = {1610.09900v2},
+eprinttype = {arxiv},
+eprintclass = {cs.AI},
+month = oct,
+annote = {11 pages, 6 figures}
+}
+
+% Inference
+@inproceedings{Wingate:2011ul,
+author = {Wingate, David and Goodman, Noah D and Stuhlm{\"u}ller, Andreas},
+title = {{Lightweight Implementations of Probabilistic Programming Languages Via Transformational Compilation}},
+booktitle = {Proceedings of the Fourteenth International Conference on Artificial Intelligence and Statistics},
+year = {2011},
+pages = {770--778},
+address = {Fort Lauderdale, USA},
+month = apr
+}
+
+@article{Ritchie:2015tx,
+author = {Ritchie, Daniel and Stuhlm{\"u}ller, Andreas and Goodman, Noah D},
+title = {{C3: Lightweight Incrementalized MCMC for Probabilistic Programs using Continuations and Callsite Caching}},
+journal = {arXiv.org},
+year = {2015},
+eprint = {1509.02151v2},
+eprinttype = {arxiv},
+eprintclass = {cs.AI},
+month = sep,
+annote = {Fix typo in author name}
+}
+
+@article{vandeMeent:2015uk,
+author = {van de Meent, Jan-Willem and Yang, Hongseok and Mansinghka, Vikash and Wood, Frank},
+title = {{Particle Gibbs with Ancestor Sampling for Probabilistic Programs}},
+journal = {arXiv.org},
+year = {2015},
+eprint = {1501.06769v5},
+eprinttype = {arxiv},
+eprintclass = {stat.ML},
+month = jan,
+annote = {9 pages, 2 figures}
+}
+
+@article{Paige:2014tc,
+author = {Paige, Brooks and Wood, Frank and Doucet, Arnaud and Teh, Yee Whye},
+title = {{Asynchronous Anytime Sequential Monte Carlo}},
+journal = {arXiv.org},
+year = {2014},
+eprint = {1407.2864v1},
+eprinttype = {arxiv},
+eprintclass = {stat.CO},
+month = jul
+}
+
+@article{Wood:2015tr,
+author = {Wood, Frank and van de Meent, Jan-Willem and Mansinghka, Vikash},
+title = {{A New Approach to Probabilistic Programming Inference}},
+journal = {arXiv.org},
+year = {2015},
+eprint = {1507.00996v2},
+eprinttype = {arxiv},
+eprintclass = {stat.ML},
+month = jul,
+annote = {Updated version of the 2014 AISTATS paper (to reflect changes in new language syntax). 10 pages, 3 figures. Proceedings of the Seventeenth International Conference on Artificial Intelligence and Statistics, JMLR Workshop and Conference Proceedings, Vol 33, 2014}
+}
+
+
+
+%%%BNP
+
+% Variational Inference
+
+@article{Blei:2006fo,
+author = {Blei, David M and Jordan, Michael I},
+title = {{Variational inference for Dirichlet process mixtures}},
+journal = {Bayesian Analysis},
+year = {2006},
+volume = {1},
+number = {1},
+pages = {121--143},
+month = mar
+}
+
+@article{Blei:2012uu,
+author = {Blei, David M and Wang, Chong},
+title = {{Truncation-free Stochastic Variational Inference for Bayesian Nonparametric Models}},
+journal = {Advances in Neural Information Processing Systems th Annual Conference on Neural Information Processing Systems },
+year = {2012},
+pages = {422--430},
+month = dec
+}
+
+
+
+
+% Sampling Inference
+
+@article{Favaro:2013fl,
+author = {Favaro, Stefano and Teh, Yee Whye},
+title = {{MCMC for Normalized Random Measure Mixture Models}},
+journal = {Statistical Science},
+year = {2013},
+volume = {28},
+number = {3},
+pages = {335--359},
+month = aug
+}
+
+@article{Favaro:2014kg,
+author = {Favaro, S and Lomeli, M and Teh, Y W},
+title = {{On a class of $\sigma$-stable Poisson{\textendash}Kingman models and an effective marginalized sampler}},
+journal = {Statistics and Computing},
+year = {2014},
+volume = {25},
+number = {1},
+pages = {67--78},
+month = aug
+}
+
+@article{Lomeli:2015vd,
+author = {Lomeli, Maria and Favaro, Stefano and Teh, Yee Whye},
+title = {{A hybrid sampler for Poisson-Kingman mixture models}},
+journal = {arXiv.org},
+year = {2015},
+eprint = {1509.07376v1},
+eprinttype = {arxiv},
+eprintclass = {stat.CO},
+month = sep
+}
+
+@article{Lomeli:2017kp,
+author = {Lomeli, Maria and Favaro, Stefano and Teh, Yee Whye},
+title = {{A Marginal Sampler for $\sigma$-Stable Poisson{\textendash}Kingman Mixture Models}},
+journal = {Journal of Computational and Graphical Statistics},
+year = {2017},
+volume = {26},
+number = {1},
+pages = {44--53},
+month = feb
+}
+
+% Stick-breaking
+
+@inproceedings{stick-breaking-ibp,
+  title = {Stick-breaking Construction for the Indian Buffet Process},
+  author = {Teh, YW. and G{\"o}r{\"u}r, D. and Ghahramani, Z.},
+  journal = {Proceedings of the Eleventh International Conference on Artificial Intelligence and Statistics (AISTATS 2007)},
+  booktitle = {JMLR Workshop and Conference Proceedings Volume 2: AISTATS 2007},
+  pages = {556-563},
+  editors = {Meila, M. , X. Shen},
+  publisher = {MIT Press},
+  organization = {Max-Planck-Gesellschaft},
+  school = {Biologische Kybernetik},
+  address = {Cambridge, MA, USA},
+  month = mar,
+  year = {2007},
+  month_numeric = {3}
+}
+
+@article{Favaro:2014bo,
+author = {Favaro, Stefano and Lomeli, Maria and Nipoti, Bernardo and Teh, Yee Whye},
+title = {{On the stick-breaking representation of $\sigma$-stable Poisson-Kingman models}},
+journal = {Electronic Journal of Statistics},
+year = {2014},
+volume = {8},
+number = {1},
+pages = {1063--1085}
+}
+
+
+%%%Backprob
+
+@article{Schulman:2015wk,
+author = {Schulman, John and Heess, Nicolas and Weber, Theophane and Abbeel, Pieter},
+title = {{Gradient Estimation Using Stochastic Computation Graphs}},
+journal = {arXiv.org},
+year = {2015},
+eprint = {1506.05254v3},
+eprinttype = {arxiv},
+eprintclass = {cs.LG},
+month = jun,
+annote = {Advances in Neural Information Processing Systems 28 (NIPS 2015)}
+}
+
+@article{Baydin:2015up,
+author = {Baydin, Atilim Gunes and Pearlmutter, Barak A and Radul, Alexey Andreyevich and Siskind, Jeffrey Mark},
+title = {{Automatic differentiation in machine learning: a survey}},
+journal = {arXiv.org},
+year = {2015},
+eprint = {1502.05767v3},
+eprinttype = {arxiv},
+eprintclass = {cs.SC},
+month = feb,
+annote = {34 pages, 5 figures}
+}
+
+
+
+%%% NN
+@article{Hochreiter:1997fq,
+author = {Hochreiter, Sepp and Schmidhuber, J{\"u}rgen},
+title = {{Long Short-Term Memory}},
+journal = {Neural Computation},
+year = {1997},
+volume = {9},
+number = {8},
+pages = {1735--1780},
+month = nov
+}
+
+
+%%% MISC
+@article{Bezanson:2017gd,
+author = {Bezanson, Jeff and Edelman, Alan and Karpinski, Stefan and Shah, Viral B},
+title = {{Julia: A Fresh Approach to Numerical Computing}},
+journal = {SIAM Review},
+year = {2017},
+volume = {59},
+number = {1},
+pages = {65--98},
+month = jan
+}
+
+@techreport{Rossum:1995:PRM:869369,
+ author = {Rossum, Guido},
+ title = {Python Reference Manual},
+ year = {1995},
+ source = {http://www.ncstrl.org:8900/ncstrl/servlet/search?formname=detail\&id=oai%3Ancstrlh%3Aercim_cwi%3Aercim.cwi%2F%2FCS-R9525},
+ publisher = {CWI (Centre for Mathematics and Computer Science)},
+ address = {Amsterdam, The Netherlands, The Netherlands},
+} 

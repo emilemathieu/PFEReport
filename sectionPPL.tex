@@ -1,53 +1,135 @@
-\section{Probabilistic programming}
+\chapter{Probabilistic programming}
 
-\subsection{What is it ?} \label{PPL_def}
-Using PL techniques to abstract inference algorithms from stats/ML such that they apply automatically and correctly to the broadest possible set of model-based reasoning applications
+\section{What is it ?} \label{PPL_def}
+At a high level, \gls{PPL} are \gls{PL} techniques to abstract inference algorithms from stats/ML such that they apply automatically and correctly to the broadest possible set of model-based reasoning applications
+
+Probabilistic programming systems [6, 7, 9, 31] represent generative models as programs written in a specialized language that provides syntax for the definition and conditioning of random variables.
 
 “Probabilistic programs are usual functional or imperative programs with two added constructs: 
 (1) the ability to draw values at random from distributions, and 
 (2) the ability to condition values of variables in a program via observations.”  
 from  Gordon, Henzinger, Nori, and Rajamani “Probabilistic programming.” In Proceedings of On The Future of Software Engineering (2014).
 
-\subsection{Why is it usefull ?}
+\textcolor{red}{Schema of inference / CS / Stats ?}
+
+\section{Why is it useful ?}
 Increase productivity: savings to be found in the amount of code that needs to written in order to prototype and develop models.
 
 remove the burden of having to develop inference code for each new model: which is error-prone and time consuming
-This is done by providing a modelling language abstraction layer in which developers can denote their models.  If done, generic inference is provided for free.
+This is done by providing a modeling language abstraction layer in which developers can denote their models.  If done, generic inference is provided for free.
 
-\subsection{History / Existing PPLs}
-Graphical models: BUGS \cite{Bugs}, STAN \cite{Stan}
-Factor graphs: Factorie \cite{Factorie}, Infer.NET \cite{InferNET}
-
-First-Order PPLs: bounded loops = loops can be desugared to nested lets
+\section{History}
+The first generation of \gls{PPL}s had limitation in the range of models that could be represented and in which inference could be performed.
+BUGS \cite{Bugs} and STAN \cite{Stan} can only work with graphical models.
+Similarly Factorie \cite{Factorie} and Infer.NET \cite{InferNET} only handle factor graphs.
+These so-called \textit{First-Order} \gls{PPLs}, can only represent finite dimensional model and have bounded loops.
 
 %flexibility vs performance
-High Order PPLs: Recursion / Turing complete — infinite dimensional parameter space — easy to program in, natural to express certain models, hard to perform inference in
-Anglican, Venture (graph MCMC), Church
+On the other hand, \textit{High Order \gls{PPLs}} are Turing complete, allow unbounded recursion and thus can denote infinite dimensional objects.
+They are easy to program in, natural to express certain models, but it is hard to perform inference in
+these \gls{PPL}s: Anglican \cite{wood-aistats-2014}, Venture \cite{Mansinghka:2014ty}, Church \cite{Goodman:2012uq}.
+%Venture (graph MCMC)
 
-\subsection{Inference schemes}
+\section{Design}
 
-Importance Sampling: IS, SMC
+% \begin{equation*}
+% \begin{aligned}
+% & \underset{\lambda}{\text{maximize}}
+% & & - \cfrac{1}{2} \left(  {\left\|  \sum_i^n{y_i \lambda_i x_i}  \right\|}_2^2  \right)  + 1^T \lambda  \\
+% & \text{subject to}
+% & & 0 \preceq \lambda \preceq C \\
+% \end{aligned}
+% \end{equation*}
 
-PMCMC: PG, PMMH, IPMCMC, PGAS
+\texttt{sample/assume} and \texttt{observe} statements
 
-Hamiltonian: HMC, HMCDA, NUTS, SGLD, SGHMC
+$\mby := (y_j)_{j=1}^N$
 
-\subsection{Contributions}
-\quad During this internship I have taken the time to actually implement several inference algorithms, by contributing to two existing PPLs.
-First, I implemented \footnote{See \url{https://github.com/yebai/Turing.jl/tree/master/src/samplers}} both the Stochastic Gradient Langevin Dynamics (SGLD) and Stochastic Gradient Hamiltonian Monte Carlo (SGHMC) inference algorithms in Turing.jl \cite{Turing}, a PPL based on Julia and developed at the University of Cambridge.
-Then, I implemented \footnote{See \url{https://github.com/blei-lab/edward/pull/728}} the Dual Averaging extension of HMC \cite{HMC} for Edward \cite{Edward}, a PPL built on top of Tensorflow \cite{Tensorflow} by Blei's group at Columbia University.
+A (almost-surely terminating) probabilistic program defines a probability distribution over finite feasible traces x with probability density $\pi(\mbx) := \gamma(\mbx) / Z$ where 
 
-\subsubsection{SGLD}
+\begin{equation*}
+\gamma(\mbx) := \prod_{i=1}^{|\mbx|}{f(x_i~|~x_{1:i-1})} \prod_{j=1}^{|\mby|}{g(y_j~|~x_{1:\tau(j)})}
+\end{equation*}
+
+and Z is the normalizing constant $Z := \int{\gamma(\mbx) d(\mbx)}$.
+
+\section{Inference schemes}
+Typically inference can be performed for any probabilistic program using one or more generic inference techniques provided by the system back end, such as Metropolis-Hastings \cite{Wingate:2011ul, Mansinghka:2014ty}, Hamiltonian Monte Carlo \cite{Stan}, expectation propagation \cite{InferNET}, and extensions of Sequential Monte Carlo \cite{vandeMeent:2015uk, Paige:2014tc, Wood:2015tr} methods.
+
+
+\subsection{MCMC}
+\cite{Wingate:2011ul}
+\cite{Ritchie:2015tx}
+
+\subsection{Importance Sampling}
+\paragraph{IS}
+
+% \begin{algorithm}  
+%   \caption{ImportanceSampling(f, g)
+%     \label{alg:is}}  
+%   \begin{algorithmic}[1]  
+%     \State  $\mu \gets 0_d$
+%       \For{$t \gets 1 \textrm{ to } T$}  
+%           \State  $\beta_t \gets 2 \log (\left| D \right| t^2 \pi^2 / 6 \delta)$
+%     \State Choose $a_t \gets arg \max_i \mu_{t-1} + \sqrt{\beta_t} \sigma_{t-1}$
+%     \State Observe $y_t = f(\mathbf{x}_t) + \epsilon_t$
+%     \State $\mu_t = k_{t-1}(\mathbf{x})^T {(K_{t-1} + \sigma^2 I_d)}^{-1} y_t$
+%     \State $k_t = k(\mathbf{x}, \mathbf{x}') - k_{t-1}(\mathbf{x})^T {(K_{t-1} + \sigma^2 I_d)}^{-1} k_{t-1}(\mathbf{x'}) $
+%     \State $\sigma_{t}^2 = k_t(\mathbf{x},\mathbf{x})$
+%       \EndFor  
+%   \end{algorithmic}  
+% \end{algorithm}
+
+\paragraph{SMC}
+
+
+\subsection{Particle MCMC}
+\textit{breakpoints} are needed. \gls{CPS} in \emph{Anglican} \cite{wood-aistats-2014} and \emph{WebPPL} \cite{dippl}
+coroutine copying in \cite{Turing}
+
+\paragraph{PG}
+
+
+\paragraph{PMMH}
+
+
+\paragraph{IPMCMC}
+
+\subsection{Hamiltonian}
+\paragraph{HMC}
+
+
+\paragraph{HMCDA}
+
+
+\paragraph{NUTS}
+In \cite{NUTS}, the authors address the issue of choosing the two hyperparameters of HMC: a step size $\epsilon$ and a desired number of steps $L$, since HMC’s performance is highly sensitive on those.
+\cite{Nesterov2009}
+
+\paragraph{SGLD}
 mini-batch / online setting, scale to bug dataset
 \footnote{See for instance, SGLD applied to a Bayesian logistic regression at \url{https://github.com/yebai/Turing.jl/blob/master/example-models/sgld-paper/lr_sgld.jl}}
  \cite{SGLD}
- 
-\subsubsection{SGHMC}
+
+\paragraph{SGHMC}
 Same setting as SGLD
 Naive version is wrong (posterior is not the invariant distribution), see \cite{SGMCMC}
 friction term
  \cite{SGHMC}
  
-\subsubsection{Dual Averaging}
-In \cite{NUTS}, the authors address the issue of choosing the two hyperparameters of HMC: a step size $\epsilon$ and a desired number of steps $L$, since HMC’s performance is highly sensitive on those.
-\cite{Nesterov2009}
+\subsection{Variational Inference}
+MCMC methods can be slow to converge and their convergence can be difficult to diagnose.
+To my knowledge, \emph{Edward} \cite{Edward} is the only \gls{PPL} handling variational inference.
+
+\section{Contributions}
+\quad During this internship I have taken the time to actually implement several inference algorithms, by contributing to two existing PPLs.
+First, I implemented \footnote{See \url{https://github.com/yebai/Turing.jl/tree/master/src/samplers}} both the \gls{SGLD} and \gls{SGHMC} inference algorithms in Turing.jl \cite{Turing}, a PPL based on Julia and developed at the University of Cambridge.
+Then, I implemented \footnote{See \url{https://github.com/blei-lab/edward/pull/728}} the Dual Averaging extension of HMC \cite{HMC} for Edward \cite{Edward}, a PPL built on top of Tensorflow \cite{Tensorflow} by Blei's group at Columbia University.
+
+PMMH: \footnote{\url{https://github.com/yebai/Turing.jl/pull/339}}
+
+PGAS / IPMCMC for Turing.jl
+
+became a \textit{contributor} of Turing repository.
+ 
+

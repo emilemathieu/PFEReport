@@ -1,0 +1,213 @@
+\documentclass[twoside,10pt,openany,a4paper]{rapport}
+\input{preamble/preamble}
+\input{preamble/preamble_acronyms}
+\input{preamble/preamble_math}
+%\input{preamble/preamble_tikz}
+
+
+\usepackage{algpseudocode,algorithm,algorithmicx}  
+\usepackage{caption}
+\usepackage{subcaption}
+
+\graphicspath{{images/}}
+
+\begin{document}
+
+%Non affiché mais sera inséré dans les propriétés du fichier
+\title{Césure}
+\author{Émile \textsc{Mathieu}}
+\date{\today}
+
+%\mainmatter
+\frontmatter
+
+%Page de garde
+\begin{titlepage}
+      \begin{center}
+      %\includegraphics[scale=0.5]{logo_enpc.jpg}
+      %\includegraphics[scale=0.2]{logo_oxford.png}
+      \begin{figure}
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.6\linewidth]{logo_enpc.jpg}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.6\linewidth]{logo_oxford.png}
+\end{subfigure}
+\vspace{1.0cm}
+\end{figure}
+
+      
+      \vspace{0.3cm}
+      \institute{École des Ponts ParisTech}\\
+      \institute{Department of Statistics, University of Oxford}
+      
+      \vspace{0.7cm}
+      2017\\
+      Master's Internship Report
+      
+      \vspace{0.3cm}
+      Émile Mathieu\\
+      Élève ingénieur, Third year
+      
+      \vspace{2cm}
+      \Huge{\textbf{Bayesian Nonparametric Inference within Probabilistic Programming Languages}}\\
+      %\Large{\textit{within Probabilistic Programming Languages}} 
+
+      %\vspace{2cm}
+      %\Huge{\textbf{CONFIDENTIEL}}\\
+      
+      \vfill
+      \normalsize{}
+      Internship carried out at Department of Statistics, University of Oxford \\
+      %Stages effectués du 6 Juillet au 30 décembre 2015 puis du 11 Janvier au 08 juillet 2016
+      From the 22nd of May, to the 15th of September 2017.
+      
+      \vspace{0.3cm}
+       Company tutor: \textsc{Teh}, Yee Whye\\
+       Training supervisor: \textsc{Obozinski}, Guillaume
+
+      \end{center}
+\end{titlepage}
+
+\cleardoublepage
+
+
+\chapter{Acknowledgments}
+
+\quad First of all, I would like to express my indebtedness appreciation to my departmental supervisor Prof. Yee Whye Teh. His belief in me and his advices played a decisive role in making the execution of my work and thus this report. \\
+
+I also express my deepest thanks to Benjamin Bloem-Reddy, who as a postdoc, oversaw me during this internship and with whom I frequently work. \\
+
+Moreover, my gratitude goes to Guillaume Obozinski, my school training supervisor, whose guidance has continually shaped my career path since I have been at Ecole des Ponts ParisTech.
+
+\chapter{Abstract}
+
+\textbf{Keywords :} Probabilistic Programming, Bayesian Non-parametric, Bayesian Inference, Sampling methods
+
+
+\chapter{Résumé}
+
+
+
+\tableofcontents
+\addcontentsline{toc}{chapter}{Table of contents}
+%\listoftables
+%\addcontentsline{toc}{chapter}{Liste des tableaux}
+\listoffigures
+\addcontentsline{toc}{chapter}{List of figures}
+
+\chapter{Glossary}
+
+\begin{itemize} 
+\item \textbf{BNP}:  \textit{Bayesian Non-Parametric}, explained in Section \ref{BNP_def}. \\
+\item \textbf{PPL}:  \textit{Probabilistic Programming Language}, explained in Section \ref{PPL_def}. \\
+
+\end{itemize}
+
+\mainmatter
+
+
+\chapter{Introduction}
+cf Research Proposal ?
+
+
+\include{presentation}
+
+
+\chapter{Mission}
+\section{Themes of research}
+Prof. Yee Whye Teh \footnote{\url{https://www.stats.ox.ac.uk/~teh}} has worked for a long time on inference sampling schemes for \gls{BNP} mixture models \cite{Favaro:2013fl, Favaro:2014kg, Lomeli:2015vd, Lomeli:2017kp}, but also on stick-breaking constructions \cite{stick-breaking-ibp, Favaro:2014bo}.
+He also has recently been interested in \gls{PPL} and consequently in inference schemes within \gls{PPL} for \gls{BNP} models.
+
+This theme requires knowledge in several fields -- Probabilities, Computational Statistics, Programming Languages -- which makes it deeply interesting.
+He proposed me working with him on this topic as part of a 3-years DPhil program, and to start earlier as an intern.
+
+\section{Context}
+In addition to inviting me to work with him, Prof. Yee Whye Teh also opened two postdoctoral positions for working on the same project, which have been filled by Tom Rainforth and Benjamin Bloem-Reddy. 
+
+Tom Rainforth \footnote{\url{http://www.robots.ox.ac.uk/~twgr}} is finishing is third year of DPhil in the Dept. of Engineering Science in Oxford, supervised by Prof. Frank Wood. His interests include  probabilistic programming, Bayesian optimization, probabilistic numerics, sequential Monte Carlo and particle Markov Chain Monte Carlo methods. He will join the group in October, but he has already attended several reading group meetings.
+
+On the other hand, Benjamin Bloem-Reddy \footnote{\url{http://www.stats.ox.ac.uk/~bloemred/}} arrived in May in Oxford and has already started working on the project. He was supervised by Peter Orbanz at Columbia University, and his research were focused on probabilistic and statistical analysis of networks and other discrete data.
+
+\section{Reading group}
+
+Four reading groups are organised with a bi-weekly period: Kernel methods, Deep Learning, Bayesian Nonparametrics and Probabilistic Inference.
+I have been leading the Probabilistic Inference reading group \footnote{\url{https://github.com/BigBayes/oxsml/wiki/Probabilistic-Inference-meetings}} since July. Since, Ben and I have presented four papers \cite{Ritchie:2016ve, Edward, Ritchie:2015tx, DelMoral:2015jk} with an emphasise on probabilist programming.
+
+\section{Organisation}
+In this section I develop my current organisation and workflow as a researcher.
+At first, I had much trouble to organise my workflow, I wrote my papers' review and new ideas on flying sheets, papers were saved in my computer's folders, citations for report was time-consuming, my code was locally saved, etc... 
+
+Thus, I worked on a better workflow and after trials and errors, I eventually arrived on what I describe below.
+I aim to modify this process with time, so as to continually enhance my productivity and be able to focus on the interesting part of the job.
+
+\subsection{Managing papers}
+My biggest trouble was keeping organised the dozens of new articles I read each week.
+I was saving them in a tree-like structure of folders, but with the number of articles saved growing, it became more and more difficult to find specific article.
+Moreover, this structure inherently prohibits cross-categories articles which is annoying for a project situated at the intersections of several fields.
+Furthermore, I had no fast way to cite an article, neither in plain format (for markdown \footnote{\url{https://en.wikipedia.org/wiki/Markdown}} files for instance) nor in \emph{BibTeX} format.
+
+Then, I have heard of papers managing library such as Papers3 \footnote{\url{https://www.readcube.com/papers/mac/}} or Mendeley \footnote{\url{https://www.mendeley.com}}.
+I have eventually opted for Papers3 but Mendeley is also a popular choice in the academic community.
+These applications features many tools easing the life of a researcher, the main one being from my point of view:
+
+\begin{itemize}
+\item Synchronisation: between multiple computers or devices.
+\item Multi-labels: these are used in the search tool.
+\item Local search: search in titles, authors, labels and even papers' content.
+\item Online search: can import articles in a fast manner by being connected with online search engines such as \emph{arXiv}.
+\item Collections: create a reading list, or group of papers which can be cited at once
+\item Citations: get \emph{BibTeX} reference or \emph{BibTeX} cite command in clipboard
+\end{itemize}
+
+\subsection{Managing research}
+Another of my organizational issue was keeping track of ideas.
+I happened to find that research is a result of a long chain of ideas which were continually iterated upon.
+I am now maintaining a single \textit{master document} for keeping tracks of this chain of ideas.
+
+It has a bulleted list of all ideas, problems, and topics that I’d like to think more carefully about. This list is succinct but subsequent sections go in depth on particular entries.
+This list is sorted according to what I’d like to work on next, but I continually revise my priorities according to whether I think the direction aligns with my broader research vision, and if I think the direction is necessarily impactful for the community at large.
+
+\subsection{Managing projects}
+Then, when an idea has matured enough and I have seriously started working on it, I create a Github \footnote{\url{https://github.com}} repository for the project. Each project has its separated repository. 
+It contains a \texttt{/readme.md} file maintaining a list of todo’s, with also questions (and sometimes answers!) both for myself and collaborators. This makes it transparent how to keep moving forward and what’s blocking the work.
+
+There is also a \texttt{/doc/} folder for all the write-ups, usually in \LaTeX  format.
+The  \texttt{etc/} folder is used for everything not relevant to other directories such as pictures of whiteboards during conversations about the project.
+Finally, the \texttt{/src/} folder is where all code is written. Runnable scripts are written directly in \texttt{/src/} , and classes and utilities are written in \texttt{/src/codebase/}. 
+
+%AI Summer School ?
+
+
+\include{sectionPPL}
+
+
+\include{sectionBNP}
+
+
+\include{sectionBNPwithPPL}
+
+
+\include{sectionFutureWork}
+
+
+\include{conclusions}
+
+%\backmatter
+
+\appendix
+\chapter*{Appendices}
+\addcontentsline{toc}{chapter}{Appendices}
+\renewcommand{\thesection}{\Alph{section}}
+\section{Variational Inference ?}
+\section{Automatic Differentiation ?}
+
+\nocite{*}
+
+\bibliographystyle{siam}
+\bibliography{rapport}
+
+\end{document}

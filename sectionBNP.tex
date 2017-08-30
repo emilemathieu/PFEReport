@@ -1,40 +1,30 @@
-\section{Bayesian nonparametric}
+\chapter{Bayesian nonparametric}
 
-\subsection{Definition} \label{BNP_def}
+\section{Definition} \label{BNP_def}
 
-\subsection{Usefulness}
+\section{Usefulness}
 
-\subsection{Canonical models}
+\section{Canonical models}
 ???
 DP, PYP, etc
 
-\subsection{MCMC Inference}
+\section{MCMC Inference}
 % Variational inference ? DPM \cite{DPVI}
 
 \quad Constructing MCMC schemes for models with one or more Bayesian nonparametric components is an active research area since dealing with the infinite dimensional component $P$ forbids the direct use of standard simulation-based methods.These methods usually require a finite-dimensional representation. The general idea for designing inference schemes is to find finite dimensional representations to be able to store the model in a computer with finite capacity.
 
 There are two main sampling approaches to facilitate simulation in the case of Bayesian nonparametric models: random truncation and marginalisation. These two schemes are known in the literature as conditional and marginal samplers.
 
-\subsubsection{Marginal Samplers}
+\subsection{Marginal Samplers}
 \quad Marginal samplers bypass the need to represent the infinite-dimensional component by marginalising it out. These schemes have lower storage requirements than conditional samplers because they only store the induced partition, but could potentially have worse mixing properties.
 
-\subsubsection{Conditional Samplers}
+\subsection{Conditional Samplers}
 \quad Conditional samplers replace the infinite-dimensional prior by a finite-dimensional representation chosen according to a truncation level. Since these samplers do not integrate out the infinite-dimensional component, their output provides a more comprehensive representation of the random probability measure.
 thinning vs stick-breaking
 
-\subsubsection{Hybrid Samplers}
+\subsection{Hybrid Samplers}
 YW paper on PK ?
 
-\subsubsection{SMC}
+\subsection{SMC}
 Review of SMC ?
 cf Maria Lomeli thesis
-
-
-\subsection{BNP sampling in PPL}
-
-Stochastic Memoization with DPmem: $\alpha = 0$, deterministic memoization, $\alpha = \inf$ no memoization\\
-https://probmods.org/chapters/12-non-parametric-models.html
-
-
-\subsection{Link between BNP and High order PPL}
-See Frank Wood meeting
