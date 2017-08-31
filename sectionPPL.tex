@@ -1,7 +1,7 @@
 \chapter{Probabilistic programming}
 
 \section{What is it ?} \label{PPL_def}
-At a high level, \gls{PPL} are \gls{PL} techniques to abstract inference algorithms from statistics such that they apply automatically and correctly to the broadest possible set of model-based reasoning applications.
+At a high level, \gls{PPL}s are \gls{PL} techniques to abstract inference algorithms from statistics such that they apply automatically and correctly to the broadest possible set of model-based reasoning applications.
 
 A bit more precisely, Probabilistic programming systems \cite{Goodman:2012uq,dippl,Mansinghka:2014ty,wood-aistats-2014} represent generative models as programs written in a specialized language that provides syntax for the definition and conditioning of random variables.
 
@@ -9,12 +9,18 @@ Indeed, ``probabilistic programs are usual functional or imperative programs wit
 (1) the ability to draw values at random from distributions, and 
 (2) the ability to condition values of variables in a program via observations.'' \cite{Gordon:2014:PP:2593882.2593900}
 
+Probabilistic programs define probability distributions over sequences of values, implicitly by means of program execution.
+
 \textcolor{red}{Schema of inference / CS / Stats ?}
 
 \section{Why is it useful ?}
-The main goal of \gls{PPL}s is to increase productivity. One of the savings is to be found in the amount of code that needs to written in order to prototype and develop models.
+For data science practitioners, statistical inference is typically just one step in a more elaborate analysis workflow. The first stage of this work involves data acquisition, preprocessing and cleaning. This is often followed by several iterations of exploratory model design and testing of inference algorithms. Once a sufficiently robust statistical model and a corresponding inference algorithm have been identified, analysis results must be post-processed, visualized, and in some cases integrated into a wider production system.
 
-Moreover, \gls{PPL}s remove the burden of having to develop inference code for each new model which is famously error-prone and time consuming.
+The main goal of \gls{PPL}s is to increase productivity. 
+The code for models written with these systems is generally concise, modular, and easy to modify or extend.
+Thus, one of the savings is to be found in the amount of code that needs to written in order to prototype and develop models.
+
+Secondly, \gls{PPL}s remove the burden of having to develop inference code for each new model which is error-prone and time consuming.
 This is done by providing a modeling language abstraction layer in which developers can denote their models.  Once denoted, generic inference is provided for free.
 
 \section{Existing languages}
@@ -31,28 +37,57 @@ these \gls{PPL}s. Anglican \cite{wood-aistats-2014}, Venture \cite{Mansinghka:20
 
 Recently, a new \gls{PPL} named Edward \cite{Edward} has been developed. It is different from the classical \gls{PPL}s since it focuses on \gls{VI} and Hamiltonian methods.
 
+
 \section{Design}
-Probabilistic programs denote probabilistic generative models as programs that include \texttt{sample} and \texttt{observe} statements. Both \texttt{sample} and \texttt{observe} are functions that specify random variables in this generative model using probability distribution objects as an argument, while \texttt{observe}, in addition, specifies the conditioning of this random variable upon a particular observed value in a second argument. These observed values induce a conditional probability distribution over the execution traces whose approximations and expected values we want to characterize by \textit{performing inference}.
+Probabilistic programs denote probabilistic generative models as programs that include \texttt{sample} and \texttt{observe} statements. Both \texttt{sample} and \texttt{observe} are functions that specify random variables in this generative model using probability distribution objects as an argument, while \texttt{observe}, in addition, specifies the conditioning of this random variable upon a particular observed value in a second argument. These observed values induce a conditional probability distribution over the execution traces whose approximations and expected values we aim to characterize by \textit{performing inference}.
 
-An execution trace of a probabilistic program is obtained by successively executing the program deterministically, except when encountering \texttt{sample} statements at which point a value is generated according to the specified probability distribution and appended to the execution trace.
-We denote the observed values by $\mby := (y_j)_{j=1}^N$.
+A good way to understand this is to imagine the following interpreter of probabilistic programs. Starting from a fixed initial state, the interpreter runs the deterministic parts of a program according to the standard semantics, executes the \texttt{sample} statement by generating a random sample, and treats the \texttt{observe} statement by skip. More importantly, the interpreter keeps a log that records information about all the \texttt{sample} and \texttt{observe} forms encountered during execution. The information recorded for \texttt{sample} is a triple $(F, x, \alpha)$ of (i) a primitive probability distribution $F$, such as the standard normal, for which we have the probability density $p_F$ ; (ii) a value $x$ sampled from the distribution $F$ ; and (iii) an address $\alpha$ that uniquely and systematically identifies the random choice made. The information recorded for \texttt{observe} is a pair $(G,y)$ where $G$ is a primitive probability distribution as $F$ from above and $y$ is an observed value.
 
-Depending on the probabilistic program and the values generated at sample statements, the order in which the execution encounters sample statements as well as the number of encountered sample statements may be different from one trace to another.
+An execution trace $\mbx$ is defined to be a sequence of triples $(F, x, \alpha)$ and $\mbx$ is said feasible if the trace is precisely the triple part of the log of some execution.
+%Thus, an execution trace of a probabilistic program is obtained by successively executing the program deterministically, except when encountering \texttt{sample} statements at which point a value is generated according to the specified probability distribution $F$ and appended to the execution trace.
+The observed values are denoted by $\mby := (y_j)_{j=1}^N$.
 
-A (almost-surely terminating) probabilistic program defines a probability distribution over finite feasible traces x with probability density $\pi(\mbx) := \gamma(\mbx) / Z$ where 
+In most probabilistic programming systems any variable may be declared as being the output of a random procedure. Such variables can take different values in independent interpretations of the program. This leads to a ``many-worlds'' computational trace tree in which, at interpretation time, there is a branch at every random procedure application.
+
+%Depending on the probabilistic program and the values generated at sample statements, the order in which the execution encounters sample statements as well as the number of encountered sample statements may be different from one trace to another.
+
+A (almost-surely terminating) probabilistic program defines a probability distribution over finite feasible traces $\mbx$ with probability density $\pi(\mbx) := \gamma(\mbx) / Z$ where 
 
 \begin{equation*}
-\gamma(\mbx) := \prod_{i=1}^{|\mbx|}{f(x_i~|~x_{1:i-1})} \prod_{j=1}^{|\mby|}{g(y_j~|~x_{1:\tau(j)})}
+\gamma(\mbx) := \prod_{i=1}^{|\mbx|}{p_{F_i}(x_i~|~x_{1:i-1})} \prod_{j=1}^{|\mby|}{p_{G_i}(y_j~|~x_{1:\tau(j)})}
 \end{equation*}
 
-and Z is the normalizing constant $Z := \int{\gamma(\mbx) d(\mbx)}$.
+where Z is the normalizing constant $Z := \int{\gamma(\mbx) d(\mbx)}$ and $\tau$ is a mapping from the index $j$ of the \texttt{observe} statement to the index of the last \texttt{sample} statement encountered before this \texttt{observe} statement during the execution of the program.
 
 \section{Inference}
 \textcolor{red}{Add pseudo-code for each algo ?}
 
-Inference in probabilistic programming characterizes the conditional distribution of such variables given observed data assumed to have been generated by executing the probabilistic program.
+Inference in probabilistic programming characterizes the conditional distribution of execution traces $\mbx$ given observed data $\mby$ assumed to have been generated by executing the probabilistic program.
+
+Concretely, using the \texttt{sample} statements, the \gls{PPL}'s model first defines a so called prior distribution on these execution traces, and then it adjusts this prior distribution based on observations in data using the \texttt{observe} statement. Samples from this conditioned distribution (also called posterior distribution) can be obtained by running the model under one of the \gls{PPL}’s inference algorithms.
+
+
+The inference algorithms may make random choices that do not correspond to any statements in the program, and decide which parts of the program code are executed and how often. Some inference algorithms re-run the program multiple times partially, from a certain point on, while reusing random choices made in the previous runs as much as possible.
+Upon encountering a sample or observe record, the inference algorithm computes the updated program state and the value to be passed to the continuation. How the state is updated, the number of times the continuation is called, and the value passed to the continuation of sample depend on the inference algorithm executing the program.
+
+%Implementing an inference algorithm in \gls{PPL}s amounts to defining an appropriate version of the infer function and checkpoint handlers for \texttt{sample} and \texttt{observe}.
 
 Typically inference can be performed for any probabilistic program using one or more generic inference techniques provided by the system back end, such as Metropolis-Hastings \cite{Wingate:2011ul, Mansinghka:2014ty}, Hamiltonian Monte Carlo \cite{Stan}, expectation propagation \cite{InferNET}, and extensions of Sequential Monte Carlo \cite{vandeMeent:2015uk, Paige:2014tc, Wood:2015tr} methods.
+
+\subsection{\gls{MCMC}}
+A popular way to estimate a difficult distribution is to sample from it by constructing a random walk that will visit each state in proportion to its probability. This class of algorithms are called \gls{MCMC}.
+
+Imagine doing a random walk in the space of execution traces of a computation
+
+We have successfully created a random walk in the space of executions. Moreover, it matches the desired binomial distribution. However, we have not handled factor statements (or used the computation scores in any way). This will not match the desired distribution when the computation contains factors (or when the number of random choices may change across executions). The Metropolis Hastings algorithm gives a way to ‘patch up’ this random walk to get the right distribution.
+
+Above we only reused the random choices made before the point of regeneration. It is generally better to make ‘smaller’ steps, reusing as many choices as possible. If we knew which sampled value was which, then we could look into the previous trace as the execution runs and reuse its values. That is, imagine that each call to sample was passed a (unique) name: sample(name, dist). Then the sample function could try to look up and reuse values:
+Notice that, in addition to reusing existing sampled choices, we add the name and mark whether this choice has been resampled. We must account for this in the MH acceptance calculation:
+This version will now reuse most of the choices from the old trace in making a proposal.
+
+\cite{Wingate:2011ul}
+\cite{Ritchie:2015tx}
+%Venture (graph MCMC) ?
 
 \subsection{Use-case}
 Even if as highlighted before, inference in \gls{PPL}s should be able to deal with arbitrary series of targets, for simplicity we will focus on a non-Markovian \gls{SSM}.
@@ -81,7 +116,14 @@ $$ I(\phi) = \int \phi(x_{1:T}) p_\theta(x_{1:T}|y_{1:T}) dx_{1:T} $$
 
 
 \subsection{Importance Sampling}
-\textcolor{red}{Detail SMC and PMCMC}
+For many models with large state spaces, enumeration is infeasible, even if we use smart prioritization. This is particularly clear for models with continuous random variables, where the state space is infinite.
+f there is a large number of execution paths, clearly, we cannot explore all paths individually. This leaves two possibilities: either we reason about paths more abstractly, or we explore only a subset of paths. In these notes, we focus on the second possibility.
+
+Previously, we have enumerated paths using depth-first search, breadth-first search, and a probability-based priority queue. However, this approach can result in an unrepresentative set of paths for models with large state spaces, and for uncountably infinite state spaces it isn’t even clear what exactly we are enumerating.
+
+Random sampling is a promising alternative: if we could sample paths in proportion to their posterior probability – i.e. taking into account factor weights – we could easily get a representative picture of the marginal distribution.
+
+
 
 \paragraph{\gls{IS}}
 Importance sampling is an example of a Monte Carlo sampling scheme that provides approximately independent and identically distributed samples from a distribution of interest or target distribution, such as a posterior distribution, by generating a candidate sample from a proposal or importance distribution $q(\mbx|y_1,\dots,y_T)$.
@@ -235,27 +277,23 @@ A drawback of \gls{PG} is that it can be particularly adversely affected by path
 The idea is to sample a new value for the index variable $a_t^N$ in an ancestor sampling step. While this is a small modification of the algorithm, the improvement in mixing can be quite considerable.
 The task is to artificially assign a history to the partial path $(x^\star_{t:T})$ of the reference path.
 This is done by connecting $(x^\star_{t:T})$ to one of the particles $(x^k_{1:t-1})$.
+The ancestor index of the reference path $(x^\star_{t:T})$ at time $t$ $a^N_t \in \{1,\dots,K \}$ encodes the ancestry of this particle.
 
-$$ \tilde{w}^k_{t-1|T} = \frac{}{ }  $$
+To assign a history to this partial path, first the following weights are computed
+
+$$ \tilde{w}^k_{t-1|T} := {w}^k_{t-1} \frac{p((x^k_{1:t-1},x^\star_{t:T}), y_{1:T})}{p(x^k_{1:t-1}, y_{1:t-1    })}  $$
+
+for $k = 1,\dots,K$. Then, $a^K_t$ is sampled via $\mathbb{P}\left( a^K_t = k \right) \propto \tilde{w}^k_{t-1|T}$.
 
 \paragraph{\gls{IPMCMC}}
 \gls{IPMCMC} \cite{Rainforth:2016wq} is another way of tackling the path degeneracy issue.
 In \gls{IPMCMC}, a pool of \gls{CSMC} and unconditional \gls{SMC} algorithms are ran as parallel processes (referred as nodes. After each run of this pool, successive Gibbs updates are applied to the indexes of the \gls{CSMC} nodes, such that the indices of the \gls{CSMC} nodes changes. Hence, the nodes from which retained particles are sampled can change from one \gls{MCMC} iteration to the next. This lets us trade off exploration (\gls{SMC}) and exploitation (\gls{CSMC}) to achieve improved mixing of the Markov chains.
-
-\subsection{\gls{MCMC}}
-specific to \gls{PPL}s
-\cite{Wingate:2011ul}
-\cite{Ritchie:2015tx}
-%Venture (graph MCMC) ?
 
 \subsection{Hamiltonian}
 \textcolor{red}{Can be quite brief for Hamiltonian}
 
 \paragraph{\gls{HMC}}
 
-
-\paragraph{\gls{HMCDA}}
-\textcolor{red}{useless ? because of NUTS}
 
 \paragraph{\gls{NUTS}}
 In \cite{NUTS}, the authors address the issue of choosing the two hyperparameters of \gls{HMC}: a step size $\epsilon$ and a desired number of steps $L$, since \gls{HMC}'s performance is highly sensitive on those.

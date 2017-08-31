@@ -16,6 +16,8 @@ In Clojure there is a recursive operator for tail-recursive functions that uses 
 
 Clojure provides special forms loop and recur for writing tail-recursive programs. Anglican programs are \gls{CPS}-onverted and do not use the stack; recursive calls in Anglican cannot lead to stack overflow.
 
+A function is tail-recursive when the recursive call happens as the final action in a function, in which case it can happen without the function call stack growing. In continuation-passing style, there is no stack – all function calls are tail calls, hence all recursive functions are tail-recursive.
+
 \section{Stick-breaking process}
 PPL -> be able to sample from prior
 
@@ -24,9 +26,9 @@ well known
 already implemented in most \gls{PPL}s
 
 \subsection{PK}
-Theorem 2.1 of Perman et al. states that the sequence of surplus masses (T_k)_(k>=0) forms a Markov chain and gives the corresponding initial distribution and transition kernels.
+Theorem 2.1 of Perman et al. states that the sequence of surplus masses $(T_k)_(k>=0)$ forms a Markov chain and gives the corresponding initial distribution and transition kernels.
 
-Could we sample the Kth stick length in generic way since we know the density ? For instance by restricting to Levy measure intensity and Total mass density which are tractable (not σ-stable PK). One may use a simple rejection sampling with proposal U(0, t_K) (what would be M ?).
+Could we sample the Kth stick length in generic way since we know the density ? For instance by restricting to Levy measure intensity and Total mass density which are tractable (not σ-stable PK). One may use a simple rejection sampling with proposal $U(0, t_K)$ (what would be M ?).
 
 There exist other models based directly on specifying a valid distribution for the stick breaks (e.g. Ottowa sequence, Beta-Stacy, others?); these should fit in without a problem.
 
