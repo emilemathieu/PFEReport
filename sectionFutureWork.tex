@@ -45,6 +45,13 @@ Yet this is not a trivial task, one have to put proper care when computing unbia
 Hopefully, a stochastic computation graph \cite{Schulman:2015wk} can be converted into a deterministic computation graph, to which the backpropagation algorithm can then be applied on a surrogate loss function which results in an unbiased gradient estimator of the loss.
 
 
+\section{Piecewise Deterministic Markov Processes}
+A novel class of non-reversible Markov chain Monte Carlo schemes relying on continuous-time piecewise deterministic Markov Processes has recently emerged \cite{Vanetti:2017ux}. In these algorithms, the state of the Markov process evolves according to a deterministic dynamics which is modified using a Markov transition kernel at random event times. A general framework is presented in \cite{Bierkens:2017we}, and includes among others the Zig-Zag Process \cite{Bierkens:2016uk}, the Bouncy Particle Sampler \cite{BouchardCote:2017gs} and the Generalized Bouncy Particle Sampler \cite{Wu:2017uz}.
+
+
+It has been claimed \cite{Bierkens:2017we} that the non-reversibility property of these algorithms enhances the mixing rate of the chain.
+I am consequently interested in understanding to what extent this class of MCMC schemes could fit the \gls{PPL}'s setting.
+
 
 \section{Variational Inference for \gls{BNP} in \gls{PPL}}
 To my knowledge, the first article tackling inference in a \gls{BNP} setting is \cite{Blei:2006fo}, where
@@ -67,15 +74,3 @@ An adversarial game is cast between these two networks and a discriminative netw
 Adversarial inference seems to be closely related to \gls{VI}. Yet, in adversarial inference the model can also be learned as opposed to \gls{VI} where only the proposal is learned. Moreover, in \gls{VI} the marginal likelihood is optimised via a lower bound (ELBO) whereas in adversarial inference, a classification loss is optimised.
 
 This approach could be interesting in the \gls{BNP} setting, if a tractable and tight lower bound on the marginal likelihood cannot be found.
-
-
-
-\section{Piecewise Deterministic Markov Processes}
-A novel class of non-reversible Markov chain Monte Carlo schemes relying on continuous-time piecewise deterministic Markov Processes has recently emerged \cite{Vanetti:2017ux}. In these algorithms, the state of the Markov process evolves according to a deterministic dynamics which is modified using a Markov transition kernel at random event times. A general framework is presented in \cite{Bierkens:2017we}, and includes among others the Zig-Zag Process \cite{Bierkens:2016uk}, the Bouncy Particle Sampler \cite{BouchardCote:2017gs} and the Generalized Bouncy Particle Sampler \cite{Wu:2017uz}.
-
-
-It has been claimed \cite{Bierkens:2017we} that the non-reversibility property of these algorithms enhances the mixing rate of the chain.
-I am consequently interested in understanding to what extent this class of MCMC schemes could fit the \gls{PPL}'s setting.
-
-
-
