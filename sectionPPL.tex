@@ -174,7 +174,7 @@ These targets are then approximated by propagating a population of samples known
 More formally, \gls{SIS} performs approximate inference on a sequence of target distributions
 $\left(\pi_t(x_{1:t}) \right)_{t=1}^T$ of increasing spaces 
 $\left(\mathcal{X}_1 \times \dots \times \mathcal{X}_t \right)_{t=1}^T$.
-In the context of \gls{SSM}s, the target distributions are often taken to be
+In the context of \gls{SSM}s, the target distributions are taken to be
 $\left(p_\theta(x_{1:t}|y_{1:t}) \right)_{t=1}^T$.
 At each time step $t$, we have a set of $K$ particles $\left(\tilde{x}_{1:t}^k \right)_{t=1}^T$,
 corresponding to samples of the latents, and respective particle weights $\left({w}_{t}^k \right)_{t=1}^T$.
@@ -190,11 +190,11 @@ where $\bar{w}_T^k = \frac{{w}_T^k}{\sum_{k=1}^K {w}_T^k}$ is the normalized wei
 
 
 
-Let us assume that the importance distribution $q$ at time $t$ depends on all data points until time $t$ and not on the future data points, the joint posterior can be written in the following factorised form
+Let's now focus on computing the particles' weights. The joint posterior can be written in the following factorised form
 
 $$ q(x_{1:T}|y_{1:T}) = q(x_1) \prod_{t=2}^T q(x_t|x_{1:t-1},y_{1:t}) $$
 
-The corresponding importance weight is
+The corresponding importance weight is thus
 
 \begin{equation} \label{eq:IS_w}
 \begin{aligned}
@@ -203,10 +203,7 @@ w_t =& \frac{\mu(x_1) \prod_{t=2}^T p(x_t|x_{1:t-1},y_{1:t})}{q(x_1) \prod_{t=2}
 \end{aligned}
 \end{equation}
 
-The target distribution is the posterior distribution up to time $t$, which changes sequentially as we observe more data.
-
-
-The posterior distribution can be estimated recursively due to
+The target distribution is the posterior distribution up to time $t$, which changes sequentially as we observe more data. This posterior distribution can be estimated recursively due to
 
 \begin{equation} \label{eq:IS_p_rec}
 p(x_{1:t+1}|y_{1:t+1}) = p(x_{1:t}|y_{1:t}) \times \frac{p(y_{t+1}|x_{1:t+1})p(x_{t+1}|x_{1:t})}{p(y_{t+1}|y_{1:t})} \\
@@ -219,30 +216,25 @@ $$ w_{t+1} = w_{t} \times \frac{p(y_{t+1}|x_{1:t+1})p(x_{t+1}|x_{1:t})}{p(y_{t+1
 
 Even if we are not dealing with a \gls{SSM}, \gls{SIS} can be used as a general-purpose algorithm. The data are assumed to be observed sequentially so the observation’s index is the time index.
 
-\textcolor{red}{PPL breakpoints}
-\textit{breakpoints} are needed. \gls{CPS} in \emph{Anglican} \cite{wood-aistats-2014} and \emph{WebPPL} \cite{dippl}
-coroutine copying in Turing \cite{Turing}
 
 \paragraph{\gls{SMC}}
 \textcolor{red}{Illustration of particles wrt time t ?}
 
-The main problem with \gls{SIS} is that the weights become more skewed as the number of data points increases \cite{Anonymous:2001ue}, after a few steps only one particle will have a significant weight. To remedy this, a resampling step can be introduced which allows to eliminate particles with small weights and replicate particles with high weights. This selection step can be introduced only occasionally or at every step of the algorithm. We resample from the empirical posterior at step $t$
+The main problem with \gls{SIS} is that the weights become more skewed as the number of data points increases \cite{Anonymous:2001ue}, after a few steps only one particle will have a significant weight. To remedy this, a resampling step can be introduced which allows to eliminate particles with small weights and replicate particles with high weights.
+The resampling step is achieved by, at each time step $t = 2, \dots , T$ ,
+selecting the ancestor index $a^k_{t-1}$ for the $k$th particle from a discrete distribution 
+$\mathcal{F} (\cdot|\bar{w}^1_{t-1},\dots, \bar{w}^K_{t-1})$
+over parent indices ${1, \dots , K }$ with probabilities equal to the normalized weights at the previous time step $(\bar{w}^1_{t-1},\dots, \bar{w}^K_{t-1})$. The first resampling scheme introduced was the multinomial resampling for which $\mathbb{P}(a^k_{t-1} = i) \propto \bar{w}^i_{t-1}$. \cite{Douc:2005wa} provides a comparison of numerous different schemes for sampling from $\mathcal{F} (\cdot|\bar{w}^1_{t-1},\dots, \bar{w}^K_{t-1})$ that reduce the variance of the \gls{SMC} estimates compared with naïve multinomial resampling.
+%We resample from the empirical posterior at step $t$
+%$$ \hat{p}(x_{1:T}|y_{1:T}) = \sum_{k=1}^K \bar{w}_t^k \delta_{\tilde{x}_{1:T}^k} ({x}_{1:T})$$
 
-$$ \hat{p}(x_{1:T}|y_{1:T}) = \sum_{k=1}^K \bar{w}_t^k \delta_{\tilde{x}_{1:T}^k} ({x}_{1:T})$$
-
+This selection step can be introduced only occasionally or at every step of the algorithm.
 If the selection step is to be performed occasionally, a possible criterion is when the \gls{ESS} is below a given threshold, which is a function of the number of particles, a popular choice is $0.5T$. The \gls{ESS} for the unnormalised weights is given by
 
 $$ ESS_t = \frac{{\left( \sum_{k=1}^K{w_i^k} \right)}^2}{\sum_{k=1}^K{{w_i^k}^2}}$$
 
-
-
-
-The resampling step is achieved by, at each time step $t = 2, \dots , T$ ,
-selecting the ancestor index $a^k_{t-1}$ for the $k$th particle from a discrete distribution 
-$\mathcal{F} (\cdot|\bar{w}^1_{t-1},\dots, \bar{w}^K_{t-1})$
-over parent indices ${1, \dots , K }$ with probabilities equal to the normalized weights at the previous time step $(\bar{w}^1_{t-1},\dots, \bar{w}^K_{t-1})$. \cite{Douc:2005wa} provides a comparison of numerous different schemes
-for sampling from $\mathcal{F} (\cdot|\bar{w}^1_{t-1},\dots, \bar{w}^K_{t-1})$ that reduce the variance of the \gls{SMC} estimates compared with naïve multinomial resampling.
-
+One thing which makes the development of \gls{PPL} non-trivial is having the ability to stop the execution of the program at each time $t$ (more generally at each \texttt{observe} statement). These \textit{chechpoints} are required by the \gls{SMC} algorithm for the resampling step.
+Handling of checkpoints can be implemented through coroutines/co-operative multitasking (as in Turing \cite{Turing}), and parallel execution/preemptive multitasking, as well as through explicit maintenance of pro- gram continuations (as in \emph{Anglican} \cite{wood-aistats-2014} and \emph{WebPPL} \cite{dippl}).  
 
 \subsection{\gls{PMCMC}}
 In a Bayesian setting, it is usual to consider the parameter $\theta$ in $p_\theta(x_{1:T}|y_{1:T})$ as a random variable by specifying a prior $p(\theta)$. In this subsection, we are therefore interested on algorithms targeting
@@ -301,38 +293,43 @@ for $k = 1,\dots,K$. Then, $a^K_t$ is sampled via $\mathbb{P}\left( a^K_t = k \r
 In \gls{IPMCMC}, a pool of \gls{CSMC} and unconditional \gls{SMC} algorithms are ran as parallel processes (referred as nodes. After each run of this pool, successive Gibbs updates are applied to the indexes of the \gls{CSMC} nodes, such that the indices of the \gls{CSMC} nodes changes. Hence, the nodes from which retained particles are sampled can change from one \gls{MCMC} iteration to the next. This lets us trade off exploration (\gls{SMC}) and exploitation (\gls{CSMC}) to achieve improved mixing of the Markov chains.
 
 \subsection{Hamiltonian}
-\textcolor{red}{Can be quite brief for Hamiltonian}
 
 \paragraph{\gls{HMC}}
-
+In \gls{HMC} \cite{HMC,Neal:2012uu}, a deterministic proposal process based on Hamiltonian dynamics is employed along with additional stochastic proposals that together provide an ergodic Markov chain capable of making large transitions that are accepted with high probability. The Hamiltonian makes use of the gradient of the joint distribution $p(\mbx, \mby)$ so as to construct better proposal.
+\textcolor{red}{speak about autodiff to compute this gradient ?}
 
 \paragraph{\gls{NUTS}}
 In \cite{NUTS}, the authors address the issue of choosing the two hyperparameters of \gls{HMC}: a step size $\epsilon$ and a desired number of steps $L$, since \gls{HMC}'s performance is highly sensitive on those.
-\cite{Nesterov2009}
 
-\paragraph{\gls{SGLD}}
-mini-batch / online setting, scale to bug dataset
-\footnote{See for instance, \gls{SGLD} applied to a Bayesian logistic regression at \url{https://github.com/yebai/Turing.jl/blob/master/example-models/sgld-paper/lr_sgld.jl}}
- \cite{SGLD}
+First, \gls{NUTS} uses a recursive algorithm to build a set of likely candidate points that spans a wide swath of the target distribution, stopping automatically when it starts to double back and retrace its steps. The number of recursion calls is chosen to be the number of leapfrogs steps.
+Moreover, if $\alpha_t$ is the Metropolis acceptance probability for iteration $t$ and $\delta$ is the desired average acceptance probability, we would like the statistic $H_t = \delta - \alpha_t$ to decreases towards $0$.
+\gls{NUTS} achieves that by adaptively computing the step size using the dual averaging scheme of Nesterov \cite{Nesterov2009}, an algorithm for nonsmooth and stochastic convex optimization.
 
-\paragraph{\gls{SGHMC}}
-Same setting as \gls{SGLD}
-Naive version is wrong (posterior is not the invariant distribution), see \cite{SGMCMC}
-friction term
- \cite{SGHMC}
+\paragraph{\gls{SGMCMC}}
+A recent focus has been on devising scalable variants of \gls{MCMC} algorithms that subsample the data and use stochastic gradients in place of full-data gradients in the dynamic simulations. Such algorithms are called \gls{SGMCMC} and a recipe has now been given \cite{SGMCMC} for deriving these schemes. \gls{SGMCMC} algorithms are well suited for online setting and can scale to big datasets.
+\gls{SGLD} \cite{SGLD} and \gls{SGHMC} \cite{SGHMC} are examples of these schemes.
  
+%Naive version is wrong (posterior is not the invariant distribution)
+%friction term
+ 
+
 \subsection{Variational Inference}
 \textcolor{red}{Introduction to VI ? or in appendix ?}
 
 MCMC methods can be slow to converge and their convergence can be difficult to diagnose.
-To my knowledge, \emph{Edward} \cite{Edward} is the only \gls{PPL} handling variational inference.
+One class of alternative methods is provided by variational inference methods \cite{Jordan:1998ci,Ghahramani:2000:PAV:3008751.3008822}.
+The basic idea of variational inference is to formulate the computation of a marginal
+or conditional probability in terms of an optimization problem.
+This (generally intractable) problem is then ``relaxed'', yielding a simplified optimization problem that
+depends on a number of free parameters, known as variational parameters. Solving for the variational parameters gives an approximation to the marginal or conditional probabilities of interest.
 
+To my knowledge, Edward \cite{Edward} is the only \gls{PPL} handling variational inference.
 
 \section{Contributions}
 During this internship I have taken the time to actually implement several inference algorithms, and by so, I contributed to two existing \gls{PPL}s.
 Some only for the sake of learning more about sampling schemes and \gls{PPL}s, but others as specifically part of the project. 
 
-First, I implemented \footnote{See \url{https://github.com/yebai/Turing.jl/tree/master/src/samplers}} both the \gls{SGLD} and \gls{SGHMC} inference algorithms in Turing.jl \cite{Turing}, a \gls{PPL} based on Julia \cite{Bezanson:2017gd} and developed at the University of Cambridge.
+First, I implemented \footnote{See \url{https://github.com/yebai/Turing.jl/tree/master/src/samplers}} both the \gls{SGLD} \footnote{See for instance, \gls{SGLD} applied to a Bayesian logistic regression at \url{https://github.com/yebai/Turing.jl/blob/master/example-models/sgld-paper/lr_sgld.jl}} and \gls{SGHMC} inference algorithms in Turing.jl \cite{Turing}, a \gls{PPL} based on Julia \cite{Bezanson:2017gd} and developed at the University of Cambridge.
 Then, I implemented \footnote{See \url{https://github.com/blei-lab/edward/pull/728}} the Dual Averaging extension \cite{NUTS} of \gls{HMC} for Edward \cite{Edward}, a \gls{PPL} built on top of Tensorflow \cite{Tensorflow} by Blei's group \footnote{\url{http://www.cs.columbia.edu/~blei/}} at Columbia University.
 
 More recently, I have worked on \gls{PMCMC} methods for Turing. \Gls{PMMH} \footnote{\url{https://github.com/yebai/Turing.jl/pull/339}} is implemented but not merged yet, and I am currently working on \gls{PGAS} and \gls{IPMCMC}. Consequently I became a \textit{Collaborator} of the Turing's repository.

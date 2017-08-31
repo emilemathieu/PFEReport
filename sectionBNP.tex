@@ -1,22 +1,30 @@
 \chapter{Bayesian nonparametric}
+\textcolor{red}{SHORTER THAN PPL STATE OF THE ART}
 
 \section{Definition} \label{BNP_def}
-Use general introductions of famous papers
+A Bayesian nonparametric model is a Bayesian model on an infinite-dimensional parameter space.
 
-\section{Usefulness}
+A Bayesian nonparametric model uses only a finite subset of the available parameter dimensions to explain a finite sample of observations, with the set of dimensions chosen depending on the sample, such that the effective complexity of the model (as measured by the number of dimensions used) adapts to the data.
+
+Classical adaptive problems, such as nonparametric estimation and model selection, can thus be formulated as Bayesian inference problems. Popular examples of Bayesian nonparametric models include Gaussian process regression, in which the correlation structure is refined with growing sample size, and Dirichlet process mixture models for clustering, which adapt the number of clusters to the complexity of the data.
+
+\section{Usefulness ??}
+% Applications
+Bayesian nonparametric models have recently been applied to a variety of machine learning problems, including regression, classification, clustering, latent variable modeling, sequential modeling, image segmentation, source separation and grammar induction.
+
+
+Nonparametric models constitute an approach to model selection and adaptation, where the sizes of models are allowed to grow with data size.
 
 \section{Canonical models}
-???
-
 DP, PYP, etc
 
-Mixture models
+Mixture models only ?
 
-Others ?
+Others ? such as IHMM
 
 \section{MCMC Inference}
 
-Constructing MCMC schemes for models with one or more Bayesian nonparametric components is an active research area since dealing with the infinite dimensional component $P$ forbids the direct use of standard simulation-based methods.These methods usually require a finite-dimensional representation. The general idea for designing inference schemes is to find finite dimensional representations to be able to store the model in a computer with finite capacity.
+Constructing MCMC schemes for models with one or more Bayesian nonparametric components is an active research area since dealing with the infinite dimensional component $P$ forbids the direct use of standard simulation-based methods. These methods usually require a finite-dimensional representation. The general idea for designing inference schemes is to find finite dimensional representations to be able to store the model in a computer with finite capacity.
 
 There are two main sampling approaches to facilitate simulation in the case of Bayesian nonparametric models: random truncation and marginalisation. These two schemes are known in the literature as conditional and marginal samplers.
 
@@ -28,9 +36,11 @@ Conditional samplers replace the infinite-dimensional prior by a finite-dimensio
 thinning vs stick-breaking
 
 \subsection{Hybrid Samplers}
+Lomeli about hybrid samplers
 YW paper on PK ?
 
 \subsection{SMC}
+\textcolor{red}{can skip that part since not completely clear to me}
 Review of SMC ?
 cf Maria Lomeli thesis
 
