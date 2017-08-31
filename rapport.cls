@@ -74,7 +74,10 @@
 \titleformat{\section}
   {\normalfont\large\bfseries}
   {\thesection}{1em}{}
+%  \titleformat{\subsection}
+%  {\normalfont}
+%  {\thesection}{1em}{}
   \titleformat{\subsection}
-  {\normalfont}
-  {\thesection}{1em}{}
+  {\normalfont\bfseries}
+  {\thesubsection}{1em}{}
 \titlespacing*{\thechapter}{0pt}{0pt}{0pt}

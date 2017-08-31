@@ -1,25 +1,30 @@
 \chapter{Bayesian nonparametric}
 
 \section{Definition} \label{BNP_def}
+Use general introductions of famous papers
 
 \section{Usefulness}
 
 \section{Canonical models}
 ???
+
 DP, PYP, etc
 
-\section{MCMC Inference}
-% Variational inference ? DPM \cite{DPVI}
+Mixture models
 
-\quad Constructing MCMC schemes for models with one or more Bayesian nonparametric components is an active research area since dealing with the infinite dimensional component $P$ forbids the direct use of standard simulation-based methods.These methods usually require a finite-dimensional representation. The general idea for designing inference schemes is to find finite dimensional representations to be able to store the model in a computer with finite capacity.
+Others ?
+
+\section{MCMC Inference}
+
+Constructing MCMC schemes for models with one or more Bayesian nonparametric components is an active research area since dealing with the infinite dimensional component $P$ forbids the direct use of standard simulation-based methods.These methods usually require a finite-dimensional representation. The general idea for designing inference schemes is to find finite dimensional representations to be able to store the model in a computer with finite capacity.
 
 There are two main sampling approaches to facilitate simulation in the case of Bayesian nonparametric models: random truncation and marginalisation. These two schemes are known in the literature as conditional and marginal samplers.
 
 \subsection{Marginal Samplers}
-\quad Marginal samplers bypass the need to represent the infinite-dimensional component by marginalising it out. These schemes have lower storage requirements than conditional samplers because they only store the induced partition, but could potentially have worse mixing properties.
+Marginal samplers bypass the need to represent the infinite-dimensional component by marginalising it out. These schemes have lower storage requirements than conditional samplers because they only store the induced partition, but could potentially have worse mixing properties.
 
 \subsection{Conditional Samplers}
-\quad Conditional samplers replace the infinite-dimensional prior by a finite-dimensional representation chosen according to a truncation level. Since these samplers do not integrate out the infinite-dimensional component, their output provides a more comprehensive representation of the random probability measure.
+Conditional samplers replace the infinite-dimensional prior by a finite-dimensional representation chosen according to a truncation level. Since these samplers do not integrate out the infinite-dimensional component, their output provides a more comprehensive representation of the random probability measure.
 thinning vs stick-breaking
 
 \subsection{Hybrid Samplers}
@@ -28,3 +33,8 @@ YW paper on PK ?
 \subsection{SMC}
 Review of SMC ?
 cf Maria Lomeli thesis
+
+
+\section{Variational inference}
+Use future work writing
+%  DPM \cite{DPVI}

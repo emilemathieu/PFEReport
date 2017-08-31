@@ -7,3 +7,47 @@ https://probmods.org/chapters/12-non-parametric-models.html
 
 \section{Link between BNP and High order PPL}
 See Frank Wood meeting
+Frank's Theorem: "The Lambda abstraction is necessary in a PPL to be able to denote BNP in this language." The Lambda abstraction seems to be synonymous to function recursion and thus allowing stochastic loop, which are useful for BNP.
+
+Stick-breaking process = control flow + recursion = stochastic recursion ?
+
+\subsection{Implementation}
+In Clojure there is a recursive operator for tail-recursive functions that uses constant space. Without such a specific operator, we will have a Maximum call stack size exceeded error for heavy tail BNP such as for some PY stick-breaking process. Unfortunately, \gls{TCO} is not implemented in Julia (since it's not implemented in LLVM on which Julia relies). But other solutions in Julia exist to avoid stack overflow.
+
+Clojure provides special forms loop and recur for writing tail-recursive programs. Anglican programs are \gls{CPS}-onverted and do not use the stack; recursive calls in Anglican cannot lead to stack overflow.
+
+\section{Stick-breaking process}
+PPL -> be able to sample from prior
+
+\subsection{DP and PY}
+well known
+already implemented in most \gls{PPL}s
+
+\subsection{PK}
+Theorem 2.1 of Perman et al. states that the sequence of surplus masses (T_k)_(k>=0) forms a Markov chain and gives the corresponding initial distribution and transition kernels.
+
+Could we sample the Kth stick length in generic way since we know the density ? For instance by restricting to Levy measure intensity and Total mass density which are tractable (not σ-stable PK). One may use a simple rejection sampling with proposal U(0, t_K) (what would be M ?).
+
+There exist other models based directly on specifying a valid distribution for the stick breaks (e.g. Ottowa sequence, Beta-Stacy, others?); these should fit in without a problem.
+
+\subsection{PG}
+cf article Ben
+
+\section{Sampler}
+
+highly dimensional -> particle methods
+write model as streaming/online to avoid IS and take advantage of resampling
+
+prior on parameters -> PMCMC
+PG -> path degeneracy
+PPMH -> ?
+PGAS / IPMCMCM
+
+\section{Theoretical aspects}
+calculus for SMC for BNP mixture with fixed parameters
+fixed parameters are not a assumption, since can be made random then with PMCMC
+
+\section{Open questions}
+Is a stick-breaking-like Markov Chain necessary and sufficient for doing inference with particle methods? For lazy instantiation (possibly equivalent to denotable / lambda abstraction?)?
+
+What should be the representation of the state in the PPL (theoretically and efficiently concerned) ? Unique components + assignments | all components | sticks lengths ?   
