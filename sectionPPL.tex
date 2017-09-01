@@ -109,7 +109,7 @@ $$ I(\phi) = \int \phi(x_{1:T}) p_\theta(x_{1:T}|y_{1:T}) dx_{1:T} $$
 \subsection{Enumeration}
 The easiest way one could think of to perform inference in a probabilistic program is via \textit{rejection sampling}. An execution trace can be thought of a \textit{path} in a \textit{tree} implicitly defined by a discrete model. This tree could then be explored using depth-first search, breadth-first search, or a probability-based priority queue. Then only the paths matching the observations $\mbx$ are retained and the others are rejected. These retained execution traces form the targeted posterior distribution.
 
-\subsection{\gls{MCMC}}
+\subsection{Markov Chain Monte Carlo}
 Yet, for many models with large state spaces, enumeration is infeasible. This is particularly clear for models with continuous random variables, where the state space is infinite.
 In the case of a large number of execution paths, one should avoid exploring all paths individually but only a subset of paths.
 
@@ -136,7 +136,7 @@ More generally, for an excellent introduction to \gls{MCMC} and particle inferen
 
 \subsection{Importance Sampling}
 
-\paragraph{\gls{IS}}
+\paragraph{Importance Sampling}
 Importance sampling is an example of a Monte Carlo sampling scheme that provides approximately independent and identically distributed samples from a distribution of interest or target distribution, such as a posterior distribution, by generating a candidate sample from a proposal or importance distribution $q(\mbx|y_1,\dots,y_T)$.
 The fact that the weights 
 $w^k = \frac{p(\mbx, y_1,\dots,y_T)}{q(\mbx|y_1,\dots,y_T)} \propto \frac{p(\mbx|y_1,\dots,y_T)}{q(\mbx|y_1,\dots,y_T)}, \ \text{with} \ k \in 1,\dots,K$ can be computed is exploited, and samples from the target are obtained by sampling from the following weighted empirical distribution
@@ -167,7 +167,7 @@ $$ \hat{I}(\phi) = \sum_{k=1}^K \bar{w}^k \phi(\tilde{\mbx})$$
 
 One problem with this method is that it is not easy to choose the proposal distribution $q$. A good proposal should share most of the support of the target distribution and have the same number of modes, i.e. it should be “close” to the target. A second problem is that it is a batch estimation method. To tackle this latter issue, in the next section, an extension to a sequential scenario is described.
 
-\paragraph{\gls{SIS}}
+\paragraph{Sequential Importance Sampling}
 \gls{SIS} exploits the structure of a model by breaking down the overall inference problem into a series of target distributions which get incrementally closer to the distribution of interest.
 These targets are then approximated by propagating a population of samples known as particles. If each intermediary target is kept similar to its predecessor, approximating one target given the last forms a significantly simpler problem than the overall inference.
 
@@ -217,7 +217,7 @@ $$ w_{t+1} = w_{t} \times \frac{p(y_{t+1}|x_{1:t+1})p(x_{t+1}|x_{1:t})}{p(y_{t+1
 Even if we are not dealing with a \gls{SSM}, \gls{SIS} can be used as a general-purpose algorithm. The data are assumed to be observed sequentially so the observation’s index is the time index.
 
 
-\paragraph{\gls{SMC}}
+\paragraph{Sequential Monte Carlo}
 \textcolor{red}{Illustration of particles wrt time t ?}
 
 The main problem with \gls{SIS} is that the weights become more skewed as the number of data points increases \cite{Anonymous:2001ue}, after a few steps only one particle will have a significant weight. To remedy this, a resampling step can be introduced which allows to eliminate particles with small weights and replicate particles with high weights.
@@ -236,7 +236,7 @@ $$ ESS_t = \frac{{\left( \sum_{k=1}^K{w_i^k} \right)}^2}{\sum_{k=1}^K{{w_i^k}^2}
 One thing which makes the development of \gls{PPL} non-trivial is having the ability to stop the execution of the program at each time $t$ (more generally at each \texttt{observe} statement). These \textit{chechpoints} are required by the \gls{SMC} algorithm for the resampling step.
 Handling of checkpoints can be implemented through coroutines/co-operative multitasking (as in Turing \cite{Turing}), and parallel execution/preemptive multitasking, as well as through explicit maintenance of pro- gram continuations (as in \emph{Anglican} \cite{wood-aistats-2014} and \emph{WebPPL} \cite{dippl}).  
 
-\subsection{\gls{PMCMC}}
+\subsection{Particle Markov Chain Monte Carlo}
 In a Bayesian setting, it is usual to consider the parameter $\theta$ in $p_\theta(x_{1:T}|y_{1:T})$ as a random variable by specifying a prior $p(\theta)$. In this subsection, we are therefore interested on algorithms targeting
 $p(\theta, x_{1:T}|y_{1:T})$.
 Let's think about \gls{MCMC} algorithms targeting the distribution $p(\theta, x_{1:T}|y_{1:T})$ which rely on sampling exactly from $p_\theta(x_{1:T}|y_{1:T})$, called ‘idealized’ algorithms.
@@ -252,7 +252,7 @@ These \gls{PMCMC} updates have been introduced in \cite{Andrieu:2010gc}.
 The key feature of PMCMC algorithms is that they are in fact ‘exact approximations’ to idealized \gls{MCMC} algorithms targeting either $p(\theta, x_{1:T}|y_{1:T})$ in the sense that for any fixed number $N\ge1$ of particles their transition kernels leave the target density of interest invariant. 
 
 
-\paragraph{\gls{PMMH}}
+\paragraph{Particle Marginal Metropolis-Hastings}
 \gls{PMMH} makes use of the standard decomposition $p(\theta, x_{1:T}|y_{1:T}) = p(\theta | y_{1:T}) p_\theta(x_{1:T}|y_{1:T})$. 
 It is natural to suggest the following form of proposal density for an \gls{MH} update:
 
@@ -262,10 +262,10 @@ for which the proposed $x_{1:T}^\star$ is given by a \gls{SMC} algorithm targeti
 
 $$ 1 \wedge \frac{p_{\theta^\star}(y_{1:T}) p(\theta^\star) q(\theta|\theta^\star)}{p_{\theta}(y_{1:T}) p(\theta) q(\theta^\star|\theta)} $$
 
-\gls{PMMH} uses $\hat{p}(y_{1:T})$ to compute the acceptance ratio. It has been proven \cite{Andrieu:2010gc} that the PMMH update leaves $p(\theta, x_{1:T}|y_{1:T})$ invariant and that under weak assumptions the \gls{PMMH} sampler is ergodic.
+\gls{PMMH} uses $\hat{p}(y_{1:T})$ to compute the acceptance ratio. It has been proven \cite{Andrieu:2010gc} that the \gls{PMMH} update leaves $p(\theta, x_{1:T}|y_{1:T})$ invariant and that under weak assumptions the \gls{PMMH} sampler is ergodic.
 
 
-\paragraph{\gls{PG}}
+\paragraph{Particle Gibbs}
 An alternative to the previous algorithm to sample from $p(\theta, x_{1:T}|y_{1:T})$ consists of using the Gibbs sampler which samples iteratively from $p(\theta|x_{1:T},y_{1:T})$ and $p_\theta(x_{1:T}|y_{1:T})$.
 It is often possible to sample from $p(\theta|x_{1:T},y_{1:T})$ and thus the potentially tedious design of a proposal density for $\theta$ that is necessary in the \gls{PMMH} update can be bypassed.
 
@@ -273,7 +273,7 @@ It has been shown \cite{Andrieu:2010gc} that the naïve particle approximation t
 
 A valid particle approximation to the Gibbs sampler requires the use of a special type of \gls{PMCMC} update called the \textit{conditional} \gls{SMC} update. This update is similar to a standard \gls{SMC} algorithm but is such that a prespecified path $x^\star_{1:T}$ is ensured to survive all the resampling steps, whereas the remaining $N-1$ particles are generated as usual.
 
-\paragraph{\gls{PGAS}}
+\paragraph{Particle Gibbs with Ancestor Sampling}
 A drawback of \gls{PG} is that it can be particularly adversely affected by path degeneracy in the \gls{CSMC} step. Conditioning on an existing trajectory means that whenever resampling of the trajectories results in a common ancestor, this ancestor must correspond to this trajectory. Consequently, the mixing of the Markov chain for the early steps in the state sequence can become very slow when the particle set typically coalesces to a single ancestor during the \gls{CSMC} sweep.
 
 \cite{Lindsten:2014uw} introduces \gls{PGAS}, which alleviates the problem with path degeneracy by modifying the original \gls{PG} kernel with a so-called \gls{AS} step.
@@ -288,24 +288,24 @@ $$ \tilde{w}^k_{t-1|T} := {w}^k_{t-1} \frac{p((x^k_{1:t-1},x^\star_{t:T}), y_{1:
 
 for $k = 1,\dots,K$. Then, $a^K_t$ is sampled via $\mathbb{P}\left( a^K_t = k \right) \propto \tilde{w}^k_{t-1|T}$.
 
-\paragraph{\gls{IPMCMC}}
+\paragraph{Interacting Particle Markov Chain Monte Carlo}
 \gls{IPMCMC} \cite{Rainforth:2016wq} is another way of tackling the path degeneracy issue.
 In \gls{IPMCMC}, a pool of \gls{CSMC} and unconditional \gls{SMC} algorithms are ran as parallel processes (referred as nodes. After each run of this pool, successive Gibbs updates are applied to the indexes of the \gls{CSMC} nodes, such that the indices of the \gls{CSMC} nodes changes. Hence, the nodes from which retained particles are sampled can change from one \gls{MCMC} iteration to the next. This lets us trade off exploration (\gls{SMC}) and exploitation (\gls{CSMC}) to achieve improved mixing of the Markov chains.
 
-\subsection{Hamiltonian}
+\subsection{Hamiltonian samplers}
 
-\paragraph{\gls{HMC}}
+\paragraph{Hamiltonian Monte Carlo}
 In \gls{HMC} \cite{HMC,Neal:2012uu}, a deterministic proposal process based on Hamiltonian dynamics is employed along with additional stochastic proposals that together provide an ergodic Markov chain capable of making large transitions that are accepted with high probability. The Hamiltonian makes use of the gradient of the joint distribution $p(\mbx, \mby)$ so as to construct better proposal.
 \textcolor{red}{speak about autodiff to compute this gradient ?}
 
-\paragraph{\gls{NUTS}}
+\paragraph{No-U-Turn Sampler}
 In \cite{NUTS}, the authors address the issue of choosing the two hyperparameters of \gls{HMC}: a step size $\epsilon$ and a desired number of steps $L$, since \gls{HMC}'s performance is highly sensitive on those.
 
 First, \gls{NUTS} uses a recursive algorithm to build a set of likely candidate points that spans a wide swath of the target distribution, stopping automatically when it starts to double back and retrace its steps. The number of recursion calls is chosen to be the number of leapfrogs steps.
 Moreover, if $\alpha_t$ is the Metropolis acceptance probability for iteration $t$ and $\delta$ is the desired average acceptance probability, we would like the statistic $H_t = \delta - \alpha_t$ to decreases towards $0$.
 \gls{NUTS} achieves that by adaptively computing the step size using the dual averaging scheme of Nesterov \cite{Nesterov2009}, an algorithm for nonsmooth and stochastic convex optimization.
 
-\paragraph{\gls{SGMCMC}}
+\paragraph{Stochastic Gradient Markov Chain Monte Carlo}
 A recent focus has been on devising scalable variants of \gls{MCMC} algorithms that subsample the data and use stochastic gradients in place of full-data gradients in the dynamic simulations. Such algorithms are called \gls{SGMCMC} and a recipe has now been given \cite{SGMCMC} for deriving these schemes. \gls{SGMCMC} algorithms are well suited for online setting and can scale to big datasets.
 \gls{SGLD} \cite{SGLD} and \gls{SGHMC} \cite{SGHMC} are examples of these schemes.
  
@@ -314,7 +314,6 @@ A recent focus has been on devising scalable variants of \gls{MCMC} algorithms t
  
 
 \subsection{Variational Inference}
-\textcolor{red}{Introduction to VI ? or in appendix ?}
 
 MCMC methods can be slow to converge and their convergence can be difficult to diagnose.
 One class of alternative methods is provided by variational inference methods \cite{Jordan:1998ci,Ghahramani:2000:PAV:3008751.3008822}.
