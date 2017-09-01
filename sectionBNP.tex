@@ -2,28 +2,107 @@
 \textcolor{red}{SHORTER THAN PPL STATE OF THE ART}
 
 \section{Definition} \label{BNP_def}
-A Bayesian nonparametric model is a Bayesian model on an infinite-dimensional parameter space.
+A Bayesian nonparametric model is a model that (i) constitutes a Bayesian model on an infinite-dimensional parameter space and (ii) can be evaluated on a finite sample in a manner that uses only a finite subset of the available parameters to explain the sample.
+The parameter space in (i) typically consists of functions or of measures, while (ii) is usually achieved by marginalizing out surplus dimensions over the prior. Random functions and measures, and more generally probability distributions on infinite-dimensional random objects, are called stochastic processes.
 
-A Bayesian nonparametric model uses only a finite subset of the available parameter dimensions to explain a finite sample of observations, with the set of dimensions chosen depending on the sample, such that the effective complexity of the model (as measured by the number of dimensions used) adapts to the data.
 
-Classical adaptive problems, such as nonparametric estimation and model selection, can thus be formulated as Bayesian inference problems. Popular examples of Bayesian nonparametric models include Gaussian process regression, in which the correlation structure is refined with growing sample size, and Dirichlet process mixture models for clustering, which adapt the number of clusters to the complexity of the data.
+\section{Motivation}
+\textcolor{red}{TALK ABOUT DE FINETI TH ?}
+% Model selection
+Most scientists address the model selection problem by first fitting several models, with different numbers of clusters or factors, and then selecting one using model comparison metrics \cite{Claeskens:1251912}. Model selection metrics usually include two terms. The first term measures how well the model fits the data. The second term, a complexity penalty, favors simpler models (i.e., ones with fewer components or factors).
 
-\section{Usefulness ??}
+\gls{BNP} models provide a different approach to this problem. Rather than comparing models that vary in complexity, the \gls{BNP} approach is to fit a single model that can adapt its complexity to the data. Furthermore, \gls{BNP} models allow the complexity to grow as more data are observed, such as when using a model to perform prediction.
+Popular examples of Bayesian nonparametric models include Gaussian process regression, in which the correlation structure is refined with growing sample size, and Dirichlet process mixture models for clustering, which adapt the number of clusters to the complexity of the data.
+
+%Nonparametric models constitute an approach to model selection and adaptation, where the sizes of models are allowed to grow with data size.
+
 % Applications
 Bayesian nonparametric models have recently been applied to a variety of machine learning problems, including regression, classification, clustering, latent variable modeling, sequential modeling, image segmentation, source separation and grammar induction.
-
-
-Nonparametric models constitute an approach to model selection and adaptation, where the sizes of models are allowed to grow with data size.
 
 \section{Canonical models}
 DP, PYP, etc
 
 Mixture models only ?
 
-Others ? such as IHMM
+Others ? such as IHMM, Gaussian process regression
+
+\subsection{Normalised random measures}
+Random measures before ?
+
+We start with a description of \gls{CRM}.
+See the monograph by Kingman \cite{kingman-poisson-processes} and references therein for details on such a topic. \\
+
+\begin{definition}[Completely Random Measure] \label{def:CRM}
+%A Completely Random Measure (CRM) $\mu$ defined on a space $\Theta$ is a random measure whose marginals, $\mu(A_1),\mu(A_2),\dots,\mu(A_K)$, are independent for any sequence of disjoint subsets, $A_1,A_2,...,A_K$, of $\Theta$.\\
+Let $\mathbb{X}$ be a complete and separable metric space endowed with the Borel $\sigma$-field $\mathcal{B}(\mathbb{X})$. A Completely Random Measure $\mu$ is a random element taking values on the space of boundedly finite measures on $\mathbb{X}$ such that, for any collection of measurable subsets, $A_1, \dots , A_n$ in $\mathcal{B}(\mathbb{X})$, with $A_i \cap  A_j = \emptyset \ \forall i \neq j$, the random variables $\mu(A_1), \dots, \mu(A_n)$ are mutually independent.
+\end{definition}
+
+\gls{CRM}s were first proposed and studied by Kingman \cite{Kingman:1967kn}, who showed that a \gls{CRM} $\mu$ can always be decomposed into a sum of three independent parts
+$$ \mu = \mu_0 + \sum_{k \ge 1}{u_k \delta_{\phi_k}} + \sum_{l=1}^N{v_l \delta_{\psi_l}} $$
+where $\mu_0$ is a (non-random) measure over $\mathbb{X}$, $\left\{ \psi_l \right\}_{l \in [N]} \subset  \mathbb{X}$ is a collection of $N$, $1 \le N \le \infty$, atoms at fixed locations and independent random masses $\left(v_l \right)_{l \in [N]}$, and $\left( u_k, \phi_k \right)_{k \ge 1}$ is a collection of atoms with random masses and random locations.
+
+The distribution of the random atoms and their masses under a \gls{CRM} is characterized by the Lévy-Khintchine representation of its Laplace functional transform. Specifically,
+\begin{equation} \label{eq:levy}
+\mathbb{E} \left[e^{-\int g(y)\mu(dy)} \right] = \exp \left\{ - \int_{\mathbb{R}^+ \times \mathbb{X}} \left( \  1 - e^{-sg(y)} \right) \rho(ds) H_0(dy) \right\},
+\end{equation}
+for any measurable function $g: \mathbb{X} \rightarrow \mathbb{R}$ such that $\int_{\mathbb{X}}|g(x)|\mu(dx)<+ \infty$ almost-surely.
+The underlying measure $\nu = \rho \times H_0$ uniquely characterises the random atoms in $\mu$.
+
+The only intensity measures that are considered herein are those that factorise $\nu(ds, dy) = \rho(ds)H_0(dy)$ for some measure $\rho$ on $\mathbb{R}^+$ absolutely continuous with respect to the Lebesgue measure, and some non-atomic probability measure $H_0$ on $\mathbb{X}$. The corresponding \gls{CRM} is said to be \textit{homogeneous} and write $\text{CRM}(\rho, H_0)$ for the law of $\mu$. Successively, the measure $\rho$ is referred to as the Lévy measure, while $H_0$ is the base distribution.
+Homogeneity implies independence between $\left(u_k \right)_{k\ge1}$ and $\left(\phi_k \right)_{k\ge1}$, where $\left(\phi_k \right)_{k\ge1}$ is a sequence of random variables independent and identically distributed according to $H_0$ while the law of $\left(u_k \right)_{k\ge1}$  is governed by $\rho$. Intuitively, the point process $\left(u_k, \phi_k \right)_{k\ge1}$  is described by a Poisson process over $\mathbb{R}^+ \times \mathbb{X}$ with intensity measure $\nu = \rho \times H_0$.
+
+It is required that $\mu$ has almost-surely finite total mass, Equation \ref{eq:levy} with $g(y)=1$ shows that the Lévy measure is required to satisfy the property
+$$ \int_{\mathbb{R}^+ \times \mathbb{X}} \left( \  1 - e^{-s} \right) \rho(ds) H_0(dy) = 
+\int_{\mathbb{R}^+} \left( \  1 - e^{-s} \right) \rho(ds) < \infty $$
+Furthermore, the expected number of random atoms in $\mu$ is obtained by Campbell’s Theorem to be the total mass of the Lévy measure $\rho(\mathbb{R}^+)$. In typical applications of Bayesian nonparametrics this is infinite, so we can work with mixture models with infinite number of components. This also guarantees that the total mass is positive almost-surely.
+
+\begin{definition}[Normalised Random Measure] \label{def:NRM}
+Let $\mu$ be a homogeneous \gls{CRM}, with Lévy measure $\rho$ and base distribution $H_0$, with almost-surely positive and finite total mass. A Normalised Random Measure (NRM) is an almost-surely discrete random probability measure $P$ on $\mathbb{X}$ obtained by normalising $\mu$
+$$ P = \frac{\mu}{T} = \sum_{k \ge 1}{p_k \delta_{\phi_k}} $$
+with $T = \sum_{k \ge 1}{u_k}$ and $p_k = u_k / T$.
+Since $\mu$ is homogeneous, the law of $\left(p_k \right)_{k \ge 1}$ is governed by the Lévy measure $\rho$ and the atoms $\left(\phi_k \right)_{k \ge 1}$ are a sequence of random variables independent of $\left(p_k \right)_{k \ge 1}$, and independent and identically distributed according to $H_0$.
+We denote it by $P \sim \text{NRM}(\rho, H_0)$. \\
+\end{definition}
+
+
+Examples of NRMs: NGGP, DP
+
+\subsection{Poisson-Kingman random probability measure}
+Poisson-Kingman \gls{RPM} were introduced in \cite{pitman2003pkp} as a generalisation of homogeneous NRMs. \\
+
+\begin{definition} \label{def:PKRPM}
+Let $\mu \sim \text{CRM}(\rho, H_0)$ and let $T = \mu(\mathbb{X})$ be finite, positive almost-surely, and absolutely continuous with respect to Lebesgue measure. For any $t \in \mathbb{R}^+$, let us consider the conditional distribution of $\mu/t$ given that the total mass $T \in dt$. This distribution is denoted by $\text{PK}(\rho, \delta_t , H_0)$, were $\delta_t$ denotes the Dirac delta function. Poisson-Kingman \gls{RPM}s form a class of \gls{RPM}s whose distributions are obtained by mixing $\text{PK}(\rho, \delta_t , H_0)$, over $t$, with respect to some distribution  $\gamma$ on the positive real line. Specifically, a Poisson-Kingman \gls{RPM} has the hierarchical representation
+\begin{gather*}
+T \sim \gamma, \\
+\mu \sim \text{PK}(\rho, \delta_t, H_0), \\
+\end{gather*}
+The \gls{RPM} $P$ is referred to as the Poisson–Kingman \gls{RPM} with Lévy measure $\rho$, base distribution $H_0$ and mixing distribution $\gamma$ . The distribution of $P$ is denoted by $\text{PK}(\rho, \gamma , H_0)$. If the density for the total mass equals the density obtained from its Lévy measure $f_\rho$, i.e. $\gamma(dt) = f_\rho(t) dt$, then the distribution $\text{PK}(\rho, f_\rho , H_0)$, coincides with $\text{NRM}(\rho, H_0)$.
+\end{definition}
+
+Examples of PK: sigma-stable ?
+
+
+\subsection{Mixture model}
+Finite Mixture model: mixing measure, etc
+
+Then go to BNP: via limite of dirichlet ?
+
+\begin{gather*}
+\mu \sim \text{CRM}(\rho, \mu_0), \\
+P = \frac{\mu}{T}, \\
+X_i|\tilde{\mu} \sim \tilde{\mu}, \\
+Y_i|X_i \sim F(\cdot|X_i), \\
+\end{gather*}
+
+\begin{gather*}
+T \sim \gamma, \\
+P|T=t \sim \text{PK}(\rho, \delta_t, H_0), \\
+X_i|\tilde{\mu} \sim \tilde{\mu}, \\
+Y_i|X_i \sim F(\cdot|X_i), \\
+\end{gather*}
 
 \section{MCMC Inference}
-
+\textcolor{red}{GRAPHICAL MODELS OF THE DIFFERENT REPRESENTATIONS ?}
 Constructing MCMC schemes for models with one or more Bayesian nonparametric components is an active research area since dealing with the infinite dimensional component $P$ forbids the direct use of standard simulation-based methods. These methods usually require a finite-dimensional representation. The general idea for designing inference schemes is to find finite dimensional representations to be able to store the model in a computer with finite capacity.
 
 There are two main sampling approaches to facilitate simulation in the case of Bayesian nonparametric models: random truncation and marginalisation. These two schemes are known in the literature as conditional and marginal samplers.
