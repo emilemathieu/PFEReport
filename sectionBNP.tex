@@ -28,14 +28,13 @@ DP, PYP, etc
 Others ? such as IHMM, Gaussian process regression
 
 \section{Random probability measures}
-There are two possible random discrete distributions that can be obtained from a specific discrete random measure called Completely Random measure (CRM). Informally, a \gls{CRM} is a discrete random measure with an independence property. One of them is the well known random discrete distributions called Normalised Random Measures with Independent Increments (Regazzini et al., 2003; James et al., 2009). They are obtained from \gls{CRM}s after a suitable normalisation operation. Another random discrete distributions, obtained by conditioning rather than normalising the corresponding \gls{CRM}s, are called Poisson-Kingman Random Probability Measure.
+There are two possible random discrete distributions that can be obtained from a specific discrete random measure called Completely Random measure (CRM). Informally, a \gls{CRM} is a discrete random measure with an independence property. One of them is the well known random discrete distributions called Normalised Random Measures with Independent Increments. They are obtained from \gls{CRM}s after a suitable normalisation operation. Another random discrete distributions, obtained by conditioning rather than normalising the corresponding \gls{CRM}s, are called Poisson-Kingman Random Probability Measure.
 We start with a description of \gls{CRM}.
-See the monograph by Kingman \cite{kingman-poisson-processes} and references therein for details on such a topic. \\
+See the monograph by Kingman \cite{kingman-poisson-processes} for a good reference on such a topic.
 
 \subsection{Normalised Random Measure}
 
 \begin{definition}[Completely Random Measure] \label{def:CRM}
-%A Completely Random Measure (CRM) $\mu$ defined on a space $\Theta$ is a random measure whose marginals, $\mu(A_1),\mu(A_2),\dots,\mu(A_K)$, are independent for any sequence of disjoint subsets, $A_1,A_2,...,A_K$, of $\Theta$.\\
 Let $\mathbb{X}$ be a complete and separable metric space endowed with the Borel $\sigma$-field $\mathcal{B}(\mathbb{X})$. A Completely Random Measure $\mu$ is a random element taking values on the space of boundedly finite measures on $\mathbb{X}$ such that, for any collection of measurable subsets, $A_1, \dots , A_n$ in $\mathcal{B}(\mathbb{X})$, with $A_i \cap  A_j = \emptyset \ \forall i \neq j$, the random variables $\mu(A_1), \dots, \mu(A_n)$ are mutually independent.
 \end{definition}
 
@@ -43,7 +42,9 @@ Let $\mathbb{X}$ be a complete and separable metric space endowed with the Borel
 $$ \mu = \mu_0 + \sum_{k \ge 1}{u_k \delta_{\phi_k}} + \sum_{l=1}^N{v_l \delta_{\psi_l}} $$
 where $\mu_0$ is a (non-random) measure over $\mathbb{X}$, $\left\{ \psi_l \right\}_{l \in [N]} \subset  \mathbb{X}$ is a collection of $N$, $1 \le N \le \infty$, atoms at fixed locations and independent random masses $\left(v_l \right)_{l \in [N]}$, and $\left( u_k, \phi_k \right)_{k \ge 1}$ is a collection of atoms with random masses and random locations.
 
-The distribution of the random atoms and their masses under a \gls{CRM} is characterized by the Lévy-Khintchine representation of its Laplace functional transform. Specifically,
+In applications of Bayesian nonparametrics it is usually assumed that $\mu_0 = 0$ and $N = 0$, so that $\mu$ consists only of the atoms with random masses and locations. However, the posterior distribution of $\mu$ given data would typically contain atoms at fixed locations, hence, the usefulness of the larger class of \gls{CRM}s.
+
+The distribution of the random atoms $\left(\phi_k \right)_{k \ge 1}$ and their masses $\left(u_k \right)_{k \ge 1}$ under a \gls{CRM} is characterized by the Lévy-Khintchine representation of its Laplace functional transform. Specifically,
 \begin{equation} \label{eq:levy}
 \mathbb{E} \left[e^{-\int g(y)\mu(dy)} \right] = \exp \left\{ - \int_{\mathbb{R}^+ \times \mathbb{X}} \left( \  1 - e^{-sg(y)} \right) \rho(ds) H_0(dy) \right\},
 \end{equation}
@@ -66,10 +67,11 @@ Since $\mu$ is homogeneous, the law of $\left(p_k \right)_{k \ge 1}$ is governed
 We denote it by $P \sim \text{NRM}(\rho, H_0)$. \\
 \end{definition}
 
-Let $(X_i)_{i \ge 1}$ be a sequence of random variables that, given $P$, are independent and identically distributed according to $P$. Since $\mu$ is almost-surely discrete, there is a positive probability that $X_i = X_j$ for each pair $i \neq j$, i.e. when both are assigned to the same atom in $P$. This induces a partition $\pi$ on $\mathbb{N}$, where $i$ and $j$ are in the same block in $/Pi$ if and only if $X_i = X_j$. %The random partition $\Pi$ is exchangeable, and its exchangeable partition probability function (EPPF) can be deduced from the law of the \gls{NRM}.
+Let $\mu \sim \text{CRM}(\rho, H_0)$ with an almost-surely finite and positive total mass $T$. Suppose that $T$ is positive and finite almost-surely, and absolutely continuous with respect to Lebesgue measure with density $f_\rho(t)$.
+Let $(X_i)_{i \ge 1}$ be a sequence of random variables that, given $P$, are independent and identically distributed according to $P$. Since $\mu$ is almost-surely discrete, there is a positive probability that $X_i = X_j$ for each pair $i \neq j$, i.e. when both are assigned to the same atom in $P$. This induces a partition $\pi$ on $\mathbb{N}$, where $i$ and $j$ are in the same block in $\Pi$ if and only if $X_i = X_j$. %The random partition $\Pi$ is exchangeable, and its exchangeable partition probability function (EPPF) can be deduced from the law of the \gls{NRM}.
 %Kingman \cite{CIS-16820} demonstrates that there is a correspondence between the law of ⇧ and that of the random probability measure.
 
-Examples of NRMs: NGGP, DP
+\textcolor{red}{Examples of NRMs: NGGP, DP}
 
 \subsection{Poisson-Kingman random probability measure}
 Poisson-Kingman \gls{RPM} were introduced in \cite{pitman2003pkp} as a generalisation of homogeneous NRMs. \\
@@ -80,10 +82,26 @@ Let $\mu \sim \text{CRM}(\rho, H_0)$ and let $T = \mu(\mathbb{X})$ be finite, po
 T \sim \gamma, \\
 \mu \sim \text{PK}(\rho, \delta_t, H_0),
 \end{gather*}
-The \gls{RPM} $P$ is referred to as the Poisson–Kingman \gls{RPM} with Lévy measure $\rho$, base distribution $H_0$ and mixing distribution $\gamma$ . The distribution of $P$ is denoted by $\text{PK}(\rho, \gamma , H_0)$. If the density for the total mass equals the density obtained from its Lévy measure $f_\rho$, i.e. $\gamma(dt) = f_\rho(t) dt$, then the distribution $\text{PK}(\rho, f_\rho , H_0)$, coincides with $\text{NRM}(\rho, H_0)$.
+The \gls{RPM} $P$ is referred to as the Poisson-Kingman \gls{RPM} with Lévy measure $\rho$, base distribution $H_0$ and mixing distribution $\gamma$ . The distribution of $P$ is denoted by $\text{PK}(\rho, \gamma , H_0)$. If the density for the total mass equals the density obtained from its Lévy measure $f_\rho$, i.e. $\gamma(dt) = f_\rho(t) dt$, then the distribution $\text{PK}(\rho, f_\rho , H_0)$, coincides with $\text{NRM}(\rho, H_0)$.
+
+Since $\mu$ is homogeneous, the atoms $\left(\phi_k \right)_{k \ge 1}$ of $P$ are independent of their masses $\left(p_k \right)_{k \ge 1}$. They form a sequence of independent random variables identically distributed according to $h_0$. Finally, the masses of $P$ have distribution governed by the Lévy measure $\rho$ and the distribution $\gamma$ .
 \end{definition}
 
-Examples of PK: sigma-stable ?
+\textcolor{red}{Proposition Perman here or next chapter ?}
+\begin{proposition}[Perman et al. \cite{Perman:1992ke}] \label{prop:perman}
+The sequence of surplus masses $\left(V_k \right)_{k \ge 0}$ forms a Markov chain, where $V_k := T - \sum_{l=1}^k J_l$ , with initial distribution and transition kernels given as follows
+\begin{equation*}
+\begin{aligned}
+\mathbb{P}_{\rho,H_0}(V_0 \in dv_0) &= g_\rho(v_0)dv_0 \\
+\mathbb{P}_{\rho,H_0}(V_k \in dv_k|V_0 \in dv_0,\dots, V_{k-1} \in dv_{k-1}) &=  \mathbb{P}_{\rho,H_0}(V_{k-1} \in dv_{k-1})\\
+&= \frac{(v_k-v_{k-1})\rho(d(v_k-v_{k-1}))}{v_{k-1}} \frac{f_\rho(v_{k-1})}{f_\rho(v_{k-1})} \\
+\end{aligned}
+\end{equation*}
+\end{proposition}
+\textcolor{red}{Size-biased permutation}
+
+
+\textcolor{red}{Examples of PK: sigma-stable ?}
 
 
 \section{Mixture model}
