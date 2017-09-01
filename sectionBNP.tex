@@ -7,7 +7,6 @@ The parameter space in (i) typically consists of functions or of measures, while
 
 
 \section{Motivation}
-\textcolor{red}{TALK ABOUT DE FINETI TH ?}
 % Model selection
 Most scientists address the model selection problem by first fitting several models, with different numbers of clusters or factors, and then selecting one using model comparison metrics \cite{Claeskens:1251912}. Model selection metrics usually include two terms. The first term measures how well the model fits the data. The second term, a complexity penalty, favors simpler models (i.e., ones with fewer components or factors).
 
@@ -16,21 +15,24 @@ Popular examples of Bayesian nonparametric models include Gaussian process regre
 
 %Nonparametric models constitute an approach to model selection and adaptation, where the sizes of models are allowed to grow with data size.
 
+\textcolor{red}{DE FINETI TH and exchangeability ?}
+
+
 % Applications
 Bayesian nonparametric models have recently been applied to a variety of machine learning problems, including regression, classification, clustering, latent variable modeling, sequential modeling, image segmentation, source separation and grammar induction.
 
 \section{Canonical models}
+\textcolor{red}{How much developed ?}
 DP, PYP, etc
-
-Mixture models only ?
 
 Others ? such as IHMM, Gaussian process regression
 
-\subsection{Normalised random measures}
-Random measures before ?
-
+\section{Random probability measures}
+There are two possible random discrete distributions that can be obtained from a specific discrete random measure called Completely Random measure (CRM). Informally, a \gls{CRM} is a discrete random measure with an independence property. One of them is the well known random discrete distributions called Normalised Random Measures with Independent Increments (Regazzini et al., 2003; James et al., 2009). They are obtained from \gls{CRM}s after a suitable normalisation operation. Another random discrete distributions, obtained by conditioning rather than normalising the corresponding \gls{CRM}s, are called Poisson-Kingman Random Probability Measure.
 We start with a description of \gls{CRM}.
 See the monograph by Kingman \cite{kingman-poisson-processes} and references therein for details on such a topic. \\
+
+\subsection{Normalised Random Measure}
 
 \begin{definition}[Completely Random Measure] \label{def:CRM}
 %A Completely Random Measure (CRM) $\mu$ defined on a space $\Theta$ is a random measure whose marginals, $\mu(A_1),\mu(A_2),\dots,\mu(A_K)$, are independent for any sequence of disjoint subsets, $A_1,A_2,...,A_K$, of $\Theta$.\\
@@ -54,7 +56,7 @@ Homogeneity implies independence between $\left(u_k \right)_{k\ge1}$ and $\left(
 It is required that $\mu$ has almost-surely finite total mass, Equation \ref{eq:levy} with $g(y)=1$ shows that the Lévy measure is required to satisfy the property
 $$ \int_{\mathbb{R}^+ \times \mathbb{X}} \left( \  1 - e^{-s} \right) \rho(ds) H_0(dy) = 
 \int_{\mathbb{R}^+} \left( \  1 - e^{-s} \right) \rho(ds) < \infty $$
-Furthermore, the expected number of random atoms in $\mu$ is obtained by Campbell’s Theorem to be the total mass of the Lévy measure $\rho(\mathbb{R}^+)$. In typical applications of Bayesian nonparametrics this is infinite, so we can work with mixture models with infinite number of components. This also guarantees that the total mass is positive almost-surely.
+Furthermore, the expected number of random atoms in $\mu$ is obtained by Campbell’s Theorem to be the total mass of the Lévy measure $\rho(\mathbb{R}^+)$. In typical applications of Bayesian nonparametrics this is infinite, so we can work with mixture models with infinite number of components. This also guarantees that the total mass is positive almost-surely. \\
 
 \begin{definition}[Normalised Random Measure] \label{def:NRM}
 Let $\mu$ be a homogeneous \gls{CRM}, with Lévy measure $\rho$ and base distribution $H_0$, with almost-surely positive and finite total mass. A Normalised Random Measure (NRM) is an almost-surely discrete random probability measure $P$ on $\mathbb{X}$ obtained by normalising $\mu$
@@ -64,17 +66,19 @@ Since $\mu$ is homogeneous, the law of $\left(p_k \right)_{k \ge 1}$ is governed
 We denote it by $P \sim \text{NRM}(\rho, H_0)$. \\
 \end{definition}
 
+Let $(X_i)_{i \ge 1}$ be a sequence of random variables that, given $P$, are independent and identically distributed according to $P$. Since $\mu$ is almost-surely discrete, there is a positive probability that $X_i = X_j$ for each pair $i \neq j$, i.e. when both are assigned to the same atom in $P$. This induces a partition $\pi$ on $\mathbb{N}$, where $i$ and $j$ are in the same block in $/Pi$ if and only if $X_i = X_j$. %The random partition $\Pi$ is exchangeable, and its exchangeable partition probability function (EPPF) can be deduced from the law of the \gls{NRM}.
+%Kingman \cite{CIS-16820} demonstrates that there is a correspondence between the law of ⇧ and that of the random probability measure.
 
 Examples of NRMs: NGGP, DP
 
 \subsection{Poisson-Kingman random probability measure}
 Poisson-Kingman \gls{RPM} were introduced in \cite{pitman2003pkp} as a generalisation of homogeneous NRMs. \\
 
-\begin{definition} \label{def:PKRPM}
+\begin{definition}[Poisson-Kingman Random Probability Measure] \label{def:PKRPM}
 Let $\mu \sim \text{CRM}(\rho, H_0)$ and let $T = \mu(\mathbb{X})$ be finite, positive almost-surely, and absolutely continuous with respect to Lebesgue measure. For any $t \in \mathbb{R}^+$, let us consider the conditional distribution of $\mu/t$ given that the total mass $T \in dt$. This distribution is denoted by $\text{PK}(\rho, \delta_t , H_0)$, were $\delta_t$ denotes the Dirac delta function. Poisson-Kingman \gls{RPM}s form a class of \gls{RPM}s whose distributions are obtained by mixing $\text{PK}(\rho, \delta_t , H_0)$, over $t$, with respect to some distribution  $\gamma$ on the positive real line. Specifically, a Poisson-Kingman \gls{RPM} has the hierarchical representation
 \begin{gather*}
 T \sim \gamma, \\
-\mu \sim \text{PK}(\rho, \delta_t, H_0), \\
+\mu \sim \text{PK}(\rho, \delta_t, H_0),
 \end{gather*}
 The \gls{RPM} $P$ is referred to as the Poisson–Kingman \gls{RPM} with Lévy measure $\rho$, base distribution $H_0$ and mixing distribution $\gamma$ . The distribution of $P$ is denoted by $\text{PK}(\rho, \gamma , H_0)$. If the density for the total mass equals the density obtained from its Lévy measure $f_\rho$, i.e. $\gamma(dt) = f_\rho(t) dt$, then the distribution $\text{PK}(\rho, f_\rho , H_0)$, coincides with $\text{NRM}(\rho, H_0)$.
 \end{definition}
@@ -82,10 +86,27 @@ The \gls{RPM} $P$ is referred to as the Poisson–Kingman \gls{RPM} with Lévy m
 Examples of PK: sigma-stable ?
 
 
-\subsection{Mixture model}
-Finite Mixture model: mixing measure, etc
+\section{Mixture model}
+\subsection{Finite dimensional}
+Mixture models provide a statistical framework for modeling data where each observation is assumed to have arisen from one of $k$ groups, with $k$ possibly unknown, and each group being suitably modeled by a distribution function from some parametric family. The distribution function of each group is referred to as a component of the mixture model and is weighted by the relative frequency of the group in the population. Specifically, assuming $k$ being fixed, a collection of observations $Y_1,\dots,Y_n$ is modeled as independent draws from a mixture distribution function with $k$ components, that is,
+\begin{equation} \label{eq:mixture}
+Y_i \sim \sum_{j=1}^k{J_j f(\cdot|X_j)},
+\end{equation}
+where $f(\cdot|X)$ is a given parametric family of distribution functions indexed by a parameter $X$ and
+$(J_1, \dots, J_k)$ are the mixture proportions constrained to be nonnegative and sum to unity. A convenient formulation of the mixture model (\ref{eq:mixture}) can be stated in terms of latent allocation random variables, namely, each observation $Y_i$ is assumed to arise from a specific but unknown component $Z_i$ of the mixture model. Accordingly, an augmented version of (\ref{eq:mixture}) can be written in terms of a collection of latent random variables $(Z_1, \dots , Z_n)$, independent and identically distributed with probability mass function $\mathbb{P}[Z = j] = J_j$ , such that the observations are modeled as
+\begin{equation} \label{eq:mixture2}
+Y_i|Z_i \sim f(\cdot|X_{Z_i}).
+\end{equation}
+Integrating out the random variables $(Z_1, \dots , Z_n)$ then yields (\ref{eq:mixture}). In a Bayesian setting the formulation of the mixture model (\ref{eq:mixture2}) is completed by specifying suitable prior distributions for the unknown quantities that are objects of the inferential analysis: the parameter $(X_1, \dots, X_k)$ and the vector of proportions $(J_1, \dots, J_k)$.
 
-Then go to BNP: via limite of dirichlet ?
+\subsection{Infinite dimensional}
+\textcolor{red}{Construction as limit of finite model ?}
+
+We are specifically interested in mixture models with an unknown number of components. In particular, we focus on a Bayesian nonparametric approach with the specification of a class of prior distributions generalizing the \gls{DP} prior. In the Bayesian nonparametric setting the central role is played by a discrete random probability measure $P$ defined on a suitable measurable space $\mathbb{X}$, an example being the \gls{DP}, whose distribution acts as a nonparametric prior. The basic idea is that since $P$ is discrete, it can be written as
+\begin{equation*}
+P = \sum_{j \ge 1}{J_j \delta_{X_j}}
+\end{equation*}
+
 
 \begin{gather*}
 \mu \sim \text{CRM}(\rho, \mu_0), \\
