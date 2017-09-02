@@ -11,6 +11,15 @@ Frank's Theorem: "The Lambda abstraction is necessary in a PPL to be able to den
 
 Stick-breaking process = control flow + recursion = stochastic recursion ?
 
+Talk lambda abstraction
+discrete probability with countable support -> cannot represent it in memory
+-> lazy recursive representation the measure
+-> Urn: posterior predictive distribution of $X_{k+1}$ given $X_0, \dots, X_{k}$
+CRP: simple sufficient statistics, but in general not nice like that
+All marginal samplers: Urn distributions, involve complicated integral (can sometimes introduce auxiliary variables)
+
+Stick-breaking process: construction to sample a size-biased permutation of the random probability measure
+
 \subsection{Implementation}
 In Clojure there is a recursive operator for tail-recursive functions that uses constant space. Without such a specific operator, we will have a Maximum call stack size exceeded error for heavy tail BNP such as for some PY stick-breaking process. Unfortunately, \gls{TCO} is not implemented in Julia (since it's not implemented in LLVM on which Julia relies). But other solutions in Julia exist to avoid stack overflow.
 

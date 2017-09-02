@@ -1,7 +1,7 @@
 \chapter{Probabilistic programming}
 
 \section{What is it ?} \label{PPL_def}
-At a high level, \gls{PPL}s are \gls{PL} techniques to abstract inference algorithms from statistics such that they apply automatically and correctly to the broadest possible set of model-based reasoning applications.
+At a high level, \glspl{PPL} are \gls{PL} techniques to abstract inference algorithms from statistics such that they apply automatically and correctly to the broadest possible set of model-based reasoning applications.
 
 A bit more precisely, Probabilistic programming systems \cite{Goodman:2012uq,dippl,Mansinghka:2014ty,wood-aistats-2014} represent generative models as programs written in a specialized language that provides syntax for the definition and conditioning of random variables.
 
@@ -16,15 +16,15 @@ Probabilistic programs define probability distributions over sequences of values
 \section{Why is it useful ?}
 For data science practitioners, statistical inference is typically just one step in a more elaborate analysis workflow. The first stage of this work involves data acquisition, preprocessing and cleaning. This is often followed by several iterations of exploratory model design and testing of inference algorithms. Once a sufficiently robust statistical model and a corresponding inference algorithm have been identified, analysis results must be post-processed, visualized, and in some cases integrated into a wider production system.
 
-The main goal of \gls{PPL}s is to increase productivity. 
+The main goal of \glspl{PPL} is to increase productivity. 
 The code for models written with these systems is generally concise, modular, and easy to modify or extend.
 Thus, one of the savings is to be found in the amount of code that needs to written in order to prototype and develop models.
 
-Secondly, \gls{PPL}s remove the burden of having to develop inference code for each new model which is error-prone and time consuming.
+Secondly, \glspl{PPL} remove the burden of having to develop inference code for each new model which is error-prone and time consuming.
 This is done by providing a modeling language abstraction layer in which developers can denote their models.  Once denoted, generic inference is provided for free.
 
 \section{Existing languages}
-The first generation of \gls{PPL}s had limitation in the range of models that could be represented and in which inference could be performed.
+The first generation of \glspl{PPL} had limitation in the range of models that could be represented and in which inference could be performed.
 BUGS \cite{Bugs} and STAN \cite{Stan} can only work with graphical models.
 Similarly Factorie \cite{Factorie} and Infer.NET \cite{InferNET} only handle factor graphs.
 These so-called \textit{First-Order} \gls{PPLs}, can only represent finite dimensional model and have bounded loops.
@@ -32,10 +32,10 @@ These so-called \textit{First-Order} \gls{PPLs}, can only represent finite dimen
 
 On the other hand, \textit{High Order \gls{PPLs}} which arrived a bit before the 2010s, are Turing complete, allow complex control flow, including stochastic recursion, thus can denote infinite dimensional objects.
 They are easy to program in, natural to express certain models, but it is hard to perform inference in
-these \gls{PPL}s. Anglican \cite{wood-aistats-2014}, Venture \cite{Mansinghka:2014ty}, Church \cite{Goodman:2012uq} and WebPPL \cite{dippl} are \textit{High Order \gls{PPLs}}.
+these \glspl{PPL}. Anglican \cite{wood-aistats-2014}, Venture \cite{Mansinghka:2014ty}, Church \cite{Goodman:2012uq} and WebPPL \cite{dippl} are \textit{High Order \gls{PPLs}}.
 
 
-Recently, a new \gls{PPL} named Edward \cite{Edward} has been developed. It is different from the classical \gls{PPL}s since it focuses on \gls{VI} and Hamiltonian methods.
+Recently, a new \gls{PPL} named Edward \cite{Edward} has been developed. It is different from the classical \glspl{PPL} since it focuses on \gls{VI} and Hamiltonian methods.
 
 
 \section{Design}
@@ -74,7 +74,7 @@ Concretely, using the \texttt{sample} statements, the \gls{PPL}'s model first de
 
 The inference algorithms may make random choices that do not correspond to any statements in the program, and decide which parts of the program code are executed and how often. Some inference algorithms re-run the program multiple times partially, from a certain point on, while reusing random choices made in the previous runs as much as possible.
 Upon encountering a sample or observe record, the inference algorithm computes the updated program state and the value to be passed to the continuation. How the state is updated, the number of times the continuation is called, and the value passed to the continuation of sample depend on the inference algorithm executing the program.
-Implementing an inference algorithm in \gls{PPL}s amounts to defining 
+Implementing an inference algorithm in \glspl{PPL} amounts to defining 
 %an appropriate version of the infer function and 
 checkpoint handlers for \texttt{sample} and \texttt{observe}.
 
@@ -82,7 +82,7 @@ Typically inference can be performed for any probabilistic program using one or 
 
 \subsection{Use-case}
 \textcolor{red}{ADD PPL CODE FOR THIS SSM ?}
-Even if as highlighted before, inference in \gls{PPL}s should be able to deal with arbitrary series of targets, for simplicity we will focus on a non-Markovian \gls{SSM}.
+Even if as highlighted before, inference in \glspl{PPL} should be able to deal with arbitrary series of targets, for simplicity we will focus on a non-Markovian \gls{SSM}.
 
 \Gls{SSM}s are probabilistic models over a set of latent variables $X_t \in \mathcal{X}_t, \forall t = 1 : T$ and observed variables $Y_t \in \mathcal{Y}_t , \forall t = 1 : T$ . We can further consider a model to be parameterized by $\theta \in \Theta$. The \gls{SSM} is then characterized by an initial density $\mu_\theta(x_1)$, a series of transition densities $f_{t,\theta}(x_t|x_{1:t-1})$, and a series of emission densities $g_{t,\theta}(y_t|x_{1:t})$.
 
@@ -131,7 +131,7 @@ Notice that, in addition to reusing existing sampled choices, we add the name an
 We now hope to reuse most of the choices from the old trace in making a proposal.
 This algorithm is called Lightweight \gls{MCMC} \cite{Wingate:2011ul}, and has been improved in \cite{Ritchie:2015tx}.
 
-More generally, for an excellent introduction to \gls{MCMC} and particle inference in \gls{PPL}s, see \cite{dippl}.
+More generally, for an excellent introduction to \gls{MCMC} and particle inference in \glspl{PPL}, see \cite{dippl}.
 
 
 \subsection{Importance Sampling}
@@ -174,7 +174,7 @@ These targets are then approximated by propagating a population of samples known
 More formally, \gls{SIS} performs approximate inference on a sequence of target distributions
 $\left(\pi_t(x_{1:t}) \right)_{t=1}^T$ of increasing spaces 
 $\left(\mathcal{X}_1 \times \dots \times \mathcal{X}_t \right)_{t=1}^T$.
-In the context of \gls{SSM}s, the target distributions are taken to be
+In the context of \glspl{SSM}, the target distributions are taken to be
 $\left(p_\theta(x_{1:t}|y_{1:t}) \right)_{t=1}^T$.
 At each time step $t$, we have a set of $K$ particles $\left(\tilde{x}_{1:t}^k \right)_{t=1}^T$,
 corresponding to samples of the latents, and respective particle weights $\left({w}_{t}^k \right)_{t=1}^T$.
@@ -234,7 +234,7 @@ If the selection step is to be performed occasionally, a possible criterion is w
 $$ ESS_t = \frac{{\left( \sum_{k=1}^K{w_i^k} \right)}^2}{\sum_{k=1}^K{{w_i^k}^2}}$$
 
 One thing which makes the development of \gls{PPL} non-trivial is having the ability to stop the execution of the program at each time $t$ (more generally at each \texttt{observe} statement). These \textit{chechpoints} are required by the \gls{SMC} algorithm for the resampling step.
-Handling of checkpoints can be implemented through coroutines/co-operative multitasking (as in Turing \cite{Turing}), and parallel execution/preemptive multitasking, as well as through explicit maintenance of pro- gram continuations (as in \emph{Anglican} \cite{wood-aistats-2014} and \emph{WebPPL} \cite{dippl}).  
+Handling of checkpoints can be implemented through coroutines/co-operative multitasking (as in Turing \cite{Turing}), and parallel execution/preemptive multitasking, as well as through explicit maintenance of program continuations (as in \emph{Anglican} \cite{wood-aistats-2014} and \emph{WebPPL} \cite{dippl}).  
 
 \subsection{Particle Markov Chain Monte Carlo}
 In a Bayesian setting, it is usual to consider the parameter $\theta$ in $p_\theta(x_{1:T}|y_{1:T})$ as a random variable by specifying a prior $p(\theta)$. In this subsection, we are therefore interested on algorithms targeting
@@ -325,8 +325,8 @@ depends on a number of free parameters, known as variational parameters. Solving
 To my knowledge, Edward \cite{Edward} is the only \gls{PPL} handling variational inference.
 
 \section{Contributions}
-During this internship I have taken the time to actually implement several inference algorithms, and by so, I contributed to two existing \gls{PPL}s.
-Some only for the sake of learning more about sampling schemes and \gls{PPL}s, but others as specifically part of the project. 
+During this internship I have taken the time to actually implement several inference algorithms, and by so, I contributed to two existing \glspl{PPL}.
+Some only for the sake of learning more about sampling schemes and \glspl{PPL}, but others as specifically part of the project. 
 
 First, I implemented \footnote{See \url{https://github.com/yebai/Turing.jl/tree/master/src/samplers}} both the \gls{SGLD} \footnote{See for instance, \gls{SGLD} applied to a Bayesian logistic regression at \url{https://github.com/yebai/Turing.jl/blob/master/example-models/sgld-paper/lr_sgld.jl}} and \gls{SGHMC} inference algorithms in Turing.jl \cite{Turing}, a \gls{PPL} based on Julia \cite{Bezanson:2017gd} and developed at the University of Cambridge.
 Then, I implemented \footnote{See \url{https://github.com/blei-lab/edward/pull/728}} the Dual Averaging extension \cite{NUTS} of \gls{HMC} for Edward \cite{Edward}, a \gls{PPL} built on top of Tensorflow \cite{Tensorflow} by Blei's group \footnote{\url{http://www.cs.columbia.edu/~blei/}} at Columbia University.

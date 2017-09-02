@@ -1,5 +1,4 @@
 \chapter{Bayesian nonparametric}
-\textcolor{red}{SHORTER THAN PPL STATE OF THE ART}
 
 \section{Definition} \label{BNP_def}
 A Bayesian nonparametric model is a model that (i) constitutes a Bayesian model on an infinite-dimensional parameter space and (ii) can be evaluated on a finite sample in a manner that uses only a finite subset of the available parameters to explain the sample.
@@ -15,96 +14,67 @@ Popular examples of Bayesian nonparametric models include Gaussian process regre
 
 %Nonparametric models constitute an approach to model selection and adaptation, where the sizes of models are allowed to grow with data size.
 
-\textcolor{red}{DE FINETI TH and exchangeability ?}
-
 
 % Applications
+
+\section{Examples}
 Bayesian nonparametric models have recently been applied to a variety of machine learning problems, including regression, classification, clustering, latent variable modeling, sequential modeling, image segmentation, source separation and grammar induction.
 
-\section{Canonical models}
-\textcolor{red}{How much developed ?}
-DP, PYP, etc
+\textcolor{red}{How much developed ?
+CRP: latent mixture model
+DP: CRP, Stick-breaking, Urn ?
+Focus on mixture models
+Other type of models is future work}
 
-Others ? such as IHMM, Gaussian process regression
+\subsection{Clustering with mixture models}
+Bayesian nonparametric generalizations of finite mixture models provide an approach for estimating both the number of components in a mixture model and the parameters of the individual mixture components simultaneously from data. Finite mixture models define a density function over data items $x$ of the form $p(x) = \sum_{k=1}^K \pi_k p(x|\theta_k)$, where $\pi_k$ is the mixing proportion and $\theta_k$ are parameters associated with component $k$. The density can be written in a non-standard manner as an integral: $p(x) = \int p(x|\theta) P(\theta)d\theta$, where $P = \sum_{k=1}^K \pi_k \delta_{\theta_k}$ is a discrete mixing distribution encapsulating all the parameters of the mixture model and $\delta_\theta$ is a Dirac distribution (atom) centered at $\theta$. Bayesian nonparametric mixtures use mixing distributions consisting of a \textit{countably infinite} number of atoms instead:
+$$ P = \sum_{k = 1}^\infty \pi_k \delta_{\theta_k} $$
+This gives rise to mixture models with an infinite number of components. When applied to a finite training set, only a finite (but varying) number of components will be used to model the data, since each data item is associated with exactly one component but each component can be associated with multiple data items. Inference in the model then automatically recovers both the number of components to use and the parameters of the components. Being Bayesian, we need a prior over the mixing distribution $P$, and the most common prior to use is a \gls{DP}. The resulting mixture model is called a \gls{DP} mixture.
 
-\section{Random probability measures}
-There are two possible random discrete distributions that can be obtained from a specific discrete random measure called Completely Random measure (CRM). Informally, a \gls{CRM} is a discrete random measure with an independence property. One of them is the well known random discrete distributions called Normalised Random Measures with Independent Increments. They are obtained from \gls{CRM}s after a suitable normalisation operation. Another random discrete distributions, obtained by conditioning rather than normalising the corresponding \gls{CRM}s, are called Poisson-Kingman Random Probability Measure.
-We start with a description of \gls{CRM}.
-See the monograph by Kingman \cite{kingman-poisson-processes} for a good reference on such a topic.
+\textcolor{red}{Formally define DP and CRP ??}
 
-\subsection{Normalised Random Measure}
 
-\begin{definition}[Completely Random Measure] \label{def:CRM}
-Let $\mathbb{X}$ be a complete and separable metric space endowed with the Borel $\sigma$-field $\mathcal{B}(\mathbb{X})$. A Completely Random Measure $\mu$ is a random element taking values on the space of boundedly finite measures on $\mathbb{X}$ such that, for any collection of measurable subsets, $A_1, \dots , A_n$ in $\mathcal{B}(\mathbb{X})$, with $A_i \cap  A_j = \emptyset \ \forall i \neq j$, the random variables $\mu(A_1), \dots, \mu(A_n)$ are mutually independent.
-\end{definition}
+\subsection{Nonlinear regression}
+The aim of regression is to infer a continuous function from a training set consisting of input-output pairs $\{(t_i , x_i )\}_{i=1}^n$. Parametric approaches parametrize the function using a finite number of parameters and attempt to infer these parameters from data. The prototypical Bayesian nonparametric approach to this problem is to define a prior distribution over continuous functions directly by means of a \gls{GP}. As explained in \cite{Rasmussen:2005:GPM:1162254}, a \gls{GP} is a distribution on an infinite collection of random variables $X_t$, such that the joint distribution of each finite subset $X_{t_1},\dots, X_{t_n}$ is a multivariate Gaussian. A value $x_t$ taken by the variable $X_t$ can be regarded as the value of a continuous function $f$ at $t$, that is, $f(t) = x_t$. Given the training set, the Gaussian process posterior is again a distribution on functions, conditional on these functions taking values $f(t_1)=x_1,\dots,f(t_n)=x_n$.
 
-\gls{CRM}s were first proposed and studied by Kingman \cite{Kingman:1967kn}, who showed that a \gls{CRM} $\mu$ can always be decomposed into a sum of three independent parts
-$$ \mu = \mu_0 + \sum_{k \ge 1}{u_k \delta_{\phi_k}} + \sum_{l=1}^N{v_l \delta_{\psi_l}} $$
-where $\mu_0$ is a (non-random) measure over $\mathbb{X}$, $\left\{ \psi_l \right\}_{l \in [N]} \subset  \mathbb{X}$ is a collection of $N$, $1 \le N \le \infty$, atoms at fixed locations and independent random masses $\left(v_l \right)_{l \in [N]}$, and $\left( u_k, \phi_k \right)_{k \ge 1}$ is a collection of atoms with random masses and random locations.
+\subsection{Latent feature models}
+Latent feature models represent a set of objects in terms of a set of latent features, each of which represents an independent degree of variation exhibited by the data. Such a representation of data is sometimes referred to as a distributed representation. %#In analogy to nonparametric mixture models with an unknown number of clusters, a Bayesian nonparametric approach to latent feature modeling allows for an unknown number of latent features.
+A Bayesian nonparametric approach to latent feature modeling allows for an unknown number of latent features.
+The stochastic processes involved here are known as the \gls{IBP} and the \gls{BP}. Draws from \glspl{BP} are random discrete measures, where each of an infinite number of atoms has a mass in $(0,1)$ but the masses of atoms need not sum to $1$. Each atom corresponds to a feature, with the mass corresponding to the probability that the feature is present for an object. We can visualize the occurrences of features among objects using a binary matrix, where the $(i,k)$ entry is $1$ if object $i$ has feature $k$ and $0$ otherwise. The distribution over binary matrices induced by the \gls{BP} is called the \gls{IBP}.
 
-In applications of Bayesian nonparametrics it is usually assumed that $\mu_0 = 0$ and $N = 0$, so that $\mu$ consists only of the atoms with random masses and locations. However, the posterior distribution of $\mu$ given data would typically contain atoms at fixed locations, hence, the usefulness of the larger class of \gls{CRM}s.
+\subsection{Hidden Markov models}
+\glspl{HMM} are popular models for sequential or temporal data, where each time step is associate with a state, with state transitions dependent on the previous state. An infinite \gls{HMM} is a Bayesian nonparametric approach to \glspl{HMM}, where the number of states is unbounded and allowed to grow with the sequence length. It is defined using one \gls{DP} prior for the transition probabilities going out from each state. To ensure that the set of states reachable from each outgoing state is the same, the base distributions of the \glspl{DP} are shared and given a \gls{DP} prior recursively. The construction is called a \gls{HDP}.
 
-The distribution of the random atoms $\left(\phi_k \right)_{k \ge 1}$ and their masses $\left(u_k \right)_{k \ge 1}$ under a \gls{CRM} is characterized by the Lévy-Khintchine representation of its Laplace functional transform. Specifically,
-\begin{equation} \label{eq:levy}
-\mathbb{E} \left[e^{-\int g(y)\mu(dy)} \right] = \exp \left\{ - \int_{\mathbb{R}^+ \times \mathbb{X}} \left( \  1 - e^{-sg(y)} \right) \rho(ds) H_0(dy) \right\},
+\subsection{Density estimation}
+A nonparametric Bayesian approach to density estimation requires a prior on densities or distributions. However, the \gls{DP} is not useful in this context, since it generates discrete distributions. A useful density estimator should smooth the empirical density (such as a Parzen window estimator), which requires a prior that can generate smooth distributions. Priors applicable in density estimation problems include \gls{DP} mixture models and Pólya trees.
+
+Since the mixing distribution in the \gls{DP} mixture is random, the induced density $p(x)$ is random thus the \gls{DP} mixture can be used as a prior over densities. Despite the fact that these are now primarily used in machine learning as clustering models, they were in fact originally proposed for density estimation.
+
+Pólya Trees are priors on probability distributions that can generate both discrete and piecewise continuous distributions, depending on the choice of parameters. Pólya trees are defined by a recursive infinitely deep binary subdivision of the domain of the generated random measure. Each subdivision is associated with a beta random variable which describes the relative amount of mass on each side of the subdivision. The \gls{DP} is a special case of a Pólya tree corresponding to a particular parametrization. For other parametrizations the resulting random distribution can be smooth so is suitable for density estimation.
+
+%\subsection{Power-law Phenomena}
+%\subsection{Sequential modeling}
+%\subsection{Dependent and hierarchical models.}
+
+\section{Exchangeability}
+\textcolor{red}{WHERE TO PUT THIS PART ??}
+The underlying assumption of all Bayesian methods is that the parameter specifying the observation model is a random variable. This assumption is subject to much criticism, and at the heart of the Bayesian versus non-Bayesian debate that has long divided the statistics community. However, there is a very general type of observations for which the existence of such a random variable can be derived mathematically: For so-called \textit{exchangeable} observations, the Bayesian assumption that a randomly distributed parameter exists is not a modeling assumption, but a mathematical consequence of the data’s properties.
+
+Formally, a sequence of variables $X_1,X_2,\dots,X_n$ over the same probability space $(\mathcal{X},\Omega)$ is \textit{exchangeable} if their joint distribution is invariant to permuting the variables. That is, if $P$ is the joint distribution and $\sigma$ any permutation of $\{1,\dots,n\}$, then
+$$ P(X_1=x_1,\dots,X_n=x_n) = P(X_1=x_{\sigma(1)},\dots,X_n=x_{\sigma(n)}) $$
+
+An infinite sequence $X_1,X_2,\dots$ is \textit{infinitely exchangeable} if $X_1,\dots,X_n$ is \textit{exchangeable} for every $n \ge 1$. Exchangeability reflects the assumption that the variables do not depend on their indices although they may be dependent among themselves. This is typically a reasonable assumption in machine learning and statistical applications, even if the variables are not themselves iid (independently and identically distributed). Exchangeability is a much weaker assumption than iid since iid variables are automatically exchangeable.
+
+If $\theta$ parametrizes the underlying distribution, and one assumes a prior distribution over $\theta$, then the resulting marginal distribution over $X_1,X_2,\dots,X_n$ with $\theta$ marginalized out will still be exchangeable. A fundamental result credited to de Finetti \cite{finetti31} states that the converse is also true. That is, if $X_1,X_2,\dots,X_n$ is (infinitely) exchangeable, then there is a random $\theta$ such that:
+\begin{equation} \label{eq:deFineti}
+P(X_1,\dots,X_n) = \int{P(\theta)\prod_{i=1}^n{P(X_i|\theta) d\theta}}
 \end{equation}
-for any measurable function $g: \mathbb{X} \rightarrow \mathbb{R}$ such that $\int_{\mathbb{X}}|g(x)|\mu(dx)<+ \infty$ almost-surely.
-The underlying measure $\nu = \rho \times H_0$ uniquely characterises the random atoms in $\mu$.
+for every $n \ge 1$. In other words, the seemingly innocuous assumption of exchangeability automatically implies the existence of a hierarchical Bayesian model with $\theta$ being the random latent parameter. This the crux of the fundamental importance of exchangeability to Bayesian statistics.
 
-The only intensity measures that are considered herein are those that factorise $\nu(ds, dy) = \rho(ds)H_0(dy)$ for some measure $\rho$ on $\mathbb{R}^+$ absolutely continuous with respect to the Lebesgue measure, and some non-atomic probability measure $H_0$ on $\mathbb{X}$. The corresponding \gls{CRM} is said to be \textit{homogeneous} and write $\text{CRM}(\rho, H_0)$ for the law of $\mu$. Successively, the measure $\rho$ is referred to as the Lévy measure, while $H_0$ is the base distribution.
-Homogeneity implies independence between $\left(u_k \right)_{k\ge1}$ and $\left(\phi_k \right)_{k\ge1}$, where $\left(\phi_k \right)_{k\ge1}$ is a sequence of random variables independent and identically distributed according to $H_0$ while the law of $\left(u_k \right)_{k\ge1}$  is governed by $\rho$. Intuitively, the point process $\left(u_k, \phi_k \right)_{k\ge1}$  is described by a Poisson process over $\mathbb{R}^+ \times \mathbb{X}$ with intensity measure $\nu = \rho \times H_0$.
-
-It is required that $\mu$ has almost-surely finite total mass, Equation \ref{eq:levy} with $g(y)=1$ shows that the Lévy measure is required to satisfy the property
-$$ \int_{\mathbb{R}^+ \times \mathbb{X}} \left( \  1 - e^{-s} \right) \rho(ds) H_0(dy) = 
-\int_{\mathbb{R}^+} \left( \  1 - e^{-s} \right) \rho(ds) < \infty $$
-Furthermore, the expected number of random atoms in $\mu$ is obtained by Campbell’s Theorem to be the total mass of the Lévy measure $\rho(\mathbb{R}^+)$. In typical applications of Bayesian nonparametrics this is infinite, so we can work with mixture models with infinite number of components. This also guarantees that the total mass is positive almost-surely. \\
-
-\begin{definition}[Normalised Random Measure] \label{def:NRM}
-Let $\mu$ be a homogeneous \gls{CRM}, with Lévy measure $\rho$ and base distribution $H_0$, with almost-surely positive and finite total mass. A Normalised Random Measure (NRM) is an almost-surely discrete random probability measure $P$ on $\mathbb{X}$ obtained by normalising $\mu$
-$$ P = \frac{\mu}{T} = \sum_{k \ge 1}{p_k \delta_{\phi_k}} $$
-with $T = \sum_{k \ge 1}{u_k}$ and $p_k = u_k / T$.
-Since $\mu$ is homogeneous, the law of $\left(p_k \right)_{k \ge 1}$ is governed by the Lévy measure $\rho$ and the atoms $\left(\phi_k \right)_{k \ge 1}$ are a sequence of random variables independent of $\left(p_k \right)_{k \ge 1}$, and independent and identically distributed according to $H_0$.
-We denote it by $P \sim \text{NRM}(\rho, H_0)$. \\
-\end{definition}
-
-Let $\mu \sim \text{CRM}(\rho, H_0)$ with an almost-surely finite and positive total mass $T$. Suppose that $T$ is positive and finite almost-surely, and absolutely continuous with respect to Lebesgue measure with density $f_\rho(t)$.
-Let $(X_i)_{i \ge 1}$ be a sequence of random variables that, given $P$, are independent and identically distributed according to $P$. Since $\mu$ is almost-surely discrete, there is a positive probability that $X_i = X_j$ for each pair $i \neq j$, i.e. when both are assigned to the same atom in $P$. This induces a partition $\pi$ on $\mathbb{N}$, where $i$ and $j$ are in the same block in $\Pi$ if and only if $X_i = X_j$. %The random partition $\Pi$ is exchangeable, and its exchangeable partition probability function (EPPF) can be deduced from the law of the \gls{NRM}.
-%Kingman \cite{CIS-16820} demonstrates that there is a correspondence between the law of ⇧ and that of the random probability measure.
-
-\textcolor{red}{Examples of NRMs: NGGP, DP}
-
-\subsection{Poisson-Kingman random probability measure}
-Poisson-Kingman \gls{RPM} were introduced in \cite{pitman2003pkp} as a generalisation of homogeneous NRMs. \\
-
-\begin{definition}[Poisson-Kingman Random Probability Measure] \label{def:PKRPM}
-Let $\mu \sim \text{CRM}(\rho, H_0)$ and let $T = \mu(\mathbb{X})$ be finite, positive almost-surely, and absolutely continuous with respect to Lebesgue measure. For any $t \in \mathbb{R}^+$, let us consider the conditional distribution of $\mu/t$ given that the total mass $T \in dt$. This distribution is denoted by $\text{PK}(\rho, \delta_t , H_0)$, were $\delta_t$ denotes the Dirac delta function. Poisson-Kingman \gls{RPM}s form a class of \gls{RPM}s whose distributions are obtained by mixing $\text{PK}(\rho, \delta_t , H_0)$, over $t$, with respect to some distribution  $\gamma$ on the positive real line. Specifically, a Poisson-Kingman \gls{RPM} has the hierarchical representation
-\begin{gather*}
-T \sim \gamma, \\
-\mu \sim \text{PK}(\rho, \delta_t, H_0),
-\end{gather*}
-The \gls{RPM} $P$ is referred to as the Poisson-Kingman \gls{RPM} with Lévy measure $\rho$, base distribution $H_0$ and mixing distribution $\gamma$ . The distribution of $P$ is denoted by $\text{PK}(\rho, \gamma , H_0)$. If the density for the total mass equals the density obtained from its Lévy measure $f_\rho$, i.e. $\gamma(dt) = f_\rho(t) dt$, then the distribution $\text{PK}(\rho, f_\rho , H_0)$, coincides with $\text{NRM}(\rho, H_0)$.
-
-Since $\mu$ is homogeneous, the atoms $\left(\phi_k \right)_{k \ge 1}$ of $P$ are independent of their masses $\left(p_k \right)_{k \ge 1}$. They form a sequence of independent random variables identically distributed according to $h_0$. Finally, the masses of $P$ have distribution governed by the Lévy measure $\rho$ and the distribution $\gamma$ .
-\end{definition}
-
-\textcolor{red}{Proposition Perman here or next chapter ?}
-\begin{proposition}[Perman et al. \cite{Perman:1992ke}] \label{prop:perman}
-The sequence of surplus masses $\left(V_k \right)_{k \ge 0}$ forms a Markov chain, where $V_k := T - \sum_{l=1}^k J_l$ , with initial distribution and transition kernels given as follows
-\begin{equation*}
-\begin{aligned}
-\mathbb{P}_{\rho,H_0}(V_0 \in dv_0) &= g_\rho(v_0)dv_0 \\
-\mathbb{P}_{\rho,H_0}(V_k \in dv_k|V_0 \in dv_0,\dots, V_{k-1} \in dv_{k-1}) &=  \mathbb{P}_{\rho,H_0}(V_{k-1} \in dv_{k-1})\\
-&= \frac{(v_k-v_{k-1})\rho(d(v_k-v_{k-1}))}{v_{k-1}} \frac{f_\rho(v_{k-1})}{f_\rho(v_{k-1})} \\
-\end{aligned}
-\end{equation*}
-\end{proposition}
-\textcolor{red}{Size-biased permutation}
+In de Finetti’s Theorem it is important to stress that $\theta$ can be infinite dimensional (it is typically a random measure), thus the hierarchical Bayesian model \ref{eq:deFineti} is typically a nonparametric one. For example, the Blackwell-MacQueen urn scheme (related to the \gls{CRP}) is exchangeable thus implicitly defines a random measure, namely the \gls{DP}.
 
 
-\textcolor{red}{Examples of PK: sigma-stable ?}
-
-
-\section{Mixture model}
+\section{Mixture models}
 \subsection{Finite dimensional}
 Mixture models provide a statistical framework for modeling data where each observation is assumed to have arisen from one of $k$ groups, with $k$ possibly unknown, and each group being suitably modeled by a distribution function from some parametric family. The distribution function of each group is referred to as a component of the mixture model and is weighted by the relative frequency of the group in the population. Specifically, assuming $k$ being fixed, a collection of observations $Y_1,\dots,Y_n$ is modeled as independent draws from a mixture distribution function with $k$ components, that is,
 \begin{equation} \label{eq:mixture}
@@ -119,6 +89,9 @@ Integrating out the random variables $(Z_1, \dots , Z_n)$ then yields (\ref{eq:m
 
 \subsection{Infinite dimensional}
 \textcolor{red}{Construction as limit of finite model ?}
+
+Let $\mu \sim \text{CRM}(\rho, H_0)$ with an almost-surely finite and positive total mass $T$. Suppose that $T$ is positive and finite almost-surely, and absolutely continuous with respect to Lebesgue measure with density $f_\rho(t)$.
+Let $(X_i)_{i \ge 1}$ be a sequence of random variables that, given $P$, are independent and identically distributed according to $P$. Since $\mu$ is almost-surely discrete, there is a positive probability that $X_i = X_j$ for each pair $i \neq j$, i.e. when both are assigned to the same atom in $P$. This induces a partition $\pi$ on $\mathbb{N}$, where $i$ and $j$ are in the same block in $\Pi$ if and only if $X_i = X_j$. 
 
 We are specifically interested in mixture models with an unknown number of components. In particular, we focus on a Bayesian nonparametric approach with the specification of a class of prior distributions generalizing the \gls{DP} prior. In the Bayesian nonparametric setting the central role is played by a discrete random probability measure $P$ defined on a suitable measurable space $\mathbb{X}$, an example being the \gls{DP}, whose distribution acts as a nonparametric prior. The basic idea is that since $P$ is discrete, it can be written as
 \begin{equation*}
@@ -139,6 +112,138 @@ P|T=t \sim \text{PK}(\rho, \delta_t, H_0), \\
 X_i|\tilde{\mu} \sim \tilde{\mu}, \\
 Y_i|X_i \sim F(\cdot|X_i), \\
 \end{gather*}
+
+\section{Random probability measures}
+There are two possible random discrete distributions that can be obtained from a specific discrete random measure called Completely Random measure (CRM). Informally, a \gls{CRM} is a discrete random measure with an independence property. One of them is the well known random discrete distributions called Normalised Random Measures with Independent Increments. They are obtained from \glspl{CRM} after a suitable normalisation operation. Another random discrete distributions, obtained by conditioning rather than normalising the corresponding \glspl{CRM}, are called Poisson-Kingman Random Probability Measure.
+
+\subsection{Normalised Random Measure}
+We start with a description of \gls{CRM}.
+See the monograph by Kingman \cite{kingman-poisson-processes} for a good reference on such a topic.
+
+\begin{definition}[Completely Random Measure] \label{def:CRM}
+Let $\mathbb{X}$ be a complete and separable metric space endowed with the Borel $\sigma$-field $\mathcal{B}(\mathbb{X})$. A Completely Random Measure $\mu$ is a random element taking values on the space of boundedly finite measures on $\mathbb{X}$ such that, for any collection of measurable subsets, $A_1, \dots , A_n$ in $\mathcal{B}(\mathbb{X})$, with $A_i \cap  A_j = \emptyset \ \forall i \neq j$, the random variables $\mu(A_1), \dots, \mu(A_n)$ are mutually independent.
+\end{definition}
+
+\glspl{CRM} were first proposed and studied by Kingman \cite{Kingman:1967kn}, who showed that a \gls{CRM} $\mu$ can always be decomposed into a sum of three independent parts
+$$ \mu = \mu_0 + \sum_{k \ge 1}{J_k \delta_{\phi_k}} + \sum_{l=1}^N{v_l \delta_{\psi_l}} $$
+where $\mu_0$ is a (non-random) measure over $\mathbb{X}$, $\left\{ \psi_l \right\}_{l \in [N]} \subset  \mathbb{X}$ is a collection of $N$, $1 \le N \le \infty$, atoms at fixed locations and independent random masses $\left(v_l \right)_{l \in [N]}$, and $\left(J_k, \phi_k \right)_{k \ge 1}$ is a collection of atoms with random masses and random locations.
+
+In applications of Bayesian nonparametrics it is usually assumed that $\mu_0 = 0$ and $N = 0$, so that $\mu$ consists only of the atoms with random masses and locations. However, the posterior distribution of $\mu$ given data would typically contain atoms at fixed locations, hence, the usefulness of the larger class of \glspl{CRM}.
+
+The distribution of the random atoms $\left(\phi_k \right)_{k \ge 1}$ and their masses $\left(J_k \right)_{k \ge 1}$ under a \gls{CRM} is characterized by the Lévy-Khintchine representation of its Laplace functional transform. Specifically,
+\begin{equation} \label{eq:levy}
+\mathbb{E} \left[e^{-\int g(y)\mu(dy)} \right] = \exp \left\{ - \int_{\mathbb{R}^+ \times \mathbb{X}} \left( \  1 - e^{-sg(y)} \right) \rho(ds) H_0(dy) \right\},
+\end{equation}
+for any measurable function $g: \mathbb{X} \rightarrow \mathbb{R}$ such that $\int_{\mathbb{X}}|g(x)|\mu(dx)<+ \infty$ almost-surely.
+The underlying measure $\nu = \rho \times H_0$ uniquely characterises the random atoms in $\mu$.
+
+The only intensity measures that are considered herein are those that factorise $\nu(ds, dy) = \rho(ds)H_0(dy)$ for some measure $\rho$ on $\mathbb{R}^+$ absolutely continuous with respect to the Lebesgue measure, and some non-atomic probability measure $H_0$ on $\mathbb{X}$. The corresponding \gls{CRM} is said to be \textit{homogeneous} and write $\text{CRM}(\rho, H_0)$ for the law of $\mu$. Successively, the measure $\rho$ is referred to as the Lévy measure, while $H_0$ is the base distribution.
+Homogeneity implies independence between $\left(J_k \right)_{k\ge1}$ and $\left(\phi_k \right)_{k\ge1}$, where $\left(\phi_k \right)_{k\ge1}$ is a sequence of random variables independent and identically distributed according to $H_0$ while the law of $\left(J_k \right)_{k\ge1}$  is governed by $\rho$. Intuitively, the point process $\left(J_k, \phi_k \right)_{k\ge1}$  is described by a Poisson process over $\mathbb{R}^+ \times \mathbb{X}$ with intensity measure $\nu = \rho \times H_0$.
+
+It is required that $\mu$ has almost-surely finite total mass, Equation \ref{eq:levy} with $g(y)=1$ shows that the Lévy measure is required to satisfy the property
+$$ \int_{\mathbb{R}^+ \times \mathbb{X}} \left( \  1 - e^{-s} \right) \rho(ds) H_0(dy) = 
+\int_{\mathbb{R}^+} \left( \  1 - e^{-s} \right) \rho(ds) < \infty $$
+Furthermore, the expected number of random atoms in $\mu$ is obtained by Campbell’s Theorem to be the total mass of the Lévy measure $T = \rho(\mathbb{R}^+)$. In typical applications of Bayesian nonparametrics this is infinite, so we can work with mixture models with infinite number of components. This also guarantees that the total mass is positive almost-surely. 
+
+However, since $T \neq 1$ in general, \glspl{CRM} cannot directly be used as priors for mixture models.
+One can normalize a \gls{CRM} by its finite total mass to construct a BNP prior for mixture models.\\
+
+\begin{definition}[Normalised Random Measure] \label{def:NRM}
+Let $\mu$ be a homogeneous \gls{CRM}, with Lévy measure $\rho$ and base distribution $H_0$, with almost-surely positive and finite total mass. A Normalised Random Measure (NRM) is an almost-surely discrete random probability measure $P$ on $\mathbb{X}$ obtained by normalising $\mu$
+$$ P = \frac{\mu}{T} = \sum_{k \ge 1}{p_k \delta_{\phi_k}} $$
+with $T = \sum_{k \ge 1}{J_k}$ and $p_k = J_k / T$.
+Since $\mu$ is homogeneous, the law of $\left(p_k \right)_{k \ge 1}$ is governed by the Lévy measure $\rho$ and the atoms $\left(\phi_k \right)_{k \ge 1}$ are a sequence of random variables independent of $\left(p_k \right)_{k \ge 1}$, and independent and identically distributed according to $H_0$.
+We denote it by $P \sim \text{NRM}(\rho, H_0)$. \\
+\end{definition}
+
+An example of \gls{NRM} is the \gls{NGGP}. The GGP Lévy measure is
+\begin{equation} \label{eq:GGP}
+\rho(dy) = \frac{a}{\Gamma(1 - \sigma)}y^{-\sigma-1}e^{-\tau y} dy,
+\end{equation}
+where $\tau \in [0,\infty)$, $a \in (0, \infty)$ and $\sigma \in [0, 1)$. The \gls{NGGP} is then obtained, as described above, by normalisation of the GGP. Notable special case of \gls{NGGP} are $\sigma = 0$ where we obtain the \gls{DP}, and $\sigma=0.5$, where we obtain the \gls{IG} process.
+
+%The random partition $\Pi$ is exchangeable, and its exchangeable partition probability function (EPPF) can be deduced from the law of the \gls{NRM}.
+%Kingman \cite{CIS-16820} demonstrates that there is a correspondence between the law of ⇧ and that of the random probability measure.
+
+\subsection{Poisson-Kingman random probability measure}
+Poisson-Kingman \gls{RPM} were introduced in \cite{pitman2003pkp} as a generalisation of homogeneous NRMs. \\
+
+\begin{definition}[Poisson-Kingman Random Probability Measure] \label{def:PKRPM}
+Let $\mu \sim \text{CRM}(\rho, H_0)$ and let $T = \mu(\mathbb{X})$ be finite, positive almost-surely, and absolutely continuous with respect to Lebesgue measure. For any $t \in \mathbb{R}^+$, let us consider the conditional distribution of $\mu/t$ given that the total mass $T \in dt$. This distribution is denoted by $\text{PK}(\rho, \delta_t , H_0)$, were $\delta_t$ denotes the Dirac delta function. Poisson-Kingman \glspl{RPM} form a class of \glspl{RPM} whose distributions are obtained by mixing $\text{PK}(\rho, \delta_t , H_0)$, over $t$, with respect to some distribution  $\gamma$ on the positive real line. Specifically, a Poisson-Kingman \gls{RPM} has the hierarchical representation
+\begin{gather*}
+T \sim \gamma, \\
+\mu \sim \text{PK}(\rho, \delta_t, H_0),
+\end{gather*}
+The \gls{RPM} $P$ is referred to as the Poisson-Kingman \gls{RPM} with Lévy measure $\rho$, base distribution $H_0$ and mixing distribution $\gamma$ . The distribution of $P$ is denoted by $\text{PK}(\rho, \gamma , H_0)$. If the density for the total mass equals the density obtained from its Lévy measure $f_\rho$, i.e. $\gamma(dt) = f_\rho(t) dt$, then the distribution $\text{PK}(\rho, f_\rho , H_0)$, coincides with $\text{NRM} (\rho, H_0)$.
+\end{definition}
+
+Since $\mu$ is homogeneous, the atoms $\left(\phi_k \right)_{k \ge 1}$ of $P$ are independent of their masses $\left(p_k \right)_{k \ge 1}$. They form a sequence of independent random variables identically distributed according to $h_0$. Finally, the masses of $P$ have distribution governed by the Lévy measure $\rho$ and the distribution $\gamma$ .
+
+\paragraph{$\sigma$-Stable Poisson-Kingman \glspl{RPM}}
+One famous class of Poisson-Kingman \gls{RPM} is the class $\sigma$-Stable Poisson-Kingman \glspl{RPM} which encompasses most of the popular discrete \glspl{RPM} used in Bayesian nonparametrics, for instance, the Pitman-Yor process and the normalised generalised Gamma process.
+For any $\sigma \in (0,1)$ the density function of a positive  $\sigma-$Stable random variable is
+$f_\sigma(t) = \frac{1}{\pi}\sum_{j=0}^\infty \frac{(-1)^{j+1}}{j!}\sin(\pi\sigma j)\frac{\Gamma(\sigma j+1)}{t^{\sigma j+1}}$. A $\sigma$-Stable Poisson-Kingman \gls{RPM} is a Poisson-Kingman \gls{RPM} with Lévy measure given by
+\begin{equation} \label{eq:sigma_stable_PK}
+\rho(dy) := \rho_\sigma(dy) = \frac{a}{\Gamma(1 - \sigma)}y^{-\sigma-1} dy,
+\end{equation}
+and base distribution $H_0$.
+The mixing distribution for the total mass $T$ takes the following 
+$\gamma(dt) \propto h(t) f_\sigma(t) dt$, for any non-negative measurable function $h$ such that
+$\int_0^\infty{h(t)f_\sigma(t) dt} < \infty$.
+Accordingly, $\sigma$-Stable Poisson-Kingman \glspl{RPM} form a class of discrete \glspl{RPM} indexed by the parameters $(\rho, h)$. The Dirichlet process can be recovered as a limiting case, if $\sigma \rightarrow 0$, for some choices of $h$. The following examples of $\sigma$-Stable Poisson-Kingman \glspl{RPM}  are obtained by specifying the tilting function $h$.
+
+\begin{itemize}
+\item \acrfull{NS}: $h(t) = 1$ \\
+\item \acrfull{NGGP} : $h(t) = \exp\{\tau - \tau^{1/\sigma}t \}$, for any $\tau > 0$
+\item \acrfull{PY}: $h(t) = \frac{\Gamma(\theta + 1)}{\Gamma(\theta / \sigma + 1)}t^{-\theta}$ with $\theta \ge -\sigma$
+\item \acrfull{GT}: $h(t) = t^{-\theta} \exp\{-\eta t\}$ for any $\eta > 0$ or $\eta=0$ and $\theta>-\sigma$
+\item \acrfull{pgc}: $h(t) = \int_{\mathbb{R}^+} \exp\{\tau - \tau^{1/\sigma}t \} F(d\tau)$ \\
+\end{itemize}
+
+\textcolor{red}{Proposition Perman here or next chapter ?}
+\begin{proposition}[Perman et al. \cite{Perman:1992ke}] \label{prop:perman}
+The sequence of surplus masses $\left(V_k \right)_{k \ge 0}$ forms a Markov chain, where $V_k := T - \sum_{l=1}k J_l$ , with initial distribution and transition kernels given as follows
+\begin{equation*}
+\begin{aligned}
+\mathbb{P}_{\rho,H_0}(V_0 \in dv_0) &= g_\rho(v_0)dv_0 \\
+\mathbb{P}_{\rho,H_0}(V_k \in dv_k|V_0 \in dv_0,\dots, V_{k-1} \in dv_{k-1}) &=  \mathbb{P}_{\rho,H_0}(V_{k-1} \in dv_{k-1})\\
+&= \frac{(v_k-v_{k-1})\rho(d(v_k-v_{k-1}))}{v_{k-1}} \frac{f_\rho(v_{k-1})}{f_\rho(v_{k-1})} \\
+\end{aligned}
+\end{equation*}
+\end{proposition}
+
+
+\textcolor{red}{Size-biased permutation
+All measure
+Urn: marginalized out the random -> only partition left
+Stick-breaking: hybrid-case, lazely instanciate our observation once they are drawn from it, sized-biased permutation }\\
+
+A second object induced by a Poisson-Kingman \gls{RPM} is a size-biased permutation of its atoms. Specifically, order the blocks in $\Pi$ by increasing order of the least element in each block, and for each $l \in \mathbb{N}$ let $Z_l$ be the least element of the $l$-th block. $Z_l$ is the index among $(X_i)_{i \ge 1}$ of the first appearance of the $l$-th unique value in the sequence.
+Let $\tilde{J}_l = \mu(\{X_{Z_l}\})$ be the mass of the corresponding atom in $\mu$. Then $(\tilde{J}_l)_{l\ge 1}$ is a size-biased permutation of the masses of atoms in $\mu$, with larger masses tending to appear earlier in the sequence. It is easy to see that $\sum_{l \ge 1}{\tilde{J}_l} = T$, and that the sequence can be understood as a stick-breaking construction: start with a stick of length $T_0 = T$; break off the first piece of length $\tilde{J}_1$; the surplus length of stick is $V_1 = T - \tilde{J}_1$; then
+the second piece with length $\tilde{J}_2$ is broken off, etc.
+
+Proposition \ref{prop:perman} \cite{Perman:1992ke} states that the sequence of surplus masses $(V_l)_{l \ge 1}$ forms a Markov chain and gives the corresponding initial distribution and transition kernels. The density of $T$ is denoted by $\gamma(t) \propto h(t) f_\rho(t)$. The PKP generative process for the sequence $(X_i)_{i \ge 1}$ goes as follows, where parts of the \gls{PK} random measure $\mu$ are simulated as required.
+
+\begin{enumerate}[label=(\roman*)]
+    \item Draw from the total mass from its distribution $\mathbb{P}_{\rho,H_0}(T \in dt) \propto h(t) f_\rho(t)$.
+    \item The first draw $X_1$ from $\mu/T$ is a size-biased pick from the masses of $\mu$. The actual
+value of $X_1$ is simply $X_1^\star \sim H_0$, while the mass of the corresponding atom in $\mu$ is
+$\tilde{J}_1$, with conditional distribution given by
+$$ \mathbb{P}_{\rho,H_0}(\tilde{J}_1 \in ds_1 | T \in dt) = \frac{s_1}{t}\rho(ds_1)\frac{f_\rho(t - s_1)}{f_\rho(t)} $$
+The leftover mass is $V_1 = T - \tilde{J}_1$.
+    \item For subsequent draws $i \ge 2:$
+    \begin{itemize}
+        \item Let $k$ be the current number of distinct values among $X_1,\dots,X_{i-1}$, and let
+$X_1^\star,\dots,X_{k}^\star$ be the unique values, i.e., atoms in $\mu$. The masses of these first
+$k$ atoms are denoted by $\tilde{J}_{1},\dots,\tilde{J}_{k}$ and the leftover mass is $V_k = T - \sum_{l=1}^k{\tilde{J}_{l}}$.
+        \item For each $l \le k$, with probability $\tilde{J}_l / T$, we set $X_i = X_l^\star$.
+        \item With probability $V_k / T$, $X_i$, takes on the value of an atom in $\mu$ besides the first $k$ atoms. The actual value $X_{k+1}^\star$ is drawn from $H_0$, while its mass is drawn from
+        $$ \mathbb{P}_{\rho,H_0}(\tilde{J}_{k+1} \in ds_{k+1} | T \in dv_k) = \frac{s_{k+1}}{v_k}\rho(ds_{k+1})\frac{f_\rho(t - s_{k+1})}{f_\rho(t)} $$
+        The leftover mass is again $V_{k+1} = V_k - \tilde{J}_{k+1}$.
+    \end{itemize}
+\end{enumerate}
+
+By multiplying the above infinitesimal probabilities one obtains the joint distribution of the random elements $T$, $\Pi$, $(\tilde{J}_i)_{i \ge 1}$ and $(X_i^\star)_{i \ge 1}$.
 
 \section{MCMC Inference}
 \textcolor{red}{GRAPHICAL MODELS OF THE DIFFERENT REPRESENTATIONS ?}
