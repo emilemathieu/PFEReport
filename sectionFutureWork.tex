@@ -54,10 +54,7 @@ I am consequently interested in understanding to what extent this class of MCMC 
 
 
 \section{Variational Inference for \gls{BNP} in \gls{PPL}}
-To my knowledge, the first article tackling inference in a \gls{BNP} setting is \cite{Blei:2006fo}, where
-a truncated proposal is introduced to approximate a Dirichlet Process Mixture model.
-
-\textit{Truncation-free} \gls{VI} methods have also been introduced \cite{Blei:2012uu}. These methods adapts model complexity on the fly by lazily representing clusters assignments. Yet, the sticks proportions and mixture components are marginalize out to obtain a closed form distribution for the mixture assignment hidden variables $z_i$. This marginalization is unfortunately only tractable for few models, such as the Dirichlet Process and the Pitman-Yor process.
+As explained in Section \ref{BNP_VI}, Truncation-free variational inference methods rely on a lazy representing of the clusters assignments. Yet, the marginalisation used seems to be only available for few models.
 
 However, we may be able to use a similar approach for more flexible \gls{BNP} models, by extending the latent space with the sticks proportions and mixture components (since they cannot be marginalized out).
 Moreover, there might be a deeper link between \textit{Truncation-free} \gls{VI} and stick-breaking processes.
