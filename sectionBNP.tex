@@ -9,22 +9,37 @@ The parameter space in (i) typically consists of functions or of measures, while
 % Model selection
 Most scientists address the model selection problem by first fitting several models, with different numbers of clusters or factors, and then selecting one using model comparison metrics \cite{Claeskens:1251912}. Model selection metrics usually include two terms. The first term measures how well the model fits the data. The second term, a complexity penalty, favors simpler models (i.e., ones with fewer components or factors).
 
-\gls{BNP} models provide a different approach to this problem. Rather than comparing models that vary in complexity, the \gls{BNP} approach is to fit a single model that can adapt its complexity to the data. Furthermore, \gls{BNP} models allow the complexity to grow as more data are observed, such as when using a model to perform prediction.
-Popular examples of Bayesian nonparametric models include Gaussian process regression, in which the correlation structure is refined with growing sample size, and Dirichlet process mixture models for clustering, which adapt the number of clusters to the complexity of the data.
+\gls{BNP} models provide a different approach to this problem. Rather than comparing models that vary in complexity, the \gls{BNP} approach is to fit a single model that can adapt its complexity to the data. \gls{BNP} models allow the complexity to grow as more data are observed, such as when using a model to perform prediction. This is an attractive property for many settings.
 
-%Nonparametric models constitute an approach to model selection and adaptation, where the sizes of models are allowed to grow with data size.
+%Popular examples of Bayesian nonparametric models include Gaussian process regression, in which the correlation structure is refined with growing sample size, and Dirichlet process mixture models for clustering, which adapt the number of clusters to the complexity of the data.
 
+\subsection{Exchangeability}
+\textcolor{red}{The }
+
+The underlying assumption of all Bayesian methods is that the parameter specifying the observation model is a random variable. 
+However, there is a very general type of so-called \textit{exchangeable} observations for which the existence of such a random variable is a mathematical consequence of the data's properties. This is an important notion since all models we will be considering in Chapter \ref{BNP_PPL} are assuming exchangeability.
+
+Formally, a sequence of variables $X_1,\dots,X_n$ over the same probability space $(\mathbb{X},\Omega)$ is \textit{exchangeable} if their joint distribution is invariant to permuting the variables. That is, if for any permutation $\sigma$ of $\{1,\dots,n\}$, then
+$$ \mathbb{P}(X_1=x_1,\dots,X_n=x_n) = \mathbb{P}(X_1=x_{\sigma(1)},\dots,X_n=x_{\sigma(n)}) $$
+
+Exchangeability reflects the assumption that the variables do not depend on their indices although they may be dependent among themselves. This is typically a reasonable assumption in machine learning and statistical applications, even if the variables are not themselves iid, since it is a much weaker assumption.
+
+If $\theta$ parametrizes the underlying distribution, and one assumes a prior distribution over $\theta$, then the resulting marginal distribution over $X_1,\dots,X_n$ with $\theta$ marginalized out will still be exchangeable. A fundamental result credited to de Finetti \cite{finetti31} states that the converse is also true. That is, if $X_1,\dots,X_n$ is exchangeable, then there is a random $\theta$ such that:
+\begin{equation} \label{eq:deFineti}
+P(X_1,\dots,X_n) = \int{P(\theta)\prod_{i=1}^n{P(X_i|\theta) d\theta}}
+\end{equation}
+In other words, the seemingly innocuous assumption of exchangeability automatically implies the existence of a hierarchical Bayesian model with $\theta$ being the random latent parameter.
+
+In de Finetti’s Theorem it is important to stress that $\theta$ can be infinite dimensional (it is typically a random measure), thus the hierarchical Bayesian model \ref{eq:deFineti} is typically a nonparametric one. For example, the Blackwell-MacQueen urn scheme (related to the \gls{CRP}) is exchangeable thus implicitly defines a random measure, namely the \gls{DP}.
 
 % Applications
 
 \section{Examples}
 Bayesian nonparametric models have recently been applied to a variety of machine learning problems, including regression, classification, clustering, latent variable modeling, sequential modeling, image segmentation, source separation and grammar induction.
 
-\textcolor{red}{
-CRP: latent mixture model, Urn ?}
 
 \subsection{\acrlong{DP}}
-\textcolor{red}{CRP?}
+
 The \acrfull{DP} is a distribution over distributions. It is parameterized by a concentration parameter $\alpha > 0$ and a base distribution $H_0$, which is a distribution over a space $\mathbb{X}$. A random variable drawn from a \gls{DP} is itself a distribution over $\mathbb{X}$. A random distribution $P$ drawn from a \gls{DP} is denoted $P \sim \text{DP}(\alpha, H_0)$.
 
 The \gls{DP} was first developed in \cite{ferguson73}, who showed its existence by appealing to its finite dimensional distributions. Consider a measurable partition of $\mathbb{X}$, $\{A_1,\dots,A_K\}$ If $P \sim \text{DP}(\alpha, H_0)$ then every measurable partition of $\mathbb{X}$ is Dirichlet-distributed,
@@ -46,24 +61,37 @@ X_i \sim P \quad \forall i= \{1,\dots,n\} \label{eq:CRP}
 
 \cite{ferguson73} examined the joint distribution of $X_{1:n}$, which is obtained by marginalizing out the random distribution $P$,
 \begin{equation}
-p(X_1,\dots,X_n|\alpha,H_0) = \int{\left(\prod_{i=1}^n p(X_i|P) \right) dP(P|\alpha,H_0)}
+p(X_1,\dots,X_n|\alpha,H_0) = \int{\left(\prod_{i=1}^n p(X_i|P) \right) d \mathbb{P}(P|\alpha,H_0)}
 \end{equation}
 
 He showed that, under this joint distribution, the $X_i$ will exhibit a \textit{clustering property}--they will share repeated values with positive probability. The structure of shared values defines a partition of the integers from $1$ to $n$, and the distribution of this partition is a Chinese restaurant process with parameter $\alpha$. Finally, he showed that the unique values of $X_i$ shared among the variables are independent draws from $H_0$.
 
-\paragraph{Dirichlet process mixtures}
-A \gls{DP} mixture adds a third step to the model above: $Y_i \sim f(\cdot|X_i)$. Marginalizing out $P$ reveals that the \gls{DP} mixture is equivalent to a CRP mixture.
-
 \paragraph{The stick-breaking construction}
 \cite{ferguson73} proved that the DP exists via its finite dimensional distributions. \cite{sethuraman94} provided a more constructive definition based on the stick-breaking representation.
 
-Consider a stick with unit length. We divide the stick into an infinite number of segments $\tilde{J}_k$ by the following process. First, choose a beta random variable $\beta_1 \sim \text{beta}(1, \alpha)$ and break of $\beta_1$ of the stick. For each remaining segment, choose another beta distributed random variable, and break off that proportion of the remainder of the stick. This gives us an infinite collection of weights 
+Consider a stick with unit length. We divide the stick into an infinite number of segments $\tilde{J}_k$ by the following process. First, choose a beta random variable $Z_1 \sim \text{beta}(1, \alpha)$ and break of $Z_1$ of the stick. For each remaining segment, choose another beta distributed random variable, and break off that proportion of the remainder of the stick. This gives us an infinite collection of weights 
 \begin{gather}
-\beta_k \sim \text{beta}(1, \alpha) \\
-\tilde{J}_k = \beta_k \prod_{j=1}^{k-1}(1-\beta_j) \quad k= 1,2,\dots \label{eq:SB_DP}
+Z_k \sim \text{beta}(1, \alpha) \\
+\tilde{J}_k = Z_k \prod_{j=1}^{k-1}(1-Z_j) \quad k= 1,2,\dots \label{eq:SB_DP}
 \end{gather}
 Finally, we construct a random distribution using Equation \ref{eq:DP}, where we take an infinite number of draws from a base distribution $H_0$ and draw the weights as in Equation \ref{eq:SB_DP}. \cite{sethuraman94} showed that the distribution of this random distribution is a $DP(\alpha,H_0)$.
 %This representation of the Dirichlet process, and its corresponding use in a Dirichlet process mixture, allows us to compute a variety of functions of posterior DPs (Gelfand and Kottas, 2002) and is the basis for the variational approach to approximate inference (Blei and Jordan, 2006).
+
+\paragraph{\acrlong{CRP}}
+The \gls{CRP} is a distribution over infinite partitions of the integers \cite{PitmanCRP,AldousCRP}.
+The \gls{CRP} derives its name from the following metaphor. Imagine a restaurant with an infinite number of tables \footnote{The Chinese restaurant metaphor is due to Pitman and Dubins, who were inspired by the seemingly infinite seating capacity of Chinese restaurants in San Francisco.}, and imagine a sequence of customers entering the restaurant and sitting down. The first customer enters and sits at the first table. The second customer enters and sits at the first table with probability $\frac{1}{1+\alpha}$, and the second table with probability $\frac{\alpha}{1+\alpha}$, where $\alpha$ is a positive real. When the $n$th customer enters the restaurant, he sits at each of the occupied tables with probability proportional to the number of previous customers sitting there, and at the next unoccupied table with probability proportional to $\alpha$. At any point in this process, the assignment of customers to tables defines a random partition.
+
+More formally, let $z_n$ be the table assignment of the $n$th customer. A draw from this distribution
+\begin{equation*}
+P(z_n = k | \mbz_{1:n-1})
+\propto \begin{cases} \frac{m_k}{n-1+\alpha} \ \text{if} \ k \le K_+\ \text{(i.e., k is a previously occupied table)} \\ 
+ \frac{\alpha}{n-1+\alpha} \ \text{otherwise} \ \text{(i.e., k is the next unoccupied table)} \end{cases}
+\end{equation*}
+where $m_k$ is the number of customers sitting at table $k$, and $K_+$ is the number of tables for which $m_k > 0$.
+
+\paragraph{Dirichlet process mixtures}
+A \gls{DP} mixture adds a third step to the model above: $Y_i \sim f(\cdot|X_i)$. Marginalizing out $P$ reveals that the \gls{DP} mixture is equivalent to a CRP mixture.
+
 
 \subsection{Nonlinear regression}
 The aim of regression is to infer a continuous function from a training set consisting of input-output pairs $\{(t_i , x_i )\}_{i=1}^n$. Parametric approaches parametrize the function using a finite number of parameters and attempt to infer these parameters from data. The prototypical Bayesian nonparametric approach to this problem is to define a prior distribution over continuous functions directly by means of a \gls{GP}. As explained in \cite{Rasmussen:2005:GPM:1162254}, a \gls{GP} is a distribution on an infinite collection of random variables $X_t$, such that the joint distribution of each finite subset $X_{t_1},\dots, X_{t_n}$ is a multivariate Gaussian. A value $x_t$ taken by the variable $X_t$ can be regarded as the value of a continuous function $f$ at $t$, that is, $f(t) = x_t$. Given the training set, the Gaussian process posterior is again a distribution on functions, conditional on these functions taking values $f(t_1)=x_1,\dots,f(t_n)=x_n$.
@@ -83,26 +111,8 @@ A nonparametric Bayesian approach to density estimation requires a prior on dens
 
 %Pólya Trees are priors on probability distributions that can generate both discrete and piecewise continuous distributions, depending on the choice of parameters. Pólya trees are defined by a recursive infinitely deep binary subdivision of the domain of the generated random measure. Each subdivision is associated with a beta random variable which describes the relative amount of mass on each side of the subdivision. The \gls{DP} is a special case of a Pólya tree corresponding to a particular parametrization. For other parametrizations the resulting random distribution can be smooth so is suitable for density estimation.
 
-%\subsection{Power-law Phenomena}
-%\subsection{Sequential modeling}
-%\subsection{Dependent and hierarchical models.}
 
-\section{Exchangeability}
-\textcolor{red}{WHERE TO PUT THIS PART AND IS IT USEFUL ??}
-The underlying assumption of all Bayesian methods is that the parameter specifying the observation model is a random variable. This assumption is subject to much criticism, and at the heart of the Bayesian versus non-Bayesian debate that has long divided the statistics community. However, there is a very general type of observations for which the existence of such a random variable can be derived mathematically: For so-called \textit{exchangeable} observations, the Bayesian assumption that a randomly distributed parameter exists is not a modeling assumption, but a mathematical consequence of the data’s properties.
 
-Formally, a sequence of variables $X_1,X_2,\dots,X_n$ over the same probability space $(\mathcal{X},\Omega)$ is \textit{exchangeable} if their joint distribution is invariant to permuting the variables. That is, if $P$ is the joint distribution and $\sigma$ any permutation of $\{1,\dots,n\}$, then
-$$ P(X_1=x_1,\dots,X_n=x_n) = P(X_1=x_{\sigma(1)},\dots,X_n=x_{\sigma(n)}) $$
-
-An infinite sequence $X_1,X_2,\dots$ is \textit{infinitely exchangeable} if $X_1,\dots,X_n$ is \textit{exchangeable} for every $n \ge 1$. Exchangeability reflects the assumption that the variables do not depend on their indices although they may be dependent among themselves. This is typically a reasonable assumption in machine learning and statistical applications, even if the variables are not themselves iid (independently and identically distributed). Exchangeability is a much weaker assumption than iid since iid variables are automatically exchangeable.
-
-If $\theta$ parametrizes the underlying distribution, and one assumes a prior distribution over $\theta$, then the resulting marginal distribution over $X_1,X_2,\dots,X_n$ with $\theta$ marginalized out will still be exchangeable. A fundamental result credited to de Finetti \cite{finetti31} states that the converse is also true. That is, if $X_1,X_2,\dots,X_n$ is (infinitely) exchangeable, then there is a random $\theta$ such that:
-\begin{equation} \label{eq:deFineti}
-P(X_1,\dots,X_n) = \int{P(\theta)\prod_{i=1}^n{P(X_i|\theta) d\theta}}
-\end{equation}
-for every $n \ge 1$. In other words, the seemingly innocuous assumption of exchangeability automatically implies the existence of a hierarchical Bayesian model with $\theta$ being the random latent parameter. This the crux of the fundamental importance of exchangeability to Bayesian statistics.
-
-In de Finetti’s Theorem it is important to stress that $\theta$ can be infinite dimensional (it is typically a random measure), thus the hierarchical Bayesian model \ref{eq:deFineti} is typically a nonparametric one. For example, the Blackwell-MacQueen urn scheme (related to the \gls{CRP}) is exchangeable thus implicitly defines a random measure, namely the \gls{DP}.
 
 
 \section{Mixture models}
@@ -130,10 +140,6 @@ This gives rise to mixture models with an infinite number of components. When ap
 Inference in the model then automatically recovers both the number of components to use and the parameters of the components.
 Being Bayesian, we need a prior over the mixing distribution $P$. %, and the most common prior to use is a \gls{DP}.
 Discrete \acrlongpl{RPM} are of the form of \ref{eq:mixture_inf}, defined on a suitable measurable space $\mathbb{X}$ with $X_i \in \mathbb{X}$ for $i=1,\dots,k$.
-
-\textcolor{red}{Stochastic Memoization perspective ??}
-Stochastic Memoization with DPmem: $\alpha = 0$, deterministic memoization, $\alpha = \inf$ no memoization\\
-https://probmods.org/chapters/12-non-parametric-models.html
 
 
 We are therefore interested in hierarchical models of the form
@@ -170,7 +176,14 @@ for any measurable function $g: \mathbb{X} \rightarrow \mathbb{R}$ such that $\i
 The underlying measure $\nu = \rho \times H_0$ uniquely characterises the random atoms in $\mu$.
 
 The only intensity measures that are considered herein are those that factorise $\nu(ds, dy) = \rho(ds)H_0(dy)$ for some measure $\rho$ on $\mathbb{R}^+$ absolutely continuous with respect to the Lebesgue measure, and some non-atomic probability measure $H_0$ on $\mathbb{X}$. The corresponding \gls{CRM} is said to be \textit{homogeneous} and write $\text{CRM}(\rho, H_0)$ for the law of $\mu$. Successively, the measure $\rho$ is referred to as the Lévy measure, while $H_0$ is the base distribution.
-Homogeneity implies independence between $\left(J_k \right)_{k\ge1}$ and $\left(\phi_k \right)_{k\ge1}$, where $\left(\phi_k \right)_{k\ge1}$ is a sequence of random variables independent and identically distributed according to $H_0$ while the law of $\left(J_k \right)_{k\ge1}$  is governed by $\rho$. Intuitively, the point process $\left(J_k, \phi_k \right)_{k\ge1}$  is described by a Poisson process over $\mathbb{R}^+ \times \mathbb{X}$ with intensity measure $\nu = \rho \times H_0$.
+Homogeneity implies independence between $\left(J_k \right)_{k\ge1}$ and $\left(\phi_k \right)_{k\ge1}$, where $\left(\phi_k \right)_{k\ge1}$ is a sequence of random variables independent and identically distributed according to $H_0$ while the law of $\left(J_k \right)_{k\ge1}$  is governed by $\rho$. Intuitively, the point process $\left(J_k, \phi_k \right)_{k\ge1}$  is described by a Poisson process over $\mathbb{R}^+ \times \mathbb{X}$ with intensity measure $\nu = \rho \times H_0$, as illustrated in Figure \ref{fig:CRM}.
+
+\begin{figure}[h!]
+\centering
+    \includegraphics[width=0.6\linewidth]{CRM.png} 
+    \caption{A draw $\sum_{j \ge 1}{J_j \delta_{X_j}}$ from a \gls{CRM}. Each stick denotes an atom in the \gls{CRM}, with mass given by its height $J_j$ and location given by $X_j$. Behind the \gls{CRM} is the density of its Lévy intensity measure $\nu$. Source: \cite{Favaro:2013fl}.}
+    \label{fig:CRM} 
+\end{figure}
 
 It is required that $\mu$ has almost-surely finite total mass, Equation \ref{eq:levy} with $g(y)=1$ shows that the Lévy measure is required to satisfy the property
 $$ \int_{\mathbb{R}^+ \times \mathbb{X}} \left( \  1 - e^{-s} \right) \rho(ds) H_0(dy) = 
@@ -231,6 +244,14 @@ X_i|P \sim P, \\
 Y_i|X_i \sim F(\cdot|X_i),
 \end{gather*}
 
+\begin{figure}[h!]
+\centering
+    \includegraphics[width=0.5\linewidth]{graph_model_intractable.png} 
+    \caption{\gls{PKP} intractable graphical model: the latent variables are countably infinitely many which makes the model computationally intractable. Source: \cite{LomeliThesis}.} 
+    \label{fig:graph_model_intractable} 
+\end{figure}
+Figure \ref{fig:graph_model_intractable} represents the associated graphical model.
+
 \paragraph{$\sigma$-Stable Poisson-Kingman \glspl{RPM}}
 One famous class of Poisson-Kingman \gls{RPM} is the class $\sigma$-Stable Poisson-Kingman \glspl{RPM} which encompasses most of the popular discrete \glspl{RPM} used in Bayesian nonparametrics, for instance, the Pitman-Yor process and the normalised generalised Gamma process.
 For any $\sigma \in (0,1)$ the density function of a positive  $\sigma-$Stable random variable is
@@ -242,7 +263,7 @@ and base distribution $H_0$.
 The mixing distribution for the total mass $T$ takes the following 
 $\gamma(dt) \propto h(t) f_\sigma(t) dt$, for any non-negative measurable function $h$ such that
 $\int_0^\infty{h(t)f_\sigma(t) dt} < \infty$.
-Accordingly, $\sigma$-Stable Poisson-Kingman \glspl{RPM} form a class of discrete \glspl{RPM} indexed by the parameters $(\rho, h)$. The Dirichlet process can be recovered as a limiting case, if $\sigma \rightarrow 0$, for some choices of $h$. The following examples of $\sigma$-Stable Poisson-Kingman \glspl{RPM}  are obtained by specifying the tilting function $h$.
+Accordingly, $\sigma$-Stable Poisson-Kingman \glspl{RPM} form a class of discrete \glspl{RPM} indexed by the parameters $(\rho, h)$. The Dirichlet process can be recovered as a limiting case, if $\sigma \rightarrow 0$, for some choices of $h$. The following examples of $\sigma$-Stable Poisson-Kingman \glspl{RPM}  are obtained by specifying the tilting function $h$. See \cite{LomeliThesis} for more examples and more details on those.
 
 \begin{itemize}
 \item \acrfull{NS}: $h(t) = 1$
@@ -252,31 +273,26 @@ Accordingly, $\sigma$-Stable Poisson-Kingman \glspl{RPM} form a class of discret
 \item \acrfull{pgc}: $h(t) = \int_{\mathbb{R}^+} \exp\{\tau - \tau^{1/\sigma}t \} F(d\tau)$ \\
 \end{itemize}
 
-\textcolor{red}{Proposition Perman here or next chapter ?}
+\textcolor{red}{BETTER TRANSITION ?}
 The conditioning operation from the generative process from Equation \ref{eq:PK} is not well defined a priori but the following proposition from \cite{Perman:1992ke} helps to bypass this difficulty. It also states an interesting Markovian property of the surplus masses, which will be of used to describe a \gls{PK} generative process. \\
 
 \begin{proposition}[Perman et al. \cite{Perman:1992ke}] \label{prop:perman}
-The sequence of surplus masses $\left(V_k \right)_{k \ge 0}$ forms a Markov chain, where $V_k := T - \sum_{l=1}^k J_l$ , with initial distribution and transition kernels given as follows
+The sequence of surplus masses $\left(T_k \right)_{k \ge 0}$ forms a Markov chain, where $T_k := T - \sum_{l=1}^k J_l$ , with initial distribution and transition kernels given as follows
 \begin{equation*}
 \begin{aligned}
-\mathbb{P}_{\rho,H_0}(V_0 \in dv_0) &= f_\rho(v_0)dv_0 \\
-\mathbb{P}_{\rho,H_0}(V_k \in dv_k|V_0 \in dv_0,\dots, V_{k-1} \in dv_{k-1}) &=  \mathbb{P}_{\rho,H_0}(V_{k-1} \in dv_{k-1})\\
-&= \frac{(v_k-v_{k-1})\rho(d(v_k-v_{k-1}))}{v_{k-1}} \frac{f_\rho(v_{k-1})}{f_\rho(v_{k-1})} \\
+\mathbb{P}_{\rho,H_0}(T_0 \in dt_0) &= f_\rho(t_0)dt_0 \\
+\mathbb{P}_{\rho,H_0}(T_k \in dt_k|T_0 \in dt_0,\dots, T_{k-1} \in dt_{k-1}) &=  \mathbb{P}_{\rho,H_0}(T_{k-1} \in dt_{k-1})\\
+&= \frac{(t_k-t_{k-1})\rho(d(t_k-t_{k-1}))}{t_{k-1}} \frac{f_\rho(t_{k-1})}{f_\rho(t_{k-1})} \\
 \end{aligned}
 \end{equation*}
 \end{proposition}
 
 
-\textcolor{red}{Size-biased permutation
-All measure
-Urn: marginalized out the random -> only partition left
-Stick-breaking: hybrid-case, lazely instanciate our observation once they are drawn from it, sized-biased permutation }\\
-
-A second object induced by a Poisson-Kingman \gls{RPM} is a size-biased permutation of its atoms. Specifically, order the blocks in $\Pi$ by increasing order of the least element in each block, and for each $l \in \mathbb{N}$ let $Z_l$ be the least element of the $l$-th block. $Z_l$ is the index among $(X_i)_{i \ge 1}$ of the first appearance of the $l$-th unique value in the sequence.
-Let $\tilde{J}_l = \mu(\{X_{Z_l}\})$ be the mass of the corresponding atom in $\mu$. Then $(\tilde{J}_l)_{l\ge 1}$ is a size-biased permutation of the masses of atoms in $\mu$, with larger masses tending to appear earlier in the sequence. It is easy to see that $\sum_{l \ge 1}{\tilde{J}_l} = T$, and that the sequence can be understood as a stick-breaking construction: start with a stick of length $T_0 = T$; break off the first piece of length $\tilde{J}_1$; the surplus length of stick is $V_1 = T - \tilde{J}_1$; then
+A second object induced by a Poisson-Kingman \gls{RPM} is a size-biased permutation of its atoms. Specifically, order the blocks in the partition $\Pi$ (induced by the \gls{RPM}) by increasing order of the least element in each block, and for each $l \in \mathbb{N}$ let $Z_l$ be the least element of the $l$-th block. $Z_l$ is the index among $(X_i)_{i \ge 1}$ of the first appearance of the $l$-th unique value in the sequence.
+Let $\tilde{J}_l = \mu(\{X_{Z_l}\})$ be the mass of the corresponding atom in $\mu$. Then $(\tilde{J}_l)_{l\ge 1}$ is a size-biased permutation of the masses of atoms in $\mu$, with larger masses tending to appear earlier in the sequence. It is easy to see that $\sum_{l \ge 1}{\tilde{J}_l} = T$, and that the sequence can be understood as a stick-breaking construction: start with a stick of length $T_0 = T$; break off the first piece of length $\tilde{J}_1$; the surplus length of stick is $T_1 = T - \tilde{J}_1$; then
 the second piece with length $\tilde{J}_2$ is broken off, etc.
 
-Proposition \ref{prop:perman} \cite{Perman:1992ke} states that the sequence of surplus masses $(V_l)_{l \ge 1}$ forms a Markov chain and gives the corresponding initial distribution and transition kernels. The density of $T$ is denoted by $\gamma(t) \propto h(t) f_\rho(t)$. The \gls{PK} generative process for the sequence $(X_i)_{i \ge 1}$ goes as follows, where parts of the \gls{PK} random measure $\mu$ are simulated as required.
+Proposition \ref{prop:perman} \cite{Perman:1992ke} states that the sequence of surplus masses $(T_l)_{l \ge 1}$ forms a Markov chain and gives the corresponding initial distribution and transition kernels. The density of $T$ is denoted by $\gamma(t) \propto h(t) f_\rho(t)$. The \gls{PK} generative process for the sequence $(X_i)_{i \ge 1}$ goes as follows, where parts of the \gls{PK} random measure $\mu$ are simulated as required.
 
 \begin{enumerate}[label=(\roman*)]
     \item Draw from the total mass from its distribution $\mathbb{P}_{\rho,H_0}(T \in dt) \propto h(t) f_\rho(t)$.
@@ -284,29 +300,21 @@ Proposition \ref{prop:perman} \cite{Perman:1992ke} states that the sequence of s
 value of $X_1$ is simply $X_1^\star \sim H_0$, while the mass of the corresponding atom in $\mu$ is
 $\tilde{J}_1$, with conditional distribution given by
 $$ \mathbb{P}_{\rho,H_0}(\tilde{J}_1 \in ds_1 | T \in dt) = \frac{s_1}{t}\rho(ds_1)\frac{f_\rho(t - s_1)}{f_\rho(t)} $$
-The leftover mass is $V_1 = T - \tilde{J}_1$.
+The leftover mass is $T_1 = T - \tilde{J}_1$.
     \item For subsequent draws $i \ge 2:$
     \begin{itemize}
         \item Let $k$ be the current number of distinct values among $X_1,\dots,X_{i-1}$, and let
 $X_1^\star,\dots,X_{k}^\star$ be the unique values, i.e., atoms in $\mu$. The masses of these first
-$k$ atoms are denoted by $\tilde{J}_{1},\dots,\tilde{J}_{k}$ and the leftover mass is $V_k = T - \sum_{l=1}^k{\tilde{J}_{l}}$.
+$k$ atoms are denoted by $\tilde{J}_{1},\dots,\tilde{J}_{k}$ and the leftover mass is $T_k = T - \sum_{l=1}^k{\tilde{J}_{l}}$.
         \item For each $l \le k$, with probability $\tilde{J}_l / T$, we set $X_i = X_l^\star$.
-        \item With probability $V_k / T$, $X_i$, takes on the value of an atom in $\mu$ besides the first $k$ atoms. The actual value $X_{k+1}^\star$ is drawn from $H_0$, while its mass is drawn from
-        $$ \mathbb{P}_{\rho,H_0}(\tilde{J}_{k+1} \in ds_{k+1} | T \in dv_k) = \frac{s_{k+1}}{v_k}\rho(ds_{k+1})\frac{f_\rho(t - s_{k+1})}{f_\rho(t)} $$
-        The leftover mass is again $V_{k+1} = V_k - \tilde{J}_{k+1}$.
+        \item With probability $T_k / T$, $X_i$, takes on the value of an atom in $\mu$ besides the first $k$ atoms. The actual value $X_{k+1}^\star$ is drawn from $H_0$, while its mass is drawn from
+        $$ \mathbb{P}_{\rho,H_0}(\tilde{J}_{k+1} \in ds_{k+1} | T \in dt_k) = \frac{s_{k+1}}{t_k}\rho(ds_{k+1})\frac{f_\rho(t_k - s_{k+1})}{f_\rho(t_k)} $$
+        The leftover mass is again $T_{k+1} = T_k - \tilde{J}_{k+1}$.
     \end{itemize}
 \end{enumerate}
 
 By multiplying the above infinitesimal probabilities one obtains the joint distribution of the random elements $T$, $\Pi$, $(\tilde{J}_i)_{i \ge 1}$ and $(X_i^\star)_{i \ge 1}$.
-
 \textcolor{red}{write joint distribution ?}
-
-\begin{figure}[h!]
-\centering
-    \includegraphics[width=0.5\linewidth]{graph_model_intractable.png} 
-    \caption{\gls{PKP} intractable graphical model: the latent variables are countably infinitely many which makes the model computationally intractable. Source: \cite{LomeliThesis}} 
-    \label{fig:graph_model_intractable} 
-\end{figure}
 
 \section{MCMC Inference}
 Constructing \gls{MCMC} schemes for models with one or more Bayesian nonparametric components is an active research area since dealing with the infinite dimensional component $P$ forbids the direct use of standard simulation-based methods. These methods usually require a finite-dimensional representation. The general idea for designing inference schemes is to find finite dimensional representations to be able to store the model in a computer with finite capacity.
@@ -323,7 +331,7 @@ There are two main sampling approaches to facilitate simulation in the case of B
 
 Marginal samplers bypass the need to represent the infinite-dimensional component by marginalising it out. These schemes have lower storage requirements than conditional samplers because they only store the induced partition, but could potentially have worse mixing properties.
 
-With a conjugate model ($H_0$ and $F$ are conjugate), both the $RPM$ $P$ and the cluster parameters $\{X_c^\star: c \in \pi \}$ can be marginalised out efficiently. Yet, for a more generic nonconjugate marginalized sampler, the cluster parameters cannot be easily marginalised out and are thus included into the state of the \gls{MCMC} algorithm. This yields the difficulty of the introduction of new clusters (along with their parameters) when Gibbs sampling the cluster assignments.
+With a conjugate model ($H_0$ and $F$ are conjugate), both the \gls{RPM} $P$ and the cluster parameters $\{X_c^\star: c \in \pi \}$ can be marginalised out efficiently. Yet, for a more generic nonconjugate marginalized sampler, the cluster parameters cannot be easily marginalised out and are thus included into the state of the \gls{MCMC} algorithm. This yields the difficulty of the introduction of new clusters (along with their parameters) when Gibbs sampling the cluster assignments.
 
 To tackle this issue, \cite{Neal:2000hb} conceptualizes the update in terms of an augmented state with additional temporarily existing variables, in a way that the marginal distribution of the permanent variables once the temporary ones are integrated out is still the appropriate posterior distribution.
 To do so, the state space is augmented as well to include both existing clusters and new empty clusters $[M] = \{1, \dots , M\}$, which parameters are independent of the existing ones and independent and identically distributed according to $H_0$.
@@ -336,7 +344,7 @@ This representation is based on an augmented version of its corresponding exchan
 % \begin{figure}[h!]
 % \centering
 %     \includegraphics[width=0.5\linewidth]{graph_model_conditional.png} 
-%     \caption{Conditional sampler’s graphical model. Each node represents a variable used in the augmented representation for the joint distribution. The latent variables represent the number of occupied and unoccupied components. Source: \cite{LomeliThesis}} 
+%     \caption{Conditional sampler’s graphical model. Each node represents a variable used in the augmented representation for the joint distribution. The latent variables represent the number of occupied and unoccupied components. Source: \cite{LomeliThesis}.} 
 %     \label{fig:graph_model_conditional} 
 % \end{figure}
 
@@ -354,7 +362,7 @@ The stick-breaking weights can be sampled either via a stick-breaking representa
 % \begin{figure}[h!]
 % \centering
 %     \includegraphics[width=0.5\linewidth]{graph_model_hybrid.png} 
-%     \caption{PK hybrid sampler’s graphical model. Each node represents a variable used in the augmented representation for the joint distribution. The nodes with dashed lines represent the algorithmic inputs. Source: \cite{LomeliThesis}s} 
+%     \caption{PK hybrid sampler’s graphical model. Each node represents a variable used in the augmented representation for the joint distribution. The nodes with dashed lines represent the algorithmic inputs. Source: \cite{LomeliThesis}.} 
 %     \label{fig:graph_model_hybrid} 
 % \end{figure}
 
@@ -366,17 +374,13 @@ The cluster reassignment step can be seen as a retrospective sampling scheme: we
 
 This scheme has less memory requirements since it only represents the size-biased weights associated to occupied clusters as opposed to conditional samplers which represent both empty and occupied clusters. Also, since it does not integrate out all of the size-biased weights, we obtain a more comprehensive representation of the \gls{RPM}.
 
-\textcolor{red}{Relationship between size-biased and stick breaking parameterisations ??}
-
 \subsection{SMC}
-\textcolor{red}{can skip that part since not completely clear to me}
-Review of SMC ?
-cf Maria Lomeli thesis
-
-
+Recently, various \gls{SMC} schemes for Bayesian nonparametric models have been proposed.
+\cite{Fearnhead:2004gi} and \cite{Wood:2008hx} propose an \gls{SMC} scheme for Dirichlet process mixture models and \cite{Griffin:2017cz} for \gls{NRM} mixture models.
+These articles cast the marginal and conditional representations presented previously in a particle algorithm's setting.
 
 \section{Variational inference} \label{BNP_VI}
 To my knowledge, the first article tackling inference in a \gls{BNP} setting is \cite{Blei:2006fo}, where
 a truncated proposal is introduced to approximate a Dirichlet Process Mixture model.
 
-\textit{Truncation-free} \gls{VI} methods have also been introduced \cite{Blei:2012uu}. These methods adapts model complexity on the fly by lazily representing clusters assignments. Yet, the sticks proportions and mixture components are marginalize out to obtain a closed form distribution for the mixture assignment hidden variables $z_i$. This marginalization is unfortunately only tractable for few models, such as the Dirichlet Process and the Pitman-Yor process.
+\textit{Truncation-free} \acrlong{VI} methods have also been introduced \cite{Blei:2012uu}. These methods adapts model complexity on the fly by lazily representing clusters assignments. Yet, the sticks proportions and mixture components are marginalize out to obtain a closed form distribution for the mixture assignment hidden variables $z_i$. This marginalization is unfortunately only tractable for few models, such as the Dirichlet Process and the Pitman-Yor process.

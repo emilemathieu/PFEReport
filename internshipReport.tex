@@ -155,8 +155,24 @@ Plan: First, Then, After, Eventually, etc
 % \chapter*{Appendices}
 % \addcontentsline{toc}{chapter}{Appendices}
 % \renewcommand{\thesection}{\Alph{section}}
+
 % \section{Variational Inference ?}
 % \section{Automatic Differentiation ?}
+% \section{Exchangeability} \label{exchangeability}
+% The underlying assumption of all Bayesian methods is that the parameter specifying the observation model is a random variable. This assumption is subject to much criticism, and at the heart of the Bayesian versus non-Bayesian debate that has long divided the statistics community. However, there is a very general type of observations for which the existence of such a random variable can be derived mathematically: For so-called \textit{exchangeable} observations, the Bayesian assumption that a randomly distributed parameter exists is not a modeling assumption, but a mathematical consequence of the data’s properties.
+
+% Formally, a sequence of variables $X_1,X_2,\dots,X_n$ over the same probability space $(\mathcal{X},\Omega)$ is \textit{exchangeable} if their joint distribution is invariant to permuting the variables. That is, if $P$ is the joint distribution and $\sigma$ any permutation of $\{1,\dots,n\}$, then
+% $$ P(X_1=x_1,\dots,X_n=x_n) = P(X_1=x_{\sigma(1)},\dots,X_n=x_{\sigma(n)}) $$
+
+% An infinite sequence $X_1,X_2,\dots$ is \textit{infinitely exchangeable} if $X_1,\dots,X_n$ is \textit{exchangeable} for every $n \ge 1$. Exchangeability reflects the assumption that the variables do not depend on their indices although they may be dependent among themselves. This is typically a reasonable assumption in machine learning and statistical applications, even if the variables are not themselves iid (independently and identically distributed). Exchangeability is a much weaker assumption than iid since iid variables are automatically exchangeable.
+
+% If $\theta$ parametrizes the underlying distribution, and one assumes a prior distribution over $\theta$, then the resulting marginal distribution over $X_1,X_2,\dots,X_n$ with $\theta$ marginalized out will still be exchangeable. A fundamental result credited to de Finetti \cite{finetti31} states that the converse is also true. That is, if $X_1,X_2,\dots,X_n$ is (infinitely) exchangeable, then there is a random $\theta$ such that:
+% \begin{equation} \label{eq:deFineti}
+% P(X_1,\dots,X_n) = \int{P(\theta)\prod_{i=1}^n{P(X_i|\theta) d\theta}}
+% \end{equation}
+% for every $n \ge 1$. In other words, the seemingly innocuous assumption of exchangeability automatically implies the existence of a hierarchical Bayesian model with $\theta$ being the random latent parameter. This the crux of the fundamental importance of exchangeability to Bayesian statistics.
+
+% In de Finetti’s Theorem it is important to stress that $\theta$ can be infinite dimensional (it is typically a random measure), thus the hierarchical Bayesian model \ref{eq:deFineti} is typically a nonparametric one. For example, the Blackwell-MacQueen urn scheme (related to the \gls{CRP}) is exchangeable thus implicitly defines a random measure, namely the \gls{DP}.
 
 %\nocite{*}
 

@@ -24,23 +24,45 @@ Secondly, \glspl{PPL} remove the burden of having to develop inference code for 
 This is done by providing a modeling language abstraction layer in which developers can denote their models.  Once denoted, generic inference is provided for free.
 
 \section{Existing languages}
+
 The first generation of \glspl{PPL} had limitation in the range of models that could be represented and in which inference could be performed.
 BUGS \cite{Bugs} and STAN \cite{Stan} can only work with graphical models.
-Similarly Factorie \cite{Factorie} and Infer.NET \cite{InferNET} only handle factor graphs.
+Similarly, Factorie \cite{Factorie} and Infer.NET \cite{InferNET} only handle factor graphs.
 These so-called \textit{First-Order} \gls{PPLs}, can only represent finite dimensional model and have bounded loops.
-\textcolor{red}{Schema of first order and high order PPLs ?}
 
 On the other hand, \textit{High Order \gls{PPLs}} which arrived a bit before the 2010s, are Turing complete, allow complex control flow, including stochastic recursion, thus can denote infinite dimensional objects.
-They are easy to program in, natural to express certain models, but it is hard to perform inference in
-these \glspl{PPL}. Anglican \cite{wood-aistats-2014}, Venture \cite{Mansinghka:2014ty}, Church \cite{Goodman:2012uq} and WebPPL \cite{dippl} are \textit{High Order \gls{PPLs}}.
+%They are easy to program in, natural to express certain models, but it is hard to perform inference in these \glspl{PPL}. 
+Anglican \cite{wood-aistats-2014}, Venture \cite{Mansinghka:2014ty}, Church \cite{Goodman:2012uq} and WebPPL \cite{dippl} are \textit{High Order \gls{PPLs}}.
 
+\begin{figure}[h!]
+\centering
+    \includegraphics[width=0.9\linewidth]{ppls.png} 
+    \caption{First-order and high-order \glspl{PPL}. Source: http://www.robots.ox.ac.uk/~fwood.}
+    \label{fig:ppls} 
+\end{figure}
+
+Figure \ref{fig:ppls} shows a map of existing \glspl{PPL}, with first-order ones being in red and purple (bottom left/right), and high-order ones in green (top).
+On one side, first-order \glspl{PPL} are quite restrictive since the spectrum of models that can be represented is limited to finite dimensional models, but inference can be performed efficiently.
+On the other side, high-order \glspl{PPL} are more flexible but the task of writing efficient inference algorithm is harder.
+There is therefore a trade-off between flexibility and efficiency, and the restrictions of first-order \glspl{PPL} are a design choice.
 
 Recently, a new \gls{PPL} named Edward \cite{Edward} has been developed. It is different from the classical \glspl{PPL} since it focuses on \gls{VI} and Hamiltonian methods.
 
 
 \section{Design}
-\textcolor{red}{ADD SIMPLE SAMPLE PPL CODE ?}
-Probabilistic programs denote probabilistic generative models as programs that include \texttt{sample} and \texttt{observe} statements. Both \texttt{sample} and \texttt{observe} are functions that specify random variables in this generative model using probability distribution objects as an argument, while \texttt{observe}, in addition, specifies the conditioning of this random variable upon a particular observed value in a second argument. These observed values induce a conditional probability distribution over the execution traces whose approximations and expected values we aim to characterize by \textit{performing inference}.
+
+Probabilistic programs denote probabilistic generative models as programs that include \texttt{sample} and \texttt{observe} statements (see Listing \ref{code:example_turing}). Both \texttt{sample} and \texttt{observe} are functions that specify random variables in this generative model using probability distribution objects as an argument, while \texttt{observe}, in addition, specifies the conditioning of this random variable upon a particular observed value in a second argument. These observed values induce a conditional probability distribution over the execution traces whose approximations and expected values we aim to characterize by \textit{performing inference}. \\
+
+\begin{lstlisting}[caption={Example of a Turing model},captionpos=b,label=code:example_turing]
+@model model(y) = begin
+  x = sample(Bernoulli(.75))
+  mu = x ? 2 : 0
+  observe(Gaussian(mu, 1), y)
+  return x
+end
+
+sample(model(0.5), SMC(100))
+\end{lstlisting}
 
 A good way to understand this is to imagine the following interpreter of probabilistic programs. Starting from a fixed initial state, the interpreter runs the deterministic parts of a program according to the standard semantics, executes the \texttt{sample} statement by generating a random sample, and treats the \texttt{observe} statement by skip. More importantly, the interpreter keeps a log that records information about all the \texttt{sample} and \texttt{observe} forms encountered during execution. The information recorded for \texttt{sample} is a triple $(F, x, \alpha)$ of (i) a primitive probability distribution $F$, such as the standard normal, for which we have the probability density $f$ ; (ii) a value $x$ sampled from the distribution $F$ ; and (iii) an address $\alpha$ that uniquely and systematically identifies the random choice made. The information recorded for \texttt{observe} is a pair $(G,y)$ where $G$ is a primitive probability distribution with density $g$ and $y$ is an observed value.
 
@@ -55,7 +77,7 @@ In most probabilistic programming systems any variable may be declared as being 
 A (almost-surely terminating) probabilistic program defines a probability distribution over finite feasible traces $\mbx$ with probability density $\pi(\mbx) := \gamma(\mbx) / Z$ where 
 
 \begin{equation*}
-\gamma(\mbx) := p(\mbx, \mby) = \prod_{i=1}^{|\mbx|}{f_{i}(x_i~|~x_{1:i-1})} \prod_{j=1}^{|\mby|}{g_i(y_j~|~x_{1:\tau(j)})}
+\gamma(\mbx) := p(\mbx, \mby) = \prod_{i=1}^{|\mbx|}{f_{i}(x_i~|~x_{1:i-1})} \prod_{j=1}^{|\mby|}{g_j(y_j~|~x_{1:\tau(j)})}
 \end{equation*}
 
 where Z is the normalizing constant $Z := \int{\gamma(\mbx) d(\mbx)}$ and $\tau$ is a mapping from the index $j$ of the \texttt{observe} statement to the index of the last \texttt{sample} statement encountered before this \texttt{observe} statement during the execution of the program. Without any \texttt{observe} statement, the probability distribution over traces $\mbx$ is simply the prior
@@ -65,7 +87,6 @@ p(\mbx) := \prod_{i=1}^{|\mbx|}{f_{i}(x_i~|~x_{1:i-1})}
 \end{equation*}
 
 \section{Inference}
-\textcolor{red}{Add pseudo-code for each algo ?}
 
 Inference in probabilistic programming characterizes the conditional distribution of execution traces $\mbx$ given observed data $\mby$ assumed to have been generated by executing the probabilistic program.
 
@@ -81,7 +102,6 @@ checkpoint handlers for \texttt{sample} and \texttt{observe}.
 Typically inference can be performed for any probabilistic program using one or more generic inference techniques provided by the system back end, such as Metropolis-Hastings \cite{Wingate:2011ul, Mansinghka:2014ty}, Hamiltonian Monte Carlo \cite{Stan}, expectation propagation \cite{InferNET}, and extensions of Sequential Monte Carlo \cite{vandeMeent:2015uk, Paige:2014tc, Wood:2015tr} methods.
 
 \subsection{Use-case}
-\textcolor{red}{ADD PPL CODE FOR THIS SSM ?}
 Even if as highlighted before, inference in \glspl{PPL} should be able to deal with arbitrary series of targets, for simplicity we will focus on a non-Markovian \gls{SSM}.
 
 \Gls{SSM}s are probabilistic models over a set of latent variables $X_t \in \mathcal{X}_t, \forall t = 1 : T$ and observed variables $Y_t \in \mathcal{Y}_t , \forall t = 1 : T$ . We can further consider a model to be parameterized by $\theta \in \Theta$. The \gls{SSM} is then characterized by an initial density $\mu_\theta(x_1)$, a series of transition densities $f_{t,\theta}(x_t|x_{1:t-1})$, and a series of emission densities $g_{t,\theta}(y_t|x_{1:t})$.
@@ -170,6 +190,7 @@ One problem with this method is that it is not easy to choose the proposal distr
 \paragraph{Sequential Importance Sampling}
 \gls{SIS} exploits the structure of a model by breaking down the overall inference problem into a series of target distributions which get incrementally closer to the distribution of interest.
 These targets are then approximated by propagating a population of samples known as particles. If each intermediary target is kept similar to its predecessor, approximating one target given the last forms a significantly simpler problem than the overall inference.
+Breaking the overall inference problem into a series of intermediate distributions makes the design of proposals easier since they must now be of the form $q(x_t|x_{1:t-1},y_{1:t})$ instead of $q(x_{1:T}|y_{1:T})$.
 
 More formally, \gls{SIS} performs approximate inference on a sequence of target distributions
 $\left(\pi_t(x_{1:t}) \right)_{t=1}^T$ of increasing spaces 
@@ -192,9 +213,9 @@ where $\bar{w}_T^k = \frac{{w}_T^k}{\sum_{k=1}^K {w}_T^k}$ is the normalized wei
 
 Let's now focus on computing the particles' weights. The joint posterior can be written in the following factorised form
 
-$$ q(x_{1:T}|y_{1:T}) = q(x_1) \prod_{t=2}^T q(x_t|x_{1:t-1},y_{1:t}) $$
+$$ p(x_{1:T}|y_{1:T}) = p(x_1) \prod_{t=2}^T p(x_t|x_{1:t-1},y_{1:t}) $$
 
-The corresponding importance weight is thus
+The corresponding importance weights are thus
 
 \begin{equation} \label{eq:IS_w}
 \begin{aligned}
@@ -206,21 +227,27 @@ w_t =& \frac{\mu(x_1) \prod_{t=2}^T p(x_t|x_{1:t-1},y_{1:t})}{q(x_1) \prod_{t=2}
 The target distribution is the posterior distribution up to time $t$, which changes sequentially as we observe more data. This posterior distribution can be estimated recursively due to
 
 \begin{equation} \label{eq:IS_p_rec}
-p(x_{1:t+1}|y_{1:t+1}) = p(x_{1:t}|y_{1:t}) \times \frac{p(y_{t+1}|x_{1:t+1})p(x_{t+1}|x_{1:t})}{p(y_{t+1}|y_{1:t})} \\
+p(x_{1:t+1}|y_{1:t+1}) = p(x_{1:t}|y_{1:t}) \times \frac{p(y_{t+1}|x_{1:t+1})p(x_{t+1}|x_{1:t})}{f(y_{t+1}|y_{1:t})} \\
 \end{equation}
 
 Substituting the numerator of Equation \ref{eq:IS_p_rec} in \ref{eq:IS_w} we obtain a recursive equation for the importance weight at time $t+1$
 
-$$ w_{t+1} = w_{t} \times \frac{p(y_{t+1}|x_{1:t+1})p(x_{t+1}|x_{1:t})}{p(y_{t+1}|y_{1:t})} $$
+$$ w_{t+1} = w_{t} \times \frac{p(y_{t+1}|x_{1:t+1})p(x_{t+1}|x_{1:t})}{q(x_{t+1}|x_{1:t},y_{1:t+1})} $$
 
 
 Even if we are not dealing with a \gls{SSM}, \gls{SIS} can be used as a general-purpose algorithm. The data are assumed to be observed sequentially so the observation’s index is the time index.
 
 
 \paragraph{Sequential Monte Carlo}
-\textcolor{red}{Illustration of particles wrt time t ?}
 
-The main problem with \gls{SIS} is that the weights become more skewed as the number of data points increases \cite{Anonymous:2001ue}, after a few steps only one particle will have a significant weight. To remedy this, a resampling step can be introduced which allows to eliminate particles with small weights and replicate particles with high weights.
+\begin{figure}[h!]
+\centering
+    \includegraphics[width=0.7\linewidth]{particle_filter.png} 
+    \caption{\acrlong{SMC}'s algorithm main steps. \\ Source: https://umbertopicchini.wordpress.com/2016/10/19/sequential-monte-carlo-bootstrap-filter.}
+    \label{fig:smc} 
+\end{figure}
+
+The main problem with \gls{SIS} is that the weights become more skewed as the number of data points increases \cite{Anonymous:2001ue}, after a few steps only one particle will have a significant weight. To remedy this, a resampling step can be introduced which allows to eliminate particles with small weights and replicate particles with high weights, as illustrated in Figure \ref{fig:smc}.
 The resampling step is achieved by, at each time step $t = 2, \dots , T$ ,
 selecting the ancestor index $a^k_{t-1}$ for the $k$th particle from a discrete distribution 
 $\mathcal{F} (\cdot|\bar{w}^1_{t-1},\dots, \bar{w}^K_{t-1})$
@@ -230,11 +257,22 @@ over parent indices ${1, \dots , K }$ with probabilities equal to the normalized
 
 This selection step can be introduced only occasionally or at every step of the algorithm.
 If the selection step is to be performed occasionally, a possible criterion is when the \gls{ESS} is below a given threshold, which is a function of the number of particles, a popular choice is $0.5T$. The \gls{ESS} for the unnormalised weights is given by
+$$ ESS_t = \frac{{\left( \sum_{k=1}^K{w_t^k} \right)}^2}{\sum_{k=1}^K{{w_t^k}^2}}$$
 
-$$ ESS_t = \frac{{\left( \sum_{k=1}^K{w_i^k} \right)}^2}{\sum_{k=1}^K{{w_i^k}^2}}$$
+At step $t$, after the ancestors indices $\{a^k_{t-1}\}_{k=1}^K$ have been sampled, new $\{x_{t}^k\}_{k=1}^K$ are proposed according to $q(\cdot|x_{1:t-1},y_{1:t})$. Then, the particles' weights can be computed given
+\begin{equation*} \label{eq:SMC_weights}
+\begin{aligned}
+w_{t}^k :=& \frac{p(x^k_{1:t},y_{t})}{p(x^k_{t}|x_{1:t-1}) q(x^k_{t}|x^k_{1:t-1},y_{1:t})}\\
+=& \frac{p(y_{t}|x^k_{1:t})p(x^k_{t}|x^k_{1:t-1})}{q(x^k_{t}|x^k_{1:t-1},y_{1:t})}
+\end{aligned}
+\end{equation*}
 
-One thing which makes the development of \gls{PPL} non-trivial is having the ability to stop the execution of the program at each time $t$ (more generally at each \texttt{observe} statement). These \textit{chechpoints} are required by the \gls{SMC} algorithm for the resampling step.
-Handling of checkpoints can be implemented through coroutines/co-operative multitasking (as in Turing \cite{Turing}), and parallel execution/preemptive multitasking, as well as through explicit maintenance of program continuations (as in \emph{Anglican} \cite{wood-aistats-2014} and \emph{WebPPL} \cite{dippl}).  
+\paragraph{\glspl{PPL} implementation of \gls{SMC}}
+
+One a practical point of view, so as to handle particle algorithms, \glspl{PPL} must have the ability to stop the execution of the program at each time $t$ (more generally at each \texttt{observe} statement). Indeed, these \textit{chechpoints} are required by the \gls{SMC} algorithm for the resampling step.
+Handling of checkpoints can be implemented through coroutines/co-operative multitasking (as in Turing \cite{Turing}), and parallel execution/preemptive multitasking, as well as through explicit maintenance of program continuations (as in \emph{Anglican} \cite{wood-aistats-2014} and \emph{WebPPL} \cite{dippl}).
+
+Moreover, the proposals $q(\cdot|x_{1:t-1},y_{1:t})$ are generally implemented as being the prior $p(\cdot|x_{1:t-1})$ in \glspl{PPL}, i.e. the program is simply ran until an \texttt{observe} statement is encountered. Yet, by overriding the \texttt{sampler} statements, different proposals can be implemented. In the former case, the weights simplify to the likelihood; $w_{t}^k = p(y_{t}|x^k_{1:t})$, which can be computed at the \texttt{observe} statements. 
 
 \subsection{Particle Markov Chain Monte Carlo}
 In a Bayesian setting, it is usual to consider the parameter $\theta$ in $p_\theta(x_{1:T}|y_{1:T})$ as a random variable by specifying a prior $p(\theta)$. In this subsection, we are therefore interested on algorithms targeting
@@ -296,7 +334,7 @@ In \gls{IPMCMC}, a pool of \gls{CSMC} and unconditional \gls{SMC} algorithms are
 
 \paragraph{Hamiltonian Monte Carlo}
 In \gls{HMC} \cite{HMC,Neal:2012uu}, a deterministic proposal process based on Hamiltonian dynamics is employed along with additional stochastic proposals that together provide an ergodic Markov chain capable of making large transitions that are accepted with high probability. The Hamiltonian makes use of the gradient of the joint distribution $p(\mbx, \mby)$ so as to construct better proposal.
-\textcolor{red}{speak about autodiff to compute this gradient ?}
+% \textcolor{red}{speak about autodiff to compute this gradient ?}
 
 \paragraph{No-U-Turn Sampler}
 In \cite{NUTS}, the authors address the issue of choosing the two hyperparameters of \gls{HMC}: a step size $\epsilon$ and a desired number of steps $L$, since \gls{HMC}'s performance is highly sensitive on those.
@@ -334,7 +372,3 @@ Then, I implemented \footnote{See \url{https://github.com/blei-lab/edward/pull/7
 More recently, I have worked on \gls{PMCMC} methods for Turing. \Gls{PMMH} \footnote{\url{https://github.com/yebai/Turing.jl/pull/339}} is implemented but not merged yet, and I am currently working on \gls{PGAS} and \gls{IPMCMC}. Consequently I became a \textit{Collaborator} of the Turing's repository.
 
 I have also written a stick-breaking representation of the Dirichlet Process which inherits the Distribution.jl \footnote{\url{https://github.com/JuliaStats/Distributions.jl}} type so as to be easily used in Turing.
-
-\textcolor{red}{To develop ?}
- 
-

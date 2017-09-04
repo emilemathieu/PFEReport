@@ -81,3 +81,42 @@
   {\normalfont\bfseries}
   {\thesubsection}{1em}{}
 \titlespacing*{\thechapter}{0pt}{0pt}{0pt}
+
+%Code sample
+\usepackage{listings}
+
+\lstdefinelanguage{Julia}
+  {morekeywords={begin,abstract,break,case,catch,const,continue,do,else,elseif,%
+      end,export,false,for,function,immutable,import,importall,if,in,%
+      macro,module,otherwise,quote,return,switch,true,try,type,typealias,%
+      using,while,=},%
+   sensitive=true,%
+   alsoother={$},%
+   morecomment=[l]\#,%
+   morestring=[s]{"}{"},%
+   morestring=[m]{'}{'},%
+}[keywords,comments,strings]%
+
+\usepackage{color}
+\definecolor{codered}{RGB}{215,58,73}
+\definecolor{codeblue}{RGB}{0,92,197}
+\definecolor{codepurple}{RGB}{111,66,193}
+
+\lstset{%
+    language         = Julia,
+    basicstyle       = \ttfamily,
+    numbers=left,
+    stepnumber=1,
+    keywordstyle     = \color{codered},
+    %numberstyle      = \tiny\color{codeblue},
+    emph={Bernouilli, Gaussian, sample, observe, SMC, model, @model},
+    emphstyle={\color{codeblue}},
+    % keyword highlighting
+    %classoffset=1, % starting new class
+    %morekeywords={=,:},
+    %keywordstyle=\color{codepurple},
+    %classoffset=0,
+    %stringstyle      = \color{magenta},
+    %commentstyle     = \color{ForestGreen},
+    %showstringspaces = false,
+}

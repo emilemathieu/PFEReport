@@ -1,8 +1,16 @@
 
-\chapter{BNP sampling in PPL}
+\chapter{BNP inference within PPL} \label{BNP_PPL}
+For now we have restricted ourselves to infinite mixture models, but we hope that our framework will enable efficient sampling for other \gls{BNP} models such as the infinite \acrlong{HMM}. We have also focused our study on sampling methods, but \acrlong{VI} is considered in Section \ref{BNP_VI}.
+
+\textcolor{red}{Stochastic Memoization perspective ??}
+An interesting perspective of Discrete Random Probability Measure is through \textit{stochastic memoization} \footnote{\url{https://probmods.org/chapters/12-non-parametric-models.html}}.
+First let's recall what is the usual (deterministic) memoization.
+For instance with the \gls{DP}, with $\alpha = 0$ we recover a deterministic memoization whereas with $\alpha \rightarrow \inf$ there is no memoization at all.
 
 
-\section{Link between BNP and High order PPL}
+\section{Link between BNP and High order PPL / Recursion}
+% Bayesian prob/BNP fits naturally the framework of PPL
+
 See Frank Wood meeting
 Frank's Theorem: "The Lambda abstraction is necessary in a PPL to be able to denote BNP in this language." The Lambda abstraction seems to be synonymous to function recursion and thus allowing stochastic loop, which are useful for BNP.
 
@@ -17,49 +25,109 @@ All marginal samplers: Urn distributions, involve complicated integral (can some
 
 Stick-breaking process: construction to sample a size-biased permutation of the random probability measure
 
-\subsection{Implementation}
-In Clojure there is a recursive operator for tail-recursive functions that uses constant space. Without such a specific operator, we will have a Maximum call stack size exceeded error for heavy tail BNP such as for some PY stick-breaking process. Unfortunately, \gls{TCO} is not implemented in Julia (since it's not implemented in LLVM on which Julia relies). But other solutions in Julia exist to avoid stack overflow.
+For lazy instantiation (possibly equivalent to denotable / lambda abstraction?)?
 
-Clojure provides special forms loop and recur for writing tail-recursive programs. Anglican programs are \gls{CPS}-onverted and do not use the stack; recursive calls in Anglican cannot lead to stack overflow.
+want to sample from a discrete distribution with countable support
+->finite memory
+to represent it, needs a recursive representation
+
+\subsection{Existing}
+Most current \glspl{PPL} already have a \gls{DP} or \gls{CRP} implemented.
+sampler: particle algorithm
+
+\subsection{Implementation}
+As highlighted in the previous section, recursion is key to denote \gls{BNP} models in a \gls{PPL}.
 
 A function is tail-recursive when the recursive call happens as the final action in a function, in which case it can happen without the function call stack growing. In continuation-passing style, there is no stack – all function calls are tail calls, hence all recursive functions are tail-recursive.
 
-\section{Stick-breaking process}
+Clojure provides special forms \emph{loop} and \emph{recur} for writing tail-recursive programs. Anglican programs are \gls{CPS}-converted and do not use the stack. Therefore recursive calls in the Anglican \gls{PPL} cannot lead to stack overflow.
+Without such a specific \emph{recur} operator, the call stack can exceed its maximum size and yields errors.
+
+
+\section{generative process construction}
 PPL -> be able to sample from prior
 
 \subsection{DP and PY}
+\textcolor{red}{Size-biased permutation
+All measure
+Urn: marginalized out the random -> only partition left
+Stick-breaking: hybrid-case, lazely instanciate our observation once they are drawn from it, sized-biased permutation }\\
+
 well known
 already implemented in most \gls{PPL}s
+
+For a $\text{PY}(\sigma, \theta)$
+\begin{gather*}
+Z_1 \sim \text{beta}(1-\sigma,\theta + \sigma) \\
+Z_2 \sim \text{beta}(1-\sigma,\theta + 2\sigma) \\
+\vdots \\
+Z_l \sim \text{beta}(1-\sigma,\theta + l\sigma) \\
+\vdots \\
+\end{gather*}
+the corresponding weights are:
+$$ p_l := Z_l \prod_{j<l}{(1 - Z_j)} $$
 
 \subsection{PK}
 Theorem 2.1 of Perman et al. states that the sequence of surplus masses $(T_k)_(k>=0)$ forms a Markov chain and gives the corresponding initial distribution and transition kernels.
 
-Could we sample the Kth stick length in generic way since we know the density ? For instance by restricting to Levy measure intensity and Total mass density which are tractable (not σ-stable PK). One may use a simple rejection sampling with proposal $U(0, t_K)$ (what would be M ?).
+Could we sample the $K$th stick length in generic way since we know the density ? For instance by restricting to Levy measure intensity and Total mass density which are tractable (not σ-stable PK). One may use a simple rejection sampling with proposal $U(0, t_K)$ (what would be M ?).
 
 There exist other models based directly on specifying a valid distribution for the stick breaks (e.g. Ottowa sequence, Beta-Stacy, others?); these should fit in without a problem.
+
+
+
+we reviewed the PKP generative process from Figure \ref{fig:PK_generative_process}, it is reminiscent of the well-known stick breaking construction from Ishwaran and James (2001), where a stick of length one is broken, as in Figure \ref{fig:PY_stick_breaking}, but it is not the same. As mentioned previously, we can reparameterise the model, starting with Equation (2.24), and obtain the corresponding joint distribution in terms of $N$ $(0,1)$-valued stick-breaking weights $\{\pi_j \}_{j=1}^N$, where $N$ is the number of represented sticks after trunctation (Favaro and Walker, 2012). This joint distribution is for a general Lévy measure $\rho$, density $f_\rho$ and it is conditioned on the valued of the random variable $T$. We can then recover the well-known Stick breaking representations for the Dirichlet and Pitman-Yor processes, for a specific choice of $\rho$, if we integrate out $T$.
+
+However, in general, these stick random variables, denoted by $Z_l := \frac{\pi_l}{1 - \sum_{i<l}{\pi_l}}$ form a sequence of dependent random variables with a complicated distribution, except for the two previously mentioned processes, see Pitman (1996) for details.
+
+\begin{gather*}
+T \sim \gamma \\
+\tilde{J}_1|T \sim \text{SBS}(T) \\
+\tilde{J}_2|T,\tilde{J}_1 \sim \text{SBS}(T - \tilde{J}_1) \\
+\vdots \\
+\tilde{J}_{l}|T,\tilde{J}_1,\dots,\tilde{J}_{l-1} \sim \text{SBS}(T - \sum_{i<l} \tilde{J}_i) \\
+\vdots \\
+\end{gather*}
+the corresponding weights are:
+$$ \pi_l := \frac{\tilde{J}_{l}}{T - \sum_{i<l} \tilde{J}_i} $$
+
+
+$\beta_i = \frac{\tilde{J}_i}{T_{i-1}}$
+$\tilde{p_i} = \beta_i \prod_{j=1}^i (1-\beta_i)$
+
 
 \subsection{PG}
 cf article Ben
 
-\section{Sampler}
+\section{Models of interest}
+calculus for SMC for BNP mixture with fixed parameters
+fixed parameters are not a assumption, since can be made random then with PMCMC
 
-highly dimensional -> particle methods
 write model as streaming/online to avoid IS and take advantage of resampling
+as state-space model
 
-prior on parameters -> PMCMC
+PPL's code ?
+
+\section{Sampler}
+Now that we have detailed and implemented a generative process (i.e. sampling from the prior) for our class of models, we focus in this section on the sampler scheme to use within the \gls{PPL}.
+
+\textcolor{red}{paper reference for particle methods for high dimensional space}
+It has been shown that particle methods are the class of sampler scheme to use in the case of high dimensional space.
+We are interested in the more general Bayesian case were the parameters are also random variables and to be inferred. Consequently, \acrlong{PMCMC} are methods of choice.
+
+Yet, there is a big path degeneracy issue.
+
 PG -> path degeneracy
 PPMH -> ?
 PGAS / IPMCMCM
 
-\section{Theoretical aspects}
-calculus for SMC for BNP mixture with fixed parameters
-fixed parameters are not a assumption, since can be made random then with PMCMC
 
 \section{Open questions}
 Some questions are still open on this subject, and we are currently working on these.
 
 Is a stick-breaking-like Markov Chain necessary and sufficient for doing inference with particle methods?
 
-For lazy instantiation (possibly equivalent to denotable / lambda abstraction?)?
 
-What should be the representation of the state in the PPL (theoretically and efficiently concerned) ? Unique components + assignments | all components | sticks lengths ?   
+What should be the representation of the state in the PPL (theoretically and efficiently concerned) ? Unique components + assignments | all components | sticks lengths ? 
+
+Other models than infinite mixture models  
