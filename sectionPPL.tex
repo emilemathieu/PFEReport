@@ -32,12 +32,12 @@ On the other hand, \textit{High Order \gls{PPLs}} which arrived a bit before the
 %They are easy to program in, natural to express certain models, but it is hard to perform inference in these \glspl{PPL}. 
 Anglican \cite{wood-aistats-2014}, Venture \cite{Mansinghka:2014ty}, Church \cite{Goodman:2012uq} and WebPPL \cite{dippl} are \textit{High Order \gls{PPLs}}.
 
-% \begin{figure}[h!]
-% \centering
-%     \includegraphics[width=0.9\linewidth]{ppls.png} 
-%     \caption{First-order and high-order \glspl{PPL}. Source: http://www.robots.ox.ac.uk/~fwood.}
-%     \label{fig:ppls} 
-% \end{figure}
+\begin{figure}[h!]
+\centering
+    \includegraphics[width=0.9\linewidth]{ppls.png} 
+    \caption{First-order and high-order \glspl{PPL}. Source: http://www.robots.ox.ac.uk/~fwood.}
+    \label{fig:ppls} 
+\end{figure}
 
 Figure \ref{fig:ppls} shows a map of existing \glspl{PPL}, with first-order ones being in red and purple (bottom left/right), and high-order ones in green (top).
 On one side, first-order \glspl{PPL} are quite restrictive since the spectrum of models that can be represented is limited to finite dimensional models, but inference can be performed efficiently.
@@ -238,12 +238,12 @@ Even if we are not dealing with a \gls{SSM}, \gls{SIS} can be used as a general-
 
 \paragraph{Sequential Monte Carlo} \label{SMC}
 
-% \begin{figure}[h!]
-% \centering
-%     \includegraphics[width=0.7\linewidth]{particle_filter.png} 
-%     \caption{\acrlong{SMC}'s algorithm main steps. \\ Source: https://umbertopicchini.wordpress.com/2016/10/19/sequential-monte-carlo-bootstrap-filter.}
-%     \label{fig:smc} 
-% \end{figure}
+\begin{figure}[h!]
+\centering
+    \includegraphics[width=0.7\linewidth]{particle_filter.png} 
+    \caption{\acrlong{SMC}'s algorithm main steps. \\ Source: https://umbertopicchini.wordpress.com/2016/10/19/sequential-monte-carlo-bootstrap-filter.}
+    \label{fig:smc} 
+\end{figure}
 
 The main problem with \gls{SIS} is that the weights become more skewed as the number of data points increases \cite{Anonymous:2001ue}, after a few steps only one particle will have a significant weight. To remedy this, a resampling step can be introduced which allows to eliminate particles with small weights and replicate particles with high weights, as illustrated in Figure \ref{fig:smc}.
 The resampling step is achieved by, at each time step $t = 2, \dots , T$ ,
