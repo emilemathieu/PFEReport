@@ -92,7 +92,7 @@
       using,while,=},%
    %sensitive=true,%
    %alsoother={$},%
-   %morecomment=[l]\#,%
+   morecomment=[l]\#,%
    %morestring=[s]{"}{"},%
    %morestring=[m]{'}{'},%
 }[keywords,comments,strings]%
@@ -105,11 +105,12 @@
 \lstset{%
     language         = Julia,
     basicstyle       = \ttfamily,
-    numbers=left,
-    stepnumber=1,
+    numbers          = left,
+    stepnumber       = 1,
+    mathescape       = true,
     keywordstyle     = \color{codered},
     %numberstyle      = \tiny\color{codeblue},
-    emph={Bernouilli,Gaussian,Beta,sample,observe,SMC,model,pickStick,makeSticks,DPmem,augmentedProc,rand,DP},
+    emph={Bernouilli,Gaussian,Beta,Gamma,Normal,sample,observe,SMC,model,pickStick,makeSticks,DPmem,augmentedProc,rand,DP,InfiniteMixutre,sqrt,tzeros},
     emphstyle={\color{codeblue}},
     % keyword highlighting
     classoffset=1, % starting new class
@@ -122,11 +123,17 @@
       {*}{{{\color{codered}*}}}1
       {/}{{{\color{codered}/}}}1
       {=}{{{\color{codered}=}}}1
+      %{~}{{{\color{codered}~}}}1
       {->}{{{\color{codered}->}}}1
-      {.}{{{\color{codered}.}}}1
       {:}{{{\color{codeblue}:}}}1
+      {.}{{{\color{codeblue}.}}}1
+      {1}{{{\color{codeblue}1}}}1
+      {0}{{{\color{codeblue}0}}}1
+      {2}{{{\color{codeblue}2}}}1
+      {5}{{{\color{codeblue}5}}}1
+      {7}{{{\color{codeblue}7}}}1
   ,
     %stringstyle      = \color{magenta},
-    %commentstyle     = \color{ForestGreen},
+    commentstyle     = \color{ForestGreen},
     %showstringspaces = false,
 }

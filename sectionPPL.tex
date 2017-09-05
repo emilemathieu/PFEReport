@@ -51,7 +51,7 @@ Recently, a new \gls{PPL} named Edward \cite{Edward} has been developed. It is d
 
 Probabilistic programs denote probabilistic generative models as programs that include \texttt{sample} and \texttt{observe} statements (see Listing \ref{code:example_turing}). Both \texttt{sample} and \texttt{observe} are functions that specify random variables in this generative model using probability distribution objects as an argument, while \texttt{observe}, in addition, specifies the conditioning of this random variable upon a particular observed value in a second argument. These observed values induce a conditional probability distribution over the execution traces whose approximations and expected values we aim to characterize by \textit{performing inference}. \\
 
-\begin{lstlisting}[caption={Example of a Turing model},captionpos=b,label=code:example_turing]
+\begin{lstlisting}[caption={Example of a Turing.jl model},captionpos=b,label=code:example_turing]
 @model model(y) = begin
   x = sample(Bernoulli(.75))
   mu = x ? 2 : 0
@@ -152,7 +152,7 @@ This algorithm is called Lightweight \gls{MCMC} \cite{Wingate:2011ul}, and has b
 More generally, for an excellent introduction to \gls{MCMC} and particle inference in \glspl{PPL}, see \cite{dippl}.
 
 
-\subsection{Importance Sampling}
+\subsection{Importance Sampling} \label{IS}
 
 \paragraph{Importance Sampling}
 Importance sampling is an example of a Monte Carlo sampling scheme that provides approximately independent and identically distributed samples from a distribution of interest or target distribution, such as a posterior distribution, by generating a candidate sample from a proposal or importance distribution $q(\mbx|y_1,\dots,y_T)$.
@@ -236,7 +236,7 @@ $$ w_{t+1} = w_{t} \times \frac{p(y_{t+1}|x_{1:t+1})p(x_{t+1}|x_{1:t})}{q(x_{t+1
 Even if we are not dealing with a \gls{SSM}, \gls{SIS} can be used as a general-purpose algorithm. The data are assumed to be observed sequentially so the observation’s index is the time index.
 
 
-\paragraph{Sequential Monte Carlo}
+\paragraph{Sequential Monte Carlo} \label{SMC}
 
 % \begin{figure}[h!]
 % \centering
@@ -272,7 +272,7 @@ Handling of checkpoints can be implemented through coroutines/co-operative multi
 
 Moreover, the proposals $q(\cdot|x_{1:t-1},y_{1:t})$ are generally implemented as being the prior $p(\cdot|x_{1:t-1})$ in \glspl{PPL}, i.e. the program is simply ran until an \texttt{observe} statement is encountered. Yet, by overriding the \texttt{sampler} statements, different proposals can be implemented. In the former case, the weights simplify to the likelihood; $w_{t}^k = p(y_{t}|x^k_{1:t})$, which can be computed at the \texttt{observe} statements. 
 
-\subsection{Particle Markov Chain Monte Carlo}
+\subsection{Particle Markov Chain Monte Carlo} \label{PMCMC}
 In a Bayesian setting, it is usual to consider the parameter $\theta$ in $p_\theta(x_{1:T}|y_{1:T})$ as a random variable by specifying a prior $p(\theta)$. In this subsection, we are therefore interested on algorithms targeting
 $p(\theta, x_{1:T}|y_{1:T})$.
 Let's think about \gls{MCMC} algorithms targeting the distribution $p(\theta, x_{1:T}|y_{1:T})$ which rely on sampling exactly from $p_\theta(x_{1:T}|y_{1:T})$, called ‘idealized’ algorithms.
@@ -339,7 +339,7 @@ In \cite{NUTS}, the authors address the issue of choosing the two hyperparameter
 
 First, \gls{NUTS} uses a recursive algorithm to build a set of likely candidate points that spans a wide swath of the target distribution, stopping automatically when it starts to double back and retrace its steps. The number of recursion calls is chosen to be the number of leapfrogs steps.
 Moreover, if $\alpha_t$ is the Metropolis acceptance probability for iteration $t$ and $\delta$ is the desired average acceptance probability, we would like the statistic $H_t = \delta - \alpha_t$ to decreases towards $0$.
-\gls{NUTS} achieves that by adaptively computing the step size using the dual averaging scheme of Nesterov \cite{Nesterov2009}, an algorithm for nonsmooth and stochastic convex optimization.
+\gls{NUTS} achieves that goal by adaptively computing the step size using the dual averaging scheme of Nesterov \cite{Nesterov2009}, an algorithm for nonsmooth and stochastic convex optimization.
 
 \paragraph{Stochastic Gradient Markov Chain Monte Carlo}
 A recent focus has been on devising scalable variants of \gls{MCMC} algorithms that subsample the data and use stochastic gradients in place of full-data gradients in the dynamic simulations. Such algorithms are called \gls{SGMCMC} and a recipe has now been given \cite{SGMCMC} for deriving these schemes. \gls{SGMCMC} algorithms are well suited for online setting and can scale to big datasets.

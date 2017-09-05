@@ -54,7 +54,7 @@
       
       \vspace{0.3cm}
       Émile Mathieu\\
-      Élève ingénieur, Third year
+      Élève-ingénieur, Third year
       
       \vspace{2cm}
       \Huge{\textbf{Bayesian Nonparametric Inference within Probabilistic Programming Languages}}\\
@@ -89,18 +89,18 @@ Moreover, my gratitude goes to Guillaume Obozinski, my school training superviso
 
 \chapter{Abstract}
 
-\gls{BNP} model have been gaining attraction because of their flexibility. Indeed, these models, automatically adapt with the number of data which avoid having to define a priori the number of parameters of the model, such as the number of components for a mixture model for instance.
-%+ streaming ?
-\gls{PPLs} allow practitioners to express probabilistic programs in a universal way, and bring generic inference algorithms. These systems avoid designing specific inference schemes, which is error-prone and time consuming.
+On one side, \gls{BNP} models have been gaining attraction because of their flexibility. These models, automatically adapt with the number of data, which avoid having to define a priori the number of parameters of the model, such as the number of components for a mixture model.
+On the other side, \glspl{PPL} allow practitioners to express probabilistic programs in a universal way, and bring generic inference algorithms. These systems avoid designing specific inference schemes, which is error-prone and time consuming.
+Specific representations of \gls{BNP} models must be used so as to denote such models in \glspl{PPL}, since \gls{BNP} models live in infinite dimensional space and machines only have finite memory and computational resources.
+%Secondly, how should the inference schemes be designed so that by using \gls{PPL}s (and thus gaining in flexibility) performance is not too much affected ?
 
-Therefore, a natural question is how can \gls{BNP} models be represented in such systems ? BNP models live in infinite dimensional space which is problematic for machines having finite memory and computational resources.
-Secondly, how should the inference schemes be designed so that by using \gls{PPL}s (and thus gaining in flexibility) performance is not too much affected ?
+In this report, we review well-known \gls{BNP} models with a focus on mixture models and discrete random probability measures, but we also give background on the design of \glspl{PPL} and associated inference schemes. We develop on generative construction of \glspl{BNP} and show that more generic \gls{BNP} classes than the \acrlong{DP} can be represented in \glspl{PPL}. We empirically demonstrate our approach by contributing in an existing \gls{PPL}.
 
-\textbf{Keywords :} Probabilistic Programming, Bayesian Non-parametric, Bayesian Inference, Sampling methods
+\textbf{Keywords :} Probabilistic Programming, Bayesian Non-parametric, Bayesian Inference, Generative process, Sampling methods.
 
 
-\chapter{Résumé}
-\textcolor{red}{translation of abstract in French}
+% \chapter{Résumé}
+% \textcolor{red}{translation of abstract in French}
 
 
 \tableofcontents
@@ -121,10 +121,10 @@ Secondly, how should the inference schemes be designed so that by using \gls{PPL
 \mainmatter
 
 
-\chapter{Introduction}
-cf Research Proposal ?
-Speak about the PhD which is following
-Plan: First, Then, After, Eventually, etc
+% \chapter{Introduction}
+% cf Research Proposal ?
+% Speak about the PhD which is following
+% Plan: First, Then, After, Eventually, etc
 
 
 \include{presentation}
@@ -147,7 +147,7 @@ Plan: First, Then, After, Eventually, etc
 \include{sectionFutureWork}
 
 
-\include{conclusions}
+% \include{conclusions}
 
 %\backmatter
 

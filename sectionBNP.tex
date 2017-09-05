@@ -68,10 +68,10 @@ He showed that, under this joint distribution, the $X_i$ will exhibit a \textit{
 \paragraph{The stick-breaking construction}
 \cite{ferguson73} proved that the \gls{DP} exists via its finite dimensional distributions. \cite{sethuraman94} provided a more constructive definition based on the stick-breaking representation.
 
-Consider a stick with unit length. We divide the stick into an infinite number of segments $\tilde{p}_k$ by the following process. First, choose a beta random variable $Z_1 \sim \text{beta}(1, \alpha)$ and break of $Z_1$ of the stick. For each remaining segment, choose another beta distributed random variable, and break off that proportion of the remainder of the stick. This gives us an infinite collection of weights 
+Consider a stick with unit length. We divide the stick into an infinite number of segments $\tilde{p}_k$ by the following process. First, choose a beta random variable $Z_1 \sim \text{beta}(1, \alpha)$ and break of $V_1$ of the stick. For each remaining segment, choose another beta distributed random variable, and break off that proportion of the remainder of the stick. This gives us an infinite collection of weights 
 \begin{gather}
-Z_k \sim \text{beta}(1, \alpha) \\
-\tilde{p}_k = Z_k \prod_{j=1}^{k-1}(1-Z_j) \quad k= 1,2,\dots \label{eq:SB_DP}
+V_k \sim \text{beta}(1, \alpha) \\
+\tilde{p}_k = V_k \prod_{j=1}^{k-1}(1-V_j) \quad k= 1,2,\dots \label{eq:SB_DP}
 \end{gather}
 Finally, we construct a random distribution using Equation \ref{eq:DP}, where we take an infinite number of draws from a base distribution $H_0$ and draw the weights as in Equation \ref{eq:SB_DP}. \cite{sethuraman94} showed that the distribution of this random distribution is a $DP(\alpha,H_0)$.
 %This representation of the Dirichlet process, and its corresponding use in a Dirichlet process mixture, allows us to compute a variety of functions of posterior DPs (Gelfand and Kottas, 2002) and is the basis for the variational approach to approximate inference (Blei and Jordan, 2006).
@@ -133,12 +133,14 @@ Integrating out the random variables $(Z_1, \dots , Z_n)$ then yields (\ref{eq:m
 \subsection{Infinite dimensional}
 \acrlong{BNP} generalizations of finite mixture models provide an approach for estimating both the number of components in a mixture model and the parameters of the individual mixture components simultaneously from data. As opposed to finite mixtures, \gls{BNP} mixtures use mixing distributions consisting of a \textit{countably infinite} number of atoms:
 \begin{equation} \label{eq:mixture_inf}
-P = \sum_{j=1}^\infty p_j \delta_{X_j},
+P = \sum_{j=1}^\infty p_j \delta_{X_j^\star},
 \end{equation}
 This gives rise to mixture models with an infinite number of components. When applied to a finite training set, only a finite (but varying) number of components will be used to model the data, since each data item is associated with exactly one component but each component can be associated with multiple data items.
 Inference in the model then automatically recovers both the number of components to use and the parameters of the components.
-Being Bayesian, we need a prior over the mixing distribution $P$. %, and the most common prior to use is a \gls{DP}.
+Being Bayesian, we need a prior over the mixing distribution $P$. %, and 
 Discrete \acrlongpl{RPM} are of the form of \ref{eq:mixture_inf}, defined on a suitable measurable space $\mathbb{X}$ with $X_i \in \mathbb{X}$ for $i=1,\dots,k$.
+The most common prior to use is a \gls{DP}.
+Consequently, the mixture components would be drawn accordingly to the base distribution of the \gls{DP}.
 
 
 We are therefore interested in hierarchical models of the form
@@ -162,12 +164,12 @@ Let $\mathbb{X}$ be a complete and separable metric space endowed with the Borel
 \end{definition}
 
 \glspl{CRM} were first proposed and studied by Kingman \cite{Kingman:1967kn}, who showed that a \gls{CRM} $\mu$ can always be decomposed into a sum of three independent parts
-$$ \mu = \mu_0 + \sum_{k \ge 1}{J_k \delta_{\phi_k}} + \sum_{l=1}^N{v_l \delta_{\psi_l}} $$
-where $\mu_0$ is a (non-random) measure over $\mathbb{X}$, $\left\{ \psi_l \right\}_{l \in [N]} \subset  \mathbb{X}$ is a collection of $N$, $1 \le N \le \infty$, atoms at fixed locations and independent random masses $\left(v_l \right)_{l \in [N]}$, and $\left(J_k, \phi_k \right)_{k \ge 1}$ is a collection of atoms with random masses and random locations.
+$$ \mu = \mu_0 + \sum_{k \ge 1}{J_k \delta_{X^\star_k}} + \sum_{l=1}^N{v_l \delta_{\psi_l}} $$
+where $\mu_0$ is a (non-random) measure over $\mathbb{X}$, $\left\{ \psi_l \right\}_{l \in [N]} \subset  \mathbb{X}$ is a collection of $N$, $1 \le N \le \infty$, atoms at fixed locations and independent random masses $\left(v_l \right)_{l \in [N]}$, and $\left(J_k, X^\star_k \right)_{k \ge 1}$ is a collection of atoms with random masses and random locations.
 
 In applications of Bayesian nonparametrics it is usually assumed that $\mu_0 = 0$ and $N = 0$, so that $\mu$ consists only of the atoms with random masses and locations. However, the posterior distribution of $\mu$ given data would typically contain atoms at fixed locations, hence, the usefulness of the larger class of \glspl{CRM}.
 
-The distribution of the random atoms $\left(\phi_k \right)_{k \ge 1}$ and their masses $\left(J_k \right)_{k \ge 1}$ under a \gls{CRM} is characterized by the Lévy-Khintchine representation of its Laplace functional transform. Specifically,
+The distribution of the random atoms $\left(X^\star_k \right)_{k \ge 1}$ and their masses $\left(J_k \right)_{k \ge 1}$ under a \gls{CRM} is characterized by the Lévy-Khintchine representation of its Laplace functional transform. Specifically,
 \begin{equation} \label{eq:levy}
 \mathbb{E} \left[e^{-\int g(y)\mu(dy)} \right] = \exp \left\{ - \int_{\mathbb{R}^+ \times \mathbb{X}} \left( \  1 - e^{-sg(y)} \right) \rho(ds) H_0(dy) \right\},
 \end{equation}
@@ -175,7 +177,7 @@ for any measurable function $g: \mathbb{X} \rightarrow \mathbb{R}$ such that $\i
 The underlying measure $\nu = \rho \times H_0$ uniquely characterises the random atoms in $\mu$.
 
 The only intensity measures that are considered herein are those that factorise $\nu(ds, dy) = \rho(ds)H_0(dy)$ for some measure $\rho$ on $\mathbb{R}^+$ absolutely continuous with respect to the Lebesgue measure, and some non-atomic probability measure $H_0$ on $\mathbb{X}$. The corresponding \gls{CRM} is said to be \textit{homogeneous} and write $\text{CRM}(\rho, H_0)$ for the law of $\mu$. Successively, the measure $\rho$ is referred to as the Lévy measure, while $H_0$ is the base distribution.
-Homogeneity implies independence between $\left(J_k \right)_{k\ge1}$ and $\left(\phi_k \right)_{k\ge1}$, where $\left(\phi_k \right)_{k\ge1}$ is a sequence of random variables independent and identically distributed according to $H_0$ while the law of $\left(J_k \right)_{k\ge1}$  is governed by $\rho$. Intuitively, the point process $\left(J_k, \phi_k \right)_{k\ge1}$  is described by a Poisson process over $\mathbb{R}^+ \times \mathbb{X}$ with intensity measure $\nu = \rho \times H_0$, as illustrated in Figure \ref{fig:CRM}.
+Homogeneity implies independence between $\left(J_k \right)_{k\ge1}$ and $\left(X^\star_k \right)_{k\ge1}$, where $\left(X^\star_k \right)_{k\ge1}$ is a sequence of random variables independent and identically distributed according to $H_0$ while the law of $\left(J_k \right)_{k\ge1}$  is governed by $\rho$. Intuitively, the point process $\left(J_k, X^\star_k \right)_{k\ge1}$  is described by a Poisson process over $\mathbb{R}^+ \times \mathbb{X}$ with intensity measure $\nu = \rho \times H_0$, as illustrated in Figure \ref{fig:CRM}.
 
 % \begin{figure}[h!]
 % \centering
@@ -194,9 +196,9 @@ One can normalize a \gls{CRM} by its finite total mass to construct a BNP prior 
 
 \begin{definition}[Normalised Random Measure] \label{def:NRM}
 Let $\mu$ be a homogeneous \gls{CRM}, with Lévy measure $\rho$ and base distribution $H_0$, with almost-surely positive and finite total mass. A \gls{NRM} is an almost-surely discrete random probability measure $P$ on $\mathbb{X}$ obtained by normalising $\mu$
-$$ P = \frac{\mu}{T} = \sum_{k \ge 1}{p_k \delta_{\phi_k}} $$
+$$ P = \frac{\mu}{T} = \sum_{k \ge 1}{p_k \delta_{X^\star_k}} $$
 with $T = \sum_{k \ge 1}{J_k}$ and $p_k = J_k / T$.
-Since $\mu$ is homogeneous, the law of $\left(p_k \right)_{k \ge 1}$ is governed by the Lévy measure $\rho$ and the atoms $\left(\phi_k \right)_{k \ge 1}$ are a sequence of random variables independent of $\left(p_k \right)_{k \ge 1}$, and independent and identically distributed according to $H_0$.
+Since $\mu$ is homogeneous, the law of $\left(p_k \right)_{k \ge 1}$ is governed by the Lévy measure $\rho$ and the atoms $\left(X^\star_k \right)_{k \ge 1}$ are a sequence of random variables independent of $\left(p_k \right)_{k \ge 1}$, and independent and identically distributed according to $H_0$.
 We denote it by $P \sim \text{NRM}(\rho, H_0)$. \\
 \end{definition}
 
@@ -233,7 +235,7 @@ P|T=t \sim \text{PK}(\rho, \delta_t, H_0),
 The \gls{RPM} $P$ is referred to as the Poisson-Kingman \gls{RPM} with Lévy measure $\rho$, base distribution $H_0$ and mixing distribution $\gamma$. The distribution of $P$ is denoted by $\text{PK}(\rho, \gamma , H_0)$. If the density for the total mass equals the density obtained from its Lévy measure $f_\rho$, i.e. $\gamma(dt) = f_\rho(t) dt$, then the distribution $\text{PK}(\rho, f_\rho , H_0)$, coincides with $\text{NRM} (\rho, H_0)$.
 \end{definition}
 
-Since $\mu$ is homogeneous, the atoms $\left(\phi_k \right)_{k \ge 1}$ of $P$ are independent of their masses $\left(p_k \right)_{k \ge 1}$. They form a sequence of independent random variables identically distributed according to $h_0$. Finally, the masses of $P$ have distribution governed by the Lévy measure $\rho$ and the distribution $\gamma$.
+Since $\mu$ is homogeneous, the atoms $\left(X^\star_k \right)_{k \ge 1}$ of $P$ are independent of their masses $\left(p_k \right)_{k \ge 1}$. They form a sequence of independent random variables identically distributed according to $h_0$. Finally, the masses of $P$ have distribution governed by the Lévy measure $\rho$ and the distribution $\gamma$.
 
 Same as for \glspl{NRM}, Poisson-Kingman \glspl{RPM} can be used as \gls{BNP} prior for mixture models. The associated hierarchical model is the following:
 \begin{gather*}
@@ -374,8 +376,8 @@ The cluster reassignment step can be seen as a retrospective sampling scheme: we
 
 This scheme has less memory requirements since it only represents the size-biased weights associated to occupied clusters as opposed to conditional samplers which represent both empty and occupied clusters. Also, since it does not integrate out all of the size-biased weights, we obtain a more comprehensive representation of the \gls{RPM}.
 
-\subsection{SMC}
-Recently, various \gls{SMC} schemes for Bayesian nonparametric models have been proposed.
+\subsection{Sequential Monte Carlo}
+Recently, various \gls{SMC} schemes (see Section \ref{SMC} for more details on \gls{SMC}) for Bayesian nonparametric models have been proposed.
 \cite{Fearnhead:2004gi} and \cite{Wood:2008hx} propose an \gls{SMC} scheme for Dirichlet process mixture models and \cite{Griffin:2017cz} for \gls{NRM} mixture models.
 These articles cast the marginal and conditional representations presented previously in a particle algorithm's setting.
 
