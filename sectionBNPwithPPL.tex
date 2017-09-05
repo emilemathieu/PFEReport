@@ -1,5 +1,7 @@
 
-\chapter{BNP inference within PPL} \label{BNP_PPL}
+\chapter{\gls{BNP} inference within \glspl{PPL}} \label{BNP_PPL}
+In this chapter we focus on the task of performing inference within a \gls{PPL} for models with an infinite dimensional component, also called \gls{BNP} models.
+
 For now we have restricted ourselves to infinite mixture models, but we hope that our framework will enable efficient sampling for other \gls{BNP} models such as the infinite \acrlong{HMM}. We have also focused our study on sampling methods, but \acrlong{VI} is considered in Section \ref{BNP_VI}.
 
 \textcolor{red}{Stochastic Memoization perspective ??}
@@ -8,10 +10,33 @@ First let's recall what is the usual (deterministic) memoization.
 For instance with the \gls{DP}, with $\alpha = 0$ we recover a deterministic memoization whereas with $\alpha \rightarrow \inf$ there is no memoization at all.
 
 
-\section{Link between BNP and High order PPL / Recursion}
-% Bayesian prob/BNP fits naturally the framework of PPL
+\section{Link between BNP and High order PPL}
 
-See Frank Wood meeting
+In \glspl{PPL}, to transform a variable in a random variable, one only needed to write \texttt{x = sample(Dist(parameters))}. Then the posterior distribution (given some observations) of \texttt{x} will automatically be performed during the inference scheme.
+The Bayesian setting thus naturally fits the framework of \glspl{PPL}.
+Yet, we believe that there is more  than just a connection between Bayesian inference and \glspl{PPL}, but that there is also a connection between \acrlong{BNP} and High-order \gls{PPL}.
+
+Working with \gls{BNP} models can be tedious because of the constraints of computers.
+A \gls{NRM} $\mu$ can be written \cite{Kingman:1967kn} as
+$$P = \sum_{k \ge 1}{\tilde{p}_k \delta_{\phi_k}} $$
+where $\left(\tilde{p}_k, \phi_k \right)_{k \ge 1}$ is an infinite collection of weights and atoms.
+Discrete probability measures with countable support such as \acrlongpl{NRM} cannot be represented in a computer in a naïve manner since a machine has finite memory.
+Other representations of such objects must be used, if one hope to denote them in a program.
+
+One key notion in programming languages which will be crucial is the concept of \textit{lazy evaluation} (or \textit{laziness}). It is an evaluation strategy which delays the evaluation of an expression until its value is needed and which also avoids repeated evaluations.
+Lazy evaluation is often combined with \textit{memoization}, as described in \cite{Bentley:1982:WEP:539147}. After a function's value is computed for that parameter or set of parameters, the result is stored in a lookup table that is indexed by the values of those parameters; the next time the function is called, the table is consulted to determine whether the result for that combination of parameter values is already available. If so, the stored result is simply returned. If not, the function is evaluated and another entry is added to the lookup table for reuse.
+
+Instead of hoping to construct the entire infinite sequence $\left(\tilde{p}_k, \phi_k \right)_{k \ge 1}$, we will only ``lazily'' sample $\left(\tilde{p}_k, \phi_k \right)$, i.e. when we need them.
+Since we work with homogeneous \glspl{CRM}, the $\{\phi_k\}_{k \ge 1}$ are independent and identically distributed according to the base distribution. Sampling the $(\phi_k)_{k \ge 1}$ as we need them is therefore trivial. Yet how could we lazily sample the $(\tilde{p}_k)_{k \ge 1}$ ?
+In Subsection \ref{DP}, we presented the stick-breaking process, a generative process for constructing of $(\tilde{p}_k)_{k \ge 1}$.
+
+
+We stated in Section \ref{PPL_history}, that High-order \glspl{PPL} allow complex control flow, including stochastic recursion. For programming languages, allowing recursion means allowing a function to call itself within the program text. Stochastic or unbounded recursion means that the number of recursive calls is random or unbounded.
+
+
+
+
+
 Frank's Theorem: "The Lambda abstraction is necessary in a PPL to be able to denote BNP in this language." The Lambda abstraction seems to be synonymous to function recursion and thus allowing stochastic loop, which are useful for BNP.
 
 Stick-breaking process = control flow + recursion = stochastic recursion ?
@@ -31,11 +56,11 @@ want to sample from a discrete distribution with countable support
 ->finite memory
 to represent it, needs a recursive representation
 
-\subsection{Existing}
+\subsection{Existing work}
 Most current \glspl{PPL} already have a \gls{DP} or \gls{CRP} implemented.
 sampler: particle algorithm
 
-\subsection{Implementation}
+\subsection{Implementation (TCO)}
 As highlighted in the previous section, recursion is key to denote \gls{BNP} models in a \gls{PPL}.
 
 A function is tail-recursive when the recursive call happens as the final action in a function, in which case it can happen without the function call stack growing. In continuation-passing style, there is no stack – all function calls are tail calls, hence all recursive functions are tail-recursive.
@@ -47,11 +72,29 @@ Without such a specific \emph{recur} operator, the call stack can exceed its max
 \section{generative process construction}
 PPL -> be able to sample from prior
 
-\subsection{DP and PY}
+\subsection{\gls{DP} and \gls{PY}}
 \textcolor{red}{Size-biased permutation
 All measure
 Urn: marginalized out the random -> only partition left
 Stick-breaking: hybrid-case, lazely instanciate our observation once they are drawn from it, sized-biased permutation }\\
+
+\textcolor{red}{code of DP stick-breaking ?} 
+\begin{lstlisting}[caption={\acrlong{DP} stick-breaking representation},captionpos=b,label=code:DP_SB]
+function pickStick(sticks, J) = begin
+  return rand(Bernouilli(sticks(J))) ? J : pickStick(sticks, J+1);
+end
+
+function makeSticks(alpha) = begin
+  var sticks = @memoize((index) ->  rand(Beta(1, alpha)))
+  return () -> pickStick(sticks, 1)
+end
+
+function DPmem(alpha, baseDist) = begin
+  augmentedProc = @memoize((stickIndex) -> rand(baseDist))
+  DP = makeSticks(alpha)
+  return () -> augmentedProc(DP())
+end
+\end{lstlisting}
 
 well known
 already implemented in most \gls{PPL}s
@@ -68,7 +111,7 @@ the corresponding weights are:
 $$ p_l := Z_l \prod_{j<l}{(1 - Z_j)} $$
 
 \subsection{PK}
-Theorem 2.1 of Perman et al. states that the sequence of surplus masses $(T_k)_(k>=0)$ forms a Markov chain and gives the corresponding initial distribution and transition kernels.
+Theorem \ref{prop:perman} (Page \pageref{prop:perman}) from \cite{Perman:1992ke} states that the sequence of surplus masses $(T_k)_{k \ge0}$ forms a Markov chain and gives the corresponding initial distribution and transition kernels
 
 Could we sample the $K$th stick length in generic way since we know the density ? For instance by restricting to Levy measure intensity and Total mass density which are tractable (not σ-stable PK). One may use a simple rejection sampling with proposal $U(0, t_K)$ (what would be M ?).
 
@@ -76,7 +119,7 @@ There exist other models based directly on specifying a valid distribution for t
 
 
 
-we reviewed the PKP generative process from Figure \ref{fig:PK_generative_process}, it is reminiscent of the well-known stick breaking construction from Ishwaran and James (2001), where a stick of length one is broken, as in Figure \ref{fig:PY_stick_breaking}, but it is not the same. As mentioned previously, we can reparameterise the model, starting with Equation (2.24), and obtain the corresponding joint distribution in terms of $N$ $(0,1)$-valued stick-breaking weights $\{\pi_j \}_{j=1}^N$, where $N$ is the number of represented sticks after trunctation (Favaro and Walker, 2012). This joint distribution is for a general Lévy measure $\rho$, density $f_\rho$ and it is conditioned on the valued of the random variable $T$. We can then recover the well-known Stick breaking representations for the Dirichlet and Pitman-Yor processes, for a specific choice of $\rho$, if we integrate out $T$.
+we reviewed the PKP generative process from Figure \ref{fig:PK_generative_process}, it is reminiscent of the well-known stick breaking construction from \ref{sethuraman94}, where a stick of length one is broken, as in Figure \ref{fig:PY_stick_breaking}, but it is not the same. As mentioned previously, we can reparameterise the model, starting with Equation (2.24), and obtain the corresponding joint distribution in terms of $N$ $(0,1)$-valued stick-breaking weights $\{\pi_j \}_{j=1}^N$, where $N$ is the number of represented sticks after trunctation (Favaro and Walker, 2012). This joint distribution is for a general Lévy measure $\rho$, density $f_\rho$ and it is conditioned on the valued of the random variable $T$. We can then recover the well-known Stick breaking representations for the Dirichlet and Pitman-Yor processes, for a specific choice of $\rho$, if we integrate out $T$.
 
 However, in general, these stick random variables, denoted by $Z_l := \frac{\pi_l}{1 - \sum_{i<l}{\pi_l}}$ form a sequence of dependent random variables with a complicated distribution, except for the two previously mentioned processes, see Pitman (1996) for details.
 
@@ -92,12 +135,13 @@ the corresponding weights are:
 $$ \pi_l := \frac{\tilde{J}_{l}}{T - \sum_{i<l} \tilde{J}_i} $$
 
 
+Cf meeting with Ben
 $\beta_i = \frac{\tilde{J}_i}{T_{i-1}}$
 $\tilde{p_i} = \beta_i \prod_{j=1}^i (1-\beta_i)$
 
 
 \subsection{PG}
-cf article Ben
+cf \cite{James:2013uk}
 
 \section{Models of interest}
 calculus for SMC for BNP mixture with fixed parameters

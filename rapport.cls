@@ -90,11 +90,11 @@
       end,export,false,for,function,immutable,import,importall,if,in,%
       macro,module,otherwise,quote,return,switch,true,try,type,typealias,%
       using,while,=},%
-   sensitive=true,%
-   alsoother={$},%
-   morecomment=[l]\#,%
-   morestring=[s]{"}{"},%
-   morestring=[m]{'}{'},%
+   %sensitive=true,%
+   %alsoother={$},%
+   %morecomment=[l]\#,%
+   %morestring=[s]{"}{"},%
+   %morestring=[m]{'}{'},%
 }[keywords,comments,strings]%
 
 \usepackage{color}
@@ -109,13 +109,23 @@
     stepnumber=1,
     keywordstyle     = \color{codered},
     %numberstyle      = \tiny\color{codeblue},
-    emph={Bernouilli, Gaussian, sample, observe, SMC, model, @model},
+    emph={Bernouilli,Gaussian,Beta,sample,observe,SMC,model,pickStick,makeSticks,DPmem,augmentedProc,rand,DP},
     emphstyle={\color{codeblue}},
     % keyword highlighting
-    %classoffset=1, % starting new class
-    %morekeywords={=,:},
-    %keywordstyle=\color{codepurple},
-    %classoffset=0,
+    classoffset=1, % starting new class
+    morekeywords={@model,@memoize},
+    keywordstyle=\color{codepurple},
+    classoffset=0,
+    literate=%
+      {+}{{{\color{codered}+}}}1
+      {-}{{{\color{codered}-}}}1
+      {*}{{{\color{codered}*}}}1
+      {/}{{{\color{codered}/}}}1
+      {=}{{{\color{codered}=}}}1
+      {->}{{{\color{codered}->}}}1
+      {.}{{{\color{codered}.}}}1
+      {:}{{{\color{codeblue}:}}}1
+  ,
     %stringstyle      = \color{magenta},
     %commentstyle     = \color{ForestGreen},
     %showstringspaces = false,
