@@ -1,19 +1,16 @@
 \chapter{Future Work}
-In this chapter we present several ideas which could be further developed. When matured enough, this ideas may become projects on themselves.
+In this chapter we present several ideas which could be further developed, and if matured enough, these ideas may become projects on themselves.
 
 
 \section{Learning parameters in PPL}
 \subsection{Motivation}
 Since variational methods have arisen, ideas of mixing sampling with \gls{VI} have emerged, including in the \gls{PPL} literature.
-
 In \cite{Wingate:2013tq}, the authors introduce the idea of automatically learning the parameters of proposals for \gls{SMC} within a \gls{PPL}. A lower bound on the \emph{KL} divergence between the proposal and the true posterior distribution is optimize via gradient descent.
 In \cite{Ritchie:2016ve, Le:2016te}, this idea is further developed using neural networks (such as LSTMs \cite{Hochreiter:1997fq}) to parametrize these proposal distributions. These networks are fed with the previous latent and observed variables.
 In AESMC \cite{Le:2017wm}, FIVO \cite{Maddison:2017wp} and VSMC \cite{Naesseth:2017tl}, both the model and the \gls{SMC}'s proposal are learned by maximizing the marginal likelihood estimator given by the \gls{SMC}.
-
 The interest in learning parameters (for proposals and for the model) and performing inference on some random variables at once is thus great. \gls{PPL}s allow to easily write probabilistic models and perform inference on latent variables. One may be interested in building a \gls{PPL} with the capability of automatically optimizing some parameters given a loss/estimator.
 
 \gls{AD} methods \cite{Baydin:2015up} enable the computation of gradients of some variables with respect to some parameters. The reverse differentiation is particularly popular in the machine learning community, where the history of each variable (how it has been constructed) is saved as a computational graph, and gradients can then be computed via the \textit{chain rule}.
-
 Some libraries such as TensorFlow \cite{Tensorflow} require the users to define static computation graphs within the syntactic and semantic constraints of a domain-specific mini language with limited support for control flow whereas the lineage of projects leading from autograd \footnote{\url{https://github.com/HIPS/autograd}} to PyTorch \footnote{\url{http://pytorch.org/}} provide truly general-purpose reverse mode \gls{AD} capability. The latter mode is to be preferred for fully and easy support of control flow such as stochastic recursion which is needed for stick-breaking processes.
 
 
@@ -29,25 +26,20 @@ Indeed, so as to handle such algorithms, a \gls{PPL} must have access to \textit
 
 \paragraph{Julia:}
 One could also think of using Julia \cite{Bezanson:2017gd}, which has been specifically built for scientific usage. Julia has the advantage of natively handling coroutine copying, which is used in Turing \cite{Turing} to implement particle methods.
-
 Reverse mode \gls{AD} libraries exist in Julia, \emph{ReverseDiff.jl} \footnote{\url{https://github.com/JuliaDiff/ReverseDiff.jl}} and \emph{Knet.jl} \footnote{\url{https://github.com/denizyuret/Knet.jl}} which respectively build a static and dynamic graph.
-
 I am particularly interested in the perspective of adapting a \gls{AD} library for Turing \cite{Turing}.
 
 \subsection{New models}
 With such as \gls{PPL} in mind, one can think of new model or algorithms to be developed.
-
 The idea of AESMC \cite{Le:2017wm} might be extended to \gls{PG} and \gls{PMMH} so as to learn proposals' parameters for their \gls{SMC} and for $p(\theta^\star|\theta)$ parameters (specific of \gls{PMMH}).
 
 \subsection{Difficulties}
 Yet this is not a trivial task, one have to put proper care when computing unbiased gradient of a loss function defined by an expectation over a collection of random variables.
-
 Hopefully, a stochastic computation graph \cite{Schulman:2015wk} can be converted into a deterministic computation graph, to which the backpropagation algorithm can then be applied on a surrogate loss function which results in an unbiased gradient estimator of the loss.
 
 
 \section{Piecewise Deterministic Markov Processes}
 A novel class of non-reversible Markov chain Monte Carlo schemes relying on continuous-time piecewise deterministic Markov Processes has recently emerged \cite{Vanetti:2017ux}. In these algorithms, the state of the Markov process evolves according to a deterministic dynamics which is modified using a Markov transition kernel at random event times. A general framework is presented in \cite{Bierkens:2017we}, and includes among others the Zig-Zag Process \cite{Bierkens:2016uk}, the Bouncy Particle Sampler \cite{BouchardCote:2017gs} and the Generalized Bouncy Particle Sampler \cite{Wu:2017uz}.
-
 
 It has been claimed \cite{Bierkens:2017we} that the non-reversibility property of these algorithms enhances the mixing rate of the chain.
 I am consequently interested in understanding to what extent this class of MCMC schemes could fit the \gls{PPL}'s setting.
@@ -55,19 +47,13 @@ I am consequently interested in understanding to what extent this class of MCMC 
 
 \section{Variational Inference for \gls{BNP} in \gls{PPL}} \label{BNP_VI}
 As explained in Section \ref{BNP_VI}, Truncation-free variational inference methods rely on a lazy representing of the clusters assignments. Yet, the marginalisation used seems to be only available for few models.
-
 However, we may be able to use a similar approach for more flexible \gls{BNP} models, by extending the latent space with the sticks proportions and mixture components (since they cannot be marginalized out).
 Moreover, there might be a deeper link between \textit{Truncation-free} \gls{VI} and stick-breaking processes.
 
-
-
 \section{Adversarial Inference for \gls{BNP} in \gls{PPL}}
 Adversarial inference methods \cite{Dumoulin:2016td, Donahue:2016wo, DBLP:conf/icml/MeschederNG17} inspired by GANs \cite{Goodfellow:2014wp} jointly learns a generation network and an inference network using an adversarial process.
-
 The decoder/generator network $x' \sim p(x|z)$ maps samples from stochastic latent variables to the data space while the encoder/inference network $z' \sim q(z|x)$ maps training examples in data space to the space of latent variables.
-
 An adversarial game is cast between these two networks and a discriminative network is trained to distinguish between joint latent/data-space samples $(x', z)$ from the generative network and joint samples $(x, z')$ from the inference network.
 
 Adversarial inference seems to be closely related to \gls{VI}. Yet, in adversarial inference the model can also be learned as opposed to \gls{VI} where only the proposal is learned. Moreover, in \gls{VI} the marginal likelihood is optimised via a lower bound (ELBO) whereas in adversarial inference, a classification loss is optimised.
-
 This approach could be interesting in the \gls{BNP} setting, if a tractable and tight lower bound on the marginal likelihood cannot be found.

@@ -1,23 +1,9 @@
 
 \chapter{\gls{BNP} inference within \glspl{PPL}} \label{BNP_PPL}
 In this chapter we focus on the task of performing inference within a \gls{PPL} for models with an infinite dimensional component, also called \gls{BNP} models.
+For now we have restricted ourselves to infinite mixture models, but we hope that our framework will enable efficient sampling for other \gls{BNP} models such as the infinite \acrlong{HMM} \cite{Beal02theinfinite}. We have also focused our study on sampling methods, but \acrlong{VI} is considered in Section \ref{BNP_VI}.
 
-For now we have restricted ourselves to infinite mixture models, but we hope that our framework will enable efficient sampling for other \gls{BNP} models such as the infinite \acrlong{HMM}. We have also focused our study on sampling methods, but \acrlong{VI} is considered in Section \ref{BNP_VI}.
-
-\textcolor{red}{Stochastic Memoization perspective ??}
-An interesting perspective of Discrete Random Probability Measure is through \textit{stochastic memoization} \footnote{\url{https://probmods.org/chapters/12-non-parametric-models.html}}.
-First let's recall what is the usual (deterministic) memoization.
-For instance with the \gls{DP}, with $\alpha = 0$ we recover a deterministic memoization whereas with $\alpha \rightarrow \inf$ there is no memoization at all.
-
-\textcolor{red}{Useful ?}
--> Urn: posterior predictive distribution of $X_{k+1}$ given $X_0, \dots, X_{k}$
-CRP: simple sufficient statistics, but in general not nice like that
-All marginal samplers: Urn distributions, involve complicated integral (can sometimes introduce auxiliary variables)
-
-Urn: marginalized out the random -> only partition left
-Stick-breaking: hybrid-case, lazely instanciate our observation once they are drawn from it, sized-biased permutation
-
-\section{Recursion is key}
+\section{Recursion is key} \label{recursion}
 
 In \glspl{PPL}, to transform a variable in a random variable, one only needed to write \texttt{x = sample(Dist(parameters))}. Then the posterior distribution (given some observations) of \texttt{x} will automatically be performed during the inference scheme.
 The Bayesian setting thus naturally fits the framework of \glspl{PPL}.
@@ -72,6 +58,7 @@ Recall that high-order \glspl{PPL} allow complex control flow, including stochas
 
 \glspl{PPL} are some sort of \textit{simulators}, models need to be written as generative processes. Executing such a model -- as is -- via a \gls{PPL}'s interpreter, is sampling from its prior distribution. Once one can write a model as a generative process, (i.e can sample from the model's prior), the \gls{PPL} can perform inference on the latent variables. Consequently, for \gls{BNP} models, a representation similar to the stick-breaking process for the \gls{DP}, seems to be necessary.
 
+
 \subsection{Implementation details}
 As highlighted, recursion is key to denote \gls{BNP} models in a \gls{PPL}.
 A function is called \textit{tail-recursive} when the recursive call happens as the final action in a function (as for \texttt{pickStick}), in which case it can happen without the function call stack growing. In \gls{CPS}, there is no stack -- all function calls are tail calls, hence all recursive functions are tail-recursive.
@@ -87,20 +74,19 @@ Yet, their experiments are mostly limited to \acrlong{DP}, \acrlong{PY} or hiera
 the used scheme is usually a particle algorithm such as \acrlong{SMC} or \acrlong{PG}.
 
 
-\section{Generative process construction} \label{SBS}
+\section{Generative constructions of random probability measures} \label{SBS}
 Previously, we recalled that to be able to denote a model in a \gls{PPL}, one should know how to sample from its prior, i.e. know a generative construction.
 We also highlighted the fact that such generative processes are implemented via stochastic recursion.
 
-\textcolor{red}{RECURSION !!}
-
-
-\subsection{Stick-breaking processes}
+\subsection{Stick-breaking processes} \label{stick-breaking}
 
 The first comprehensive treatment of stick-breaking priors dates back to the paper by Ishwaran and James \cite{Ishwaran:2001dw}. There, they introduced a class of stick-breaking priors including as special cases the \acrlong{DP} by Ferguson \cite{ferguson73} and the two parameter Poisson-Dirichlet process by Perman et al. \cite{Perman:1992ke}. Specifically, let $H_0$ be a nonatomic probability measure on a complete and separable metric space $\mathbb{X}$.
 % equipped with the Borel σ-field X .
 Also, let $(V_i)_{i \ge 1}$ be a sequence of independent random variables such that $\sum_{i \ge 1}{\mathbb{E}[\log(1 - V_i)]} = - \infty$.
 Based on such $V_i$'s, they define a sequence of random probabilities $(\tilde{p}_k)_{k \ge 1}$ as $\tilde{p}_1 = V_1$ and
-$$ \tilde{p}_k = V_k \prod_{j=1}^{k-1}{(1-V_j)} $$
+\begin{equation} \label{eq:Stick_breaking}
+\tilde{p}_k = V_k \prod_{j=1}^{k-1}{(1-V_j)} 
+\end{equation}
 for each $k > 1$, and let $(X^\star_k)_{k \ge 1}$ be a sequence of random variables, independent
 of $(\tilde{p}_k)_{k \ge 1}$, and independent and identically distributed according to $H_0$. Then,
 $$ P = \sum_{k \ge 1}{\tilde{p}_k \delta_{X_k^\star}} $$
@@ -120,7 +106,7 @@ where $X_k$ is distributed according to the generalized inverse Gaussian distrib
 According to Favaro et al \cite{Favaro:2014bo}, the normalized inverse Gaussian process \cite{Favaro:2012ht} is the first example of a prior admitting a stick-breaking representation in terms of dependent  $V_k$'s, and such that for any $k \ge 1$ the conditional distribution of $V_k$ given $(V_1,\dots,V_{k-1})$ is characterized by means of a straightforward transformation of random variables as in \ref{eq:IGP}.
 Favaro et al \cite{Favaro:2014bo} construct a similar transformation to build a stick-breaking process for a subclass of $\sigma$-stable Poisson-Kingman processes.
 
-Similarly, James \cite{James:2013uk} builds a stick-breaking process for $\text{PG}(\alpha,\zeta)$-Generalized Gamma Processes. The $V_k$'s can be generated via the following process:
+Similarly, James \cite{James:2013uk} builds a stick-breaking process for the class of $\text{PG}(\alpha,\zeta)$-Generalized Gamma Processes. The $V_k$'s can be generated via the following construction:
 \begin{gather*}
 \zeta_0 \sim \zeta \\
 \vdots \\
@@ -128,33 +114,16 @@ Similarly, James \cite{James:2013uk} builds a stick-breaking process for $\text{
 R_k = \left(\frac{\zeta_{k-1}}{\zeta_k}\right)^{1/\alpha} \\
 V_k = 1 - \beta_k(1 - R_k), \ \beta_k \sim \text{Beta}(1-\alpha,\alpha) \\
 \vdots \\
-\tilde{p}_k = V_k \prod_{j=1}^{k-1}(1-V_j) \ \ k= 1,2,\dots
+\tilde{p}_k = V_k \prod_{j=1}^{k-1}(1-V_j) \ \ ,k= 1,2,\dots
 \end{gather*}
+
+Since the size-biased sequence of weights $(\tilde{p}_k)_{k \ge 1}$ is defined through Equation \ref{eq:Stick_breaking} for stick-breaking processes, it can be generated in the same way than described in the previous Section (\ref{recursion}): drawing Bernouilli's with parameters $V_k$'s until success, then return integer $k$. Stochastic recursion is therefore the crux of the  implementation of stick-breaking processes.
 
 \subsection{Size-biased generative processes}
 % \subsection{\acrlong{PKP}}
 
-Theorem \ref{prop:perman} (Page \pageref{prop:perman}) from \cite{Perman:1992ke} states that the sequence of surplus masses $(T_k)_{k \ge0}$ forms a Markov chain and gives the corresponding initial distribution and transition kernels
-
-Could we sample the $K$th stick length in generic way since we know the density ? For instance by restricting to Levy measure intensity and Total mass density which are tractable (not $\sigma$-stable \gls{PK}). One may use a simple rejection sampling with proposal $U(0, t_K)$ (what would be M ?).
-
-\begin{figure}[h]
-  \centering
-  \begin{minipage}[b]{0.48\textwidth}
-    \includegraphics[width=\textwidth]{PK_generative_process2.png}
-    \caption{Generative process of Poisson-Kingman Process. Source: \cite{LomeliThesis}.}
-  \end{minipage}
-  \hfill
-  \begin{minipage}[b]{0.48\textwidth}
-    \includegraphics[width=\textwidth]{PY_stick_breaking2.png}
-    \caption{Stick-breaking construction. Source: \cite{LomeliThesis}.}
-  \end{minipage}
-\end{figure}
-
-we reviewed the PKP generative process from Figure \ref{fig:PK_generative_process}, it is reminiscent of the well-known stick breaking construction from \ref{sethuraman94}, where a stick of length one is broken, as in Figure \ref{fig:PY_stick_breaking}, but it is not the same. As mentioned previously, we can reparameterise the model, starting with Equation (2.24), and obtain the corresponding joint distribution in terms of $N$ $(0,1)$-valued stick-breaking weights $\{\tilde{p}_j \}_{j=1}^N$, where $N$ is the number of represented sticks after trunctation (Favaro and Walker, 2012). This joint distribution is for a general Lévy measure $\rho$, density $f_\rho$ and it is conditioned on the valued of the random variable $T$. We can then recover the well-known Stick breaking representations for the Dirichlet and Pitman-Yor processes, for a specific choice of $\rho$, if we integrate out $T$.
-
-However, in general, these stick random variables, denoted by $V_l := \frac{\tilde{p}_l}{1 - \sum_{i<l}{\tilde{p}_l}}$ form a sequence of dependent random variables with a complicated distribution, except for the two previously mentioned processes, see Pitman (1996) for details.
-
+The \gls{PKP} generative process (\acrlong{SBS}) described in Section \ref{PKP}, is reminiscent of the well known stick breaking construction from Ishwaran \& James \cite{Ishwaran:2001dw}, where a stick of length one is successively broken as in Figure \ref{fig:PY_stick_breaking}.
+This \gls{SBS} process is illustrated in Figure \ref{fig:PK_generative_process} and schematically recalled below:
 \begin{gather*}
 T \sim \gamma \\
 \tilde{J}_1|T \sim \text{SBS}(T) \\
@@ -163,45 +132,77 @@ T \sim \gamma \\
 \tilde{J}_{l}|T,\tilde{J}_1,\dots,\tilde{J}_{l-1} \sim \text{SBS}(T - \sum_{i<l} \tilde{J}_i) \\
 \vdots \\
 \end{gather*}
-the corresponding weights are:
-$$ \tilde{p}_k := \frac{\tilde{J}_{k}}{T_k} = \frac{\tilde{J}_{k}}{T - \sum_{j=1}^{k-1} \tilde{J}_j} $$
+\begin{figure}[h!]
+  \centering
+  \begin{minipage}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{PK_generative_process2.png}
+    \caption{Generative process of Poisson-Kingman Process. Source: \cite{LomeliThesis}.}
+    \label{fig:PK_generative_process}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{PY_stick_breaking2.png}
+    \caption{Stick-breaking construction. Source: \cite{LomeliThesis}.}
+    \label{fig:PY_stick_breaking}
+  \end{minipage}
+\end{figure}
+However, by starting with Equation (\ref{eq:perman2}), one can recover the usual stick-breaking construction due to two useful identities (in distribution):
+\begin{equation} \label{eq:SBS1}
+\tilde{p}_k := \frac{\tilde{J}_k}{T} \ \text{for} \ k=1,\dots
+\end{equation}
+\begin{equation} \label{eq:SBS2}
+V_k := \frac{\tilde{p}_k}{1 - \sum_{j=1}^{k-1}{\tilde{p}_j}} \ \text{for} \ k=1,\dots
+\end{equation}
 
+Indeed, equivalently to Equation (\ref{eq:SBS2}), we have $\tilde{p}_k = V_k \prod_{j=1}^{k-1}{(1-V_j)}$ for all $k \ge 1$, which is of the same form as Equation (\ref{eq:Stick_breaking}) for the usual stick-breaking process.
+However, in general, the stick random variables $(V_k)_{k \ge 1}$ from Equation (\ref{eq:SBS1}), form a sequence of dependent random variables, except for some simple process as the \gls{DP} and \gls{PY}, see Pitman \cite{PitmanRDD} for details.
+Similarly to stick-breaking constructions, \acrlongpl{PKP} can therefore be constructed in a generative manner and implemented via (stochastic) recursion.
 
-Cf meeting with Ben
-$\beta_i = \frac{\tilde{J}_i}{T_{i-1}}$
-$\tilde{p_i} = \beta_i \prod_{j=1}^i (1-\beta_i)$
+%(\ref{eq:perman2})
+%By reparameterizing the model using these identities and then obtain the corresponding joint in terms of $(0,1)$-valued stick-breaking weights $\{{V}_k\}_{k \ge 1}$ which correspond to the usual stick-breaking representation. This joint distribution is for a general Lévy measure $\rho$, density $f_\rho$ and it is conditioned on the valued of the random variable $T$.
+%The standard Stick breaking representations can be recovered for the Dirichlet and Pitman-Yor processes, for a specific choice of $\rho$ and if we integrate out T. For instance, the \gls{PY} stick breaking representation \cite{Ishwaran:2001dw} can be recovered from the \acrlong{SBS} generative process of Section 2.5 after integrating out the total mass $T$, a change of variables and the following distribution for the total mass is substituted
+%$$ \gamma_{\text{PY}}(t) = \frac{\Gamma(\theta+1)}{\Gamma(\theta / \alpha + 1)}t^{-\theta} f_\sigma(t) 1_{(0,\infty)}(t), \quad \theta > -\sigma $$
+%where $f_\sigma$ is the density of a $\sigma$-Stable random variable.
+
+\paragraph{Practical aspects of \gls{SBS}}
+In the \acrlong{SBS} process (described in Section \ref{PKP}), when a random variable $X_i$ takes the value of an atom which has not yet been sampled, a new atom $X^\star_{k+1}$ must be sampled, along with its associated weight $\tilde{J}_{k+1}$. The new atom $X_{k+1}^\star$ is drawn from $H_0$, while its mass is drawn from
+\begin{equation} \label{eq:SBS3}
+\mathbb{P}_{\rho,H_0}(\tilde{J}_{k+1} \in ds_{k+1} | T \in dt_k) = \frac{s_{k+1}}{t_k}\rho(ds_{k+1})\frac{f_\rho(t_k - s_{k+1})}{f_\rho(t_k)}
+\end{equation}
+
+Yet, even if we know the density of the distribution of $\tilde{J}_{k}|T,\tilde{J}_1,\dots,\tilde{J}_{k-1}$, we do not necessarily know how to sample from it.
+We are currently working on a generic way to sample from such as distribution. We could restrict to Lévy measures with tractable intensity -- which can be evaluated pointwise -- thus excluding $\sigma$-Stable \gls{PK}. A simple rejection sampling scheme with proposal $\mathcal{U}(0, T_k)$ might be sufficient.
+Nonetheless, there are particular cases for which we already know how to sample from these distributions. Lomeli et al \cite{Lomeli:2015vd} propose a simple rejection sampling scheme with uniform proposal to tackle the $-\log$Beta \gls{PK} process. Favaro et al \cite{Favaro:2014bo} give an identity from which iid samples can be drawn for a subclass of $\sigma$-Stable \gls{PKP}.
 
 
 \section{Models of interest}
-calculus for SMC for BNP mixture with fixed parameters
-fixed parameters are not a assumption, since can be made random then with PMCMC
+We focus on infinite mixture models described in Section \ref{mixture_models}.
+The stick-breaking construction previously described in Section \ref{recursion} defines a distribution over the infinite set of natural numbers via the sequence of weights $(\tilde{p}_k)_{k \ge 1}$. Ultimately we would like a distribution not over the natural numbers themselves, but over an infinite set of samples from some other distribution $H_0$ (called the base distribution) which will represent our mixture components. Using the homogeneous assumption (of the underlying \gls{CRM}), we can easily generalise the \gls{DP} code that we wrote to this setting by using \texttt{@memoize} to associate to each natural number, a draw from the base distribution.
+This is what the code sample (\ref{code:DP}) formalises.
 
-
-Ultimately we would like to define a distribution on an infinite set of discrete outcomes that will represent our categories or mixture components, but we start by defining a distribution on the natural numbers.
-Use Homogeneous assumption, when a new $(X_k^\star)$
-
-\begin{lstlisting}[caption={\acrlong{DP} written in Julia.},captionpos=b,label=code:DP]
-function DP($\alpha$, $H_0$) =    begin
+\begin{lstlisting}[caption={\acrlong{DP} with base distribution $H_0$ written in Julia.},captionpos=b,label=code:DP]
+function DPmem($\alpha$,$H_0$) =    begin
   augmentedProc = @memoize (stickIndex) -> rand($H_0$)
   DP = makeSticks($\alpha$)
   return () -> augmentedProc(DP())
 end
 \end{lstlisting}
 
+We uses this \gls{DP} construction as a prior over mixture components so as to build an infinite mixture model (see code sample \ref{code:IMM}).
 
-The code of the \gls{DP} stick-breaking process and of the infinite mixture model which has been used for our experiments can be found here: \url{link} \textcolor{red}{ADD LINK}.
+The real code of the \gls{DP} stick-breaking process and of the infinite mixture model which has been used for our experiments can be found on Github \footnote{\url{https://github.com/emilemathieu/BNPMixPPL/blob/master/src/codebase/DPMixture2.jl}}.
 
 \begin{lstlisting}[caption={Nonconjugate infinite mixture model written in Turing.jl.},captionpos=b,label=code:IMM]
 @model InfiniteMixutre(y) = begin
   N = length(y)
   $\alpha$ =  10.0
-  m ~ Normal(meanMean, 1.0/sqrt(meanPrecision)) # Assume statement
-  s ~ Gamma(precisionShape, 1.0/precisionInvScale) # Assume statement
+  m ~ Normal(meanMean, 1.0/sqrt(meanPrecision)) # Sample statement
+  s ~ Gamma(precisionShape, 1.0/precisionInvScale) # Sample statement
   P = rand(DP($\alpha$, Normal(m, 1.0/sqrt(s)))) # Random probability measure
 
   x = tzeros(N)
   for i in 1:N
-    x[i] ~ P # Assume statement
+    x[i] ~ P # Sample statement
     y[i] ~ Normal(x[i], 1.0/sqrt(s)) # Observe statement
   end
 
@@ -209,19 +210,26 @@ The code of the \gls{DP} stick-breaking process and of the infinite mixture mode
 end
 \end{lstlisting}
 
-Note the use of the \texttt{for-loop} so as to express the model as \acrlong{SSM}. Such a formulation will indeed allow us to make use of particle algorithms (described in Subsections \ref{IS} and \ref{PMCMC}).
+Note the use of the \texttt{for-loop} above so as to express the model as \acrlong{SSM}. Such a formulation allow to make use of particle algorithms (described in Subsections \ref{IS} and \ref{PMCMC}) thanks to the sequence of \texttt{observe} statements.
+In the code sample (\ref{code:IMM}) for the infinite mixture model, the \texttt{DP} \acrlong{RPM} can be replaced by another \acrlong{NRM} of \acrlong{PK} \gls{RPM}.
+
+
+\paragraph{Stochastic memoization}
+Discrete Random Probability Measures can be seen through the interesting perspective of \textit{stochastic memoization} \footnote{\url{https://probmods.org/chapters/12-non-parametric-models.html}}, which is an in-between (deterministic) memoization and no memoization.
+Higher-order procedures such as \texttt{DPmem} (defined above) transform a procedure into one that sometimes reuses its returned values, and sometimes generate new values. These procedures are called \textit{stochastic memoizers} by Goodman et al. \cite{Goodman:2012uq}.
+For instance with the \gls{DP}, setting $\alpha = 0$ recovers a deterministic memoization whereas setting $\alpha \rightarrow \infty$ yields no memoization at all.
 
 \section{Sampler}
-Now that we have detailed and implemented a generative process (i.e. sampling from the prior) for our class of models, we focus in this section on the sampler scheme to use within the \gls{PPL}.
+% calculus for SMC for BNP mixture with fixed parameters
+% fixed parameters are not a assumption, since can be made random then with PMCMC
 
-\textcolor{red}{paper reference for particle methods for high dimensional space}
-%It has been shown that particle methods are the class of sampler scheme to use in the case of high dimensional space.
-%\gls{SMC} for 
-We are interested in the more general Bayesian case were the parameters are also random variables and to be inferred. Consequently, \acrlong{PMCMC} are methods of choice.
+Now that we have detailed and implemented a generative process (i.e. sampling from the prior) for our class of models, we focus in this section on the sampling scheme to use within the \acrlong{PPL}.
+As explained in Section (\ref{IS}), the \acrfull{SMC} algorithm breaks down the overall inference problem into a series of target distributions which get incrementally closer to the distribution of interest. These intermediate target distributions live in smaller spaces than the overall posterior distribution. This class of methods is consequently well suited for the high-dimensional models that we are considering.
+Since, we are interested in models where hyper-parameters are also random variables (see code (\ref{code:IMM})), we focus on \acrlong{PMCMC} methods.
 
-Yet, there is a big path degeneracy issue. The first $X_t$s ($t$ close to $1$) have way lower \gls{ESS} compared to $X_t$s at the end of the sequence. This is a well-known issue, which is tackled in \gls{PGAS} and \gls{IPMCMC}.
+Yet, there is a big path degeneracy issue. The first $X_t$'s ($t$ close to $1$) have way lower \gls{ESS} compared to $X_t$'s at the end of the sequence. This is a well-known issue, which is tackled in \gls{PGAS} and \gls{IPMCMC}.
 
-\gls{PMMH} should bring symmetry in the \gls{ESS} graph (\gls{ESS} for the $y$-axis and $t$ index for the $x$-axis), i.e. all $X_t$s should have in average the same \gls{ESS}.
+\gls{PMMH} should bring symmetry in the \gls{ESS} graph (\gls{ESS} for the $y$-axis and $t$ index for the $x$-axis), i.e. all $X_t$'s should have in average the same \gls{ESS}.
 
 We believe that \gls{PGAS} is not suited with \gls{BNP} models since ...
 This is the reason why I am currently working on the implementation of \gls{IPMCMC} for Turing.
@@ -246,4 +254,6 @@ where $N$ the total number of observations, $k$ is the number of different compo
 
 Should we include the sticks lengths (weights) $\{\tilde{J}_j\}_{j=1}^k$
 
-Other models than infinite mixture models  
+Other models than infinite mixture models
+
+Better sampler ? Include information about our model to make the sampling more efficient. Other proposal than prior?

@@ -111,7 +111,7 @@ A nonparametric Bayesian approach to density estimation \cite{Escobar94bayesiand
 %Pólya Trees are priors on probability distributions that can generate both discrete and piecewise continuous distributions, depending on the choice of parameters. Pólya trees are defined by a recursive infinitely deep binary subdivision of the domain of the generated random measure. Each subdivision is associated with a beta random variable which describes the relative amount of mass on each side of the subdivision. The \gls{DP} is a special case of a Pólya tree corresponding to a particular parametrization. For other parametrizations the resulting random distribution can be smooth so is suitable for density estimation.
 
 
-\section{Mixture models}
+\section{Mixture models} \label{mixture_models}
 \subsection{Finite dimensional}
 Mixture models provide a statistical framework for modeling data where each observation is assumed to have arisen from one of $k$ groups, with $k$ possibly unknown, and each group being suitably modeled by a distribution function from some parametric family. We refer to the monographs by Titterington et al. \cite{titterington_85} and McLachlan and Basford \cite{mclachlan_basford88} for accounts on mixture models with a fixed number of components. The distribution function of each group is referred to as a component of the mixture model and is weighted by the relative frequency of the group in the population. Specifically, assuming $k$ being fixed, a collection of observations $Y_1,\dots,Y_n$ is modeled as independent draws from a mixture distribution function with $k$ components, that is,
 \begin{equation} \label{eq:mixture}
@@ -178,12 +178,12 @@ The underlying measure $\nu = \rho \times H_0$ uniquely characterises the random
 The only intensity measures that are considered herein are those that factorise $\nu(ds, dy) = \rho(ds)H_0(dy)$ for some measure $\rho$ on $\mathbb{R}^+$ absolutely continuous with respect to the Lebesgue measure, and some non-atomic probability measure $H_0$ on $\mathbb{X}$. The corresponding \gls{CRM} is said to be \textit{homogeneous} and write $\text{CRM}(\rho, H_0)$ for the law of $\mu$. Successively, the measure $\rho$ is referred to as the Lévy measure, while $H_0$ is the base distribution.
 Homogeneity implies independence between $\left(J_k \right)_{k\ge1}$ and $\left(X^\star_k \right)_{k\ge1}$, where $\left(X^\star_k \right)_{k\ge1}$ is a sequence of random variables independent and identically distributed according to $H_0$ while the law of $\left(J_k \right)_{k\ge1}$  is governed by $\rho$. Intuitively, the point process $\left(J_k, X^\star_k \right)_{k\ge1}$  is described by a Poisson process over $\mathbb{R}^+ \times \mathbb{X}$ with intensity measure $\nu = \rho \times H_0$, as illustrated in Figure \ref{fig:CRM}.
 
-\begin{figure}[h!]
-\centering
-    \includegraphics[width=0.6\linewidth]{CRM.png} 
-    \caption{A draw $\sum_{j \ge 1}{J_j \delta_{X_j}}$ from a \gls{CRM}. Each stick denotes an atom in the \gls{CRM}, with mass given by its height $J_j$ and location given by $X_j$. Behind the \gls{CRM} is the density of its Lévy intensity measure $\nu$. Source: \cite{Favaro:2013fl}.}
-    \label{fig:CRM} 
-\end{figure}
+% \begin{figure}[h!]
+% \centering
+%     \includegraphics[width=0.6\linewidth]{CRM.png} 
+%     \caption{A draw $\sum_{j \ge 1}{J_j \delta_{X_j}}$ from a \gls{CRM}. Each stick denotes an atom in the \gls{CRM}, with mass given by its height $J_j$ and location given by $X_j$. Behind the \gls{CRM} is the density of its Lévy intensity measure $\nu$. Source: \cite{Favaro:2013fl}.}
+%     \label{fig:CRM} 
+% \end{figure}
 
 It is required that $\mu$ has almost-surely finite total mass, Equation \ref{eq:levy} with $g(y)=1$ shows that the Lévy measure is required to satisfy the property
 $$ \int_{\mathbb{R}^+ \times \mathbb{X}} \left( \  1 - e^{-s} \right) \rho(ds) H_0(dy) = 
@@ -221,7 +221,7 @@ where $\tau \in [0,\infty)$, $a \in (0, \infty)$ and $\sigma \in [0, 1)$. The \g
 %The random partition $\Pi$ is exchangeable, and its exchangeable partition probability function (EPPF) can be deduced from the law of the \gls{NRM}.
 %Kingman \cite{CIS-16820} demonstrates that there is a correspondence between the law of ⇧ and that of the random probability measure.
 
-\subsection{Poisson-Kingman random probability measure}
+\subsection{Poisson-Kingman random probability measure} \label{PKP}
 Poisson-Kingman \gls{RPM} were introduced in \cite{pitman2003pkp} as a generalisation of homogeneous NRMs. \\
 
 \begin{definition}[Poisson-Kingman Random Probability Measure] \label{def:PKRPM}
@@ -244,12 +244,12 @@ X_i|P \sim P, \\
 Y_i|X_i \sim F(\cdot|X_i),
 \end{gather*}
 
-\begin{figure}[h!]
-\centering
-    \includegraphics[width=0.5\linewidth]{graph_model_intractable.png} 
-    \caption{\gls{PKP} intractable graphical model: the latent variables are countably infinitely many which makes the model computationally intractable. Source: \cite{LomeliThesis}.} 
-    \label{fig:graph_model_intractable} 
-\end{figure}
+% \begin{figure}[h!]
+% \centering
+%     \includegraphics[width=0.5\linewidth]{graph_model_intractable.png} 
+%     \caption{\gls{PKP} intractable graphical model: the latent variables are countably infinitely many which makes the model computationally intractable. Source: \cite{LomeliThesis}.} 
+%     \label{fig:graph_model_intractable} 
+% \end{figure}
 Figure \ref{fig:graph_model_intractable} represents the associated graphical model.
 
 \paragraph{$\sigma$-Stable Poisson-Kingman \glspl{RPM}}
@@ -273,10 +273,9 @@ Accordingly, $\sigma$-Stable Poisson-Kingman \glspl{RPM} form a class of discret
 \item \acrfull{pgc}: $h(t) = \int_{\mathbb{R}^+} \exp\{\tau - \tau^{1/\sigma}t \} F(d\tau)$ \\
 \end{itemize}
 
+\paragraph{\acrlong{SBS} process} \label{SBS}
 An important object induced by a Poisson-Kingman \gls{RPM} is a size-biased permutation of its atoms. Specifically, order the blocks in the partition $\Pi$ (induced by the \gls{RPM}) by increasing order of the least element in each block, and for each $l \in \mathbb{N}$ let $Z_l$ be the least element of the $l$-th block. $Z_l$ is the index among $(X_i)_{i \ge 1}$ of the first appearance of the $l$-th unique value in the sequence.
-Let $\tilde{J}_l = \mu(\{X_{Z_l}\})$ be the mass of the corresponding atom in $\mu$. Then $(\tilde{J}_l)_{l\ge 1}$ is a size-biased permutation of the masses of atoms in $\mu$, with larger masses tending to appear earlier in the sequence. It is easy to see that $\sum_{l \ge 1}{\tilde{J}_l} = T$, and that the sequence can be understood as a stick-breaking construction: start with a stick of length $T_0 = T$; break off the first piece of length $\tilde{J}_1$; the surplus length of stick is $T_1 = T - \tilde{J}_1$; then
-the second piece with length $\tilde{J}_2$ is broken off, etc.
-
+Let $\tilde{J}_l = \mu(\{X_{Z_l}\})$ be the mass of the corresponding atom in $\mu$. Then $(\tilde{J}_l)_{l\ge 1}$ is a size-biased permutation of the masses of atoms in $\mu$, with larger masses tending to appear earlier in the sequence. It is easy to see that $\sum_{l \ge 1}{\tilde{J}_l} = T$, and that the sequence can be understood as a stick-breaking construction: start with a stick of length $T_0 = T$; break off the first piece of length $\tilde{J}_1$; the surplus length of stick is $T_1 = T - \tilde{J}_1$; then the second piece with length $\tilde{J}_2$ is broken off, etc. This construction is called the \acrfull{SBS} process.
 
 The conditioning operation from the generative process from Equation \ref{eq:PK} is not well defined a priori but the following proposition from \cite{Perman:1992ke} helps to bypass this difficulty. It also states an interesting Markovian property of the surplus masses, which will be of used to describe a \gls{PK} generative process. \\
 
@@ -316,12 +315,12 @@ By multiplying the above infinitesimal probabilities one obtains the joint distr
 
 \begin{proposition}[Perman et al. \cite{Perman:1992ke}] \label{prop:perman2}
 Let $\Pi_n$ be the exchangeable random partition of $[n] := \{1, \dots, n\}$ induced by a sample $(X_i)_{i \in [n]}$ from $P \sim \text{PK}(\rho,h,H_0)$. Let $(X_l^\star)_{l \in [k]}$ be the $k$ distinct values in $(X_i)_{i \in [n]}$ with masses $(\tilde{J}_l)_{l \in [k]}$. Then
-\begin{equation*}
+\begin{equation} \label{eq:perman2}
 \begin{aligned}
 \mathbb{P}_{\rho, H_0}&(T \in dt, \Pi_n = (c_l)_{l \in [k]}, X_l^\star \in dx_l^\star, \tilde{J}_l \in ds_l\ \text{for} \ l \in [k]) \\
 &= h(t) t^{-n} f_\rho(t - \sum_{l=1}^k{s_l})dt \prod_{l=1}^k{s_l^{|c_l|} \rho(ds_l)H_0(dx_l^\star)}
 \end{aligned}
-\end{equation*}
+\end{equation}
 where $(c_l)_{l \in [k]}$ denotes a particular partition of $[n]$ with $k$ blocks, $c_1,\dots , c_k$, ordered by increasing least element and $|c_l|$ is the cardinality of block $c_l$.
 \end{proposition}
 
@@ -331,12 +330,12 @@ Constructing \gls{MCMC} schemes for models with one or more Bayesian nonparametr
 There are two main sampling approaches to facilitate simulation in the case of Bayesian nonparametric models: random truncation and marginalisation. These two schemes are known in the literature as conditional and marginal, but hybrid samplers between these two also exist. Each sampler rely on a tailored, thus different, representation of the underlying process. Yet, these samplers are all instances of Gibbs sampler.
 
 \subsection{Marginal Samplers}
-\begin{figure}[h!]
-\centering
-    \includegraphics[width=0.5\linewidth]{graph_model_marginal.png} 
-    \caption{Marginal sampler’s graphical model. Each node represents a variable used in the augmented representation for the joint distribution. The nodes with dashed lines represent the algorithmic inputs. Source: Maria Lomeli's thesis} 
-    \label{fig:graph_model_marginal} 
-\end{figure}
+% \begin{figure}[h!]
+% \centering
+%     \includegraphics[width=0.5\linewidth]{graph_model_marginal.png} 
+%     \caption{Marginal sampler’s graphical model. Each node represents a variable used in the augmented representation for the joint distribution. The nodes with dashed lines represent the algorithmic inputs. Source: Maria Lomeli's thesis} 
+%     \label{fig:graph_model_marginal} 
+% \end{figure}
 
 Marginal samplers bypass the need to represent the infinite-dimensional component by marginalising it out. These schemes have lower storage requirements than conditional samplers because they only store the induced partition, but could potentially have worse mixing properties \cite{LomeliThesis}.
 
@@ -350,12 +349,12 @@ For instance, if the $\sigma$-Stable Poisson-Kingman subclass is picked, then it
 This representation is based on an augmented version of its corresponding exchangeable partition probability function.
 
 \subsection{Conditional Samplers}
-\begin{figure}[h!]
-\centering
-    \includegraphics[width=0.5\linewidth]{graph_model_conditional.png} 
-    \caption{Conditional sampler’s graphical model. Each node represents a variable used in the augmented representation for the joint distribution. The latent variables represent the number of occupied and unoccupied components. Source: \cite{LomeliThesis}.} 
-    \label{fig:graph_model_conditional} 
-\end{figure}
+% \begin{figure}[h!]
+% \centering
+%     \includegraphics[width=0.7\linewidth]{graph_model_conditional.png} 
+%     \caption{Conditional sampler’s graphical model. Each node represents a variable used in the augmented representation for the joint distribution. The latent variables represent the number of occupied and unoccupied components. Source: \cite{LomeliThesis}.} 
+%     \label{fig:graph_model_conditional} 
+% \end{figure}
 
 Conditional samplers replace the infinite-dimensional prior by a finite-dimensional representation chosen according to a truncation level. Since these samplers do not integrate out the infinite-dimensional component, their output provides a more comprehensive representation of the random probability measure.
 Figure \ref{fig:graph_model_conditional} shows such representation or the $\sigma$-Stable Poisson-Kingman family for the conditional slice \gls{MCMC} sampler \cite{FavaroWalker2012}.
@@ -367,20 +366,23 @@ The stick-breaking weights can be sampled either via a stick-breaking representa
 
 
 \subsection{Hybrid Samplers}
-\begin{figure}[h!]
-\centering
-    \includegraphics[width=0.5\linewidth]{graph_model_hybrid.png} 
-    \caption{PK hybrid sampler’s graphical model. Each node represents a variable used in the augmented representation for the joint distribution. The nodes with dashed lines represent the algorithmic inputs. Source: \cite{LomeliThesis}.} 
-    \label{fig:graph_model_hybrid} 
-\end{figure}
+% \begin{figure}[h!]
+% \centering
+%     \includegraphics[width=0.5\linewidth]{graph_model_hybrid.png} 
+%     \caption{PK hybrid sampler’s graphical model. Each node represents a variable used in the augmented representation for the joint distribution. The nodes with dashed lines represent the algorithmic inputs. Source: \cite{LomeliThesis}.} 
+%     \label{fig:graph_model_hybrid} 
+% \end{figure}
 
 An hybrid \gls{MCMC} scheme has been developed \cite{Lomeli:2015vd}, and combines the main strengths of both conditional and marginal \gls{MCMC} samplers.
 
-This hybrid scheme makes use of a representation of the model where only the size-biased weights associated to occupied clusters are needed to be explicitly represented along with a surplus mass term, associated to the rest of the empty clusters.
-Figure \ref{fig:graph_model_hybrid} shows this tractable and compact representation for a Poisson-Kingman mixture model is based.
-The cluster reassignment step can be seen as a retrospective sampling scheme: we explicitly represent and update the weights associated to occupied clusters and create a new size-biased weight only when a new cluster appears. %To make this possible, we use the induced partition.
+Equation's (\ref{eq:perman2}) joint distribution is written in terms of the first $k$ size-biased weights. In order to obtain a complete representation of the \gls{RPM}, one would need to size-bias sample from it for a countably infinite number of times.
+Yet, by exploiting the \acrlong{SBS} process (derived after Proposition \ref{prop:perman}) when reassigning observations to clusters and reparameterizing the model in term of a surplus mass random variable yields the join distribution used by Lomeli et al. \cite{Lomeli:2015vd}.
 
-This scheme has less memory requirements since it only represents the size-biased weights associated to occupied clusters as opposed to conditional samplers which represent both empty and occupied clusters. Also, since it does not integrate out all of the size-biased weights, we obtain a more comprehensive representation of the \gls{RPM}.
+This hybrid scheme makes use of a representation of the model where only the size-biased weights associated to occupied clusters are needed to be explicitly represented along with a surplus mass term which is associated to the rest of the empty clusters, as Figure \ref{fig:graph_model_hybrid} shows.
+The cluster reassignment step can be seen as a retrospective sampling scheme which explicitly represent and update the weights associated to occupied clusters and create a new size-biased weight only when a new cluster appears.
+
+This scheme has less memory requirements since it only represents the size-biased weights associated to occupied clusters as opposed to conditional samplers which represent both empty and occupied clusters.
+
 
 \subsection{Sequential Monte Carlo}
 Recently, various \gls{SMC} schemes (see Section \ref{SMC} for more details on \gls{SMC}) for Bayesian nonparametric models have been proposed.
