@@ -225,7 +225,7 @@ For instance with the \gls{DP}, setting $\alpha = 0$ recovers a deterministic me
 % fixed parameters are not a assumption, since can be made random then with PMCMC
 
 Now that we have detailed and implemented a generative process (i.e. sampling from the prior) for our class of models, we focus in this section on the sampling scheme to use within the \acrlong{PPL}.
-As explained in Section (\ref{IS}), the \acrfull{SMC} algorithm breaks down the overall inference problem into a series of target distributions which get incrementally closer to the distribution of interest. These intermediate target distributions live in smaller spaces than the overall posterior distribution. This class of methods is consequently well suited for the high-dimensional models that we are considering.
+As explained in Section (\ref{IS}), the \acrfull{SMC} algorithm breaks down the overall inference problem into a series of target distributions which get incrementally closer to the distribution of interest. These intermediate target distributions live in smaller spaces than the overall posterior distribution. This class of methods is consequently well suited for the high-dimensional models that we are considering. It is straightforward to prove that by using an \gls{SMC} scheme within a \gls{PPL} with our model, we are indeed rightly targeting the posterior distribution.
 Since, we are interested in models where hyper-parameters are also random variables (see code (\ref{code:IMM})), we focus on \acrlong{PMCMC} methods.
 
 We started by using \acrlong{PG} (see Section (\ref{PMCMC})) targeting the cluster components and assignments with the conditional \gls{SMC} and the hyper-parameters with an \gls{HMC}.
