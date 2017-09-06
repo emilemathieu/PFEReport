@@ -28,8 +28,6 @@
 %Page de garde
 \begin{titlepage}
       \begin{center}
-      %\includegraphics[scale=0.5]{logo_enpc.jpg}
-      %\includegraphics[scale=0.2]{logo_oxford.png}
       \begin{figure}
 \centering
 \begin{subfigure}{.5\textwidth}
@@ -43,7 +41,6 @@
 \vspace{1.0cm}
 \end{figure}
 
-      
       \vspace{0.3cm}
       \institute{École des Ponts ParisTech}\\
       \institute{Department of Statistics, University of Oxford}
@@ -58,11 +55,7 @@
       
       \vspace{2cm}
       \Huge{\textbf{Bayesian Nonparametric Inference within Probabilistic Programming Languages}}\\
-      %\Large{\textit{within Probabilistic Programming Languages}} 
 
-      %\vspace{2cm}
-      %\Huge{\textbf{CONFIDENTIEL}}\\
-      
       \vfill
       \normalsize{}
       Internship carried out at Department of Statistics, University of Oxford \\
@@ -121,10 +114,25 @@ In this report, we review well-known \gls{BNP} models with a focus on mixture mo
 \mainmatter
 
 
-% \chapter{Introduction}
-% cf Research Proposal ?
-% Speak about the PhD which is following
-% Plan: First, Then, After, Eventually, etc
+\chapter{Introduction}
+cf Research Proposal ?
+Speak about the PhD which is following
+
+For data science practitioners, statistical inference is typically just one step in a more elaborate analysis workflow. The first stage of this work involves data acquisition, pre-processing and cleaning. This is often followed by several iterations of exploratory model design and testing of inference algorithms. Once a sufficiently robust statistical model and a corresponding inference algorithm have been identified, analysis results must be post-processed, visualized, and in some cases integrated into a wider production system.
+
+% Probabilistic programming systems [6, 7, 9, 31] represent generative models as programs written in a specialized language that provides syntax for the definition and conditioning of random variables. The code for such models is generally concise, modular, and easy to modify or extend. Inference can be performed for any probabilistic program using one or more generic inference techniques provided by the system back end.
+
+% \acrlong{BNP} models have gained attraction because of their flexibility. These models, which automatically adapt with the number and complexity of data, avoid having to define \textit{a priori} the number of parameters of the model, such as the number of components for a mixture model.
+
+% \acrlongspl{PPL} allow practitioners to express probabilistic models in a universal way, and bring generic inference algorithms. These systems avoid designing specific inference schemes, which is error-prone and time consuming.
+% Specific representations of \gls{BNP} models must be used so as to denote such models in \glspl{
+
+
+% After giving some background on the Department of Statistics in Chapter 1 and on
+% \acrlong{BNP} models in Chapter 2 with a focus on mixture models and discrete random probability measures
+
+
+In this report, we review well-known \gls{BNP} models with a focus on mixture models and discrete random probability measures, but we also give background on the design of \glspl{PPL} and associated inference schemes. We utilize generative construction of \glspl{BNP} and show that more generic \gls{BNP} classes than the \acrlong{DP} can be represented in \glspl{PPL}. We prototype our approach by contributing to an existing \gls{PPL}.
 
 
 \include{presentation}

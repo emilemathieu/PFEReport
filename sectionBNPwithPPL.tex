@@ -1,18 +1,18 @@
 
 \chapter{\gls{BNP} inference within \glspl{PPL}} \label{BNP_PPL}
 In this chapter we focus on the task of performing inference within a \gls{PPL} for models with an infinite dimensional component, also called \gls{BNP} models.
-For now we have restricted ourselves to infinite mixture models, but we hope that our framework will enable efficient sampling for other \gls{BNP} models such as the infinite \acrlong{HMM} \cite{Beal02theinfinite}. We have also focused our study on sampling methods, but \acrlong{VI} is considered in Section \ref{BNP_VI}.
+For now we have restricted ourselves to infinite mixture models, but we hope that our framework will enable efficient sampling for other \gls{BNP} models such as the infinite \acrlong{HMM} \cite{Beal02theinfinite}. We have also focused our study on \gls{MCMC} sampling methods, but \acrlong{VI} is considered in Section \ref{BNP_VI}.
 
 \section{Recursion is key} \label{recursion}
 
-In \glspl{PPL}, to transform a variable in a random variable, one only needed to write \texttt{x = sample(Dist(parameters))}. Then the posterior distribution (given some observations) of \texttt{x} will automatically be performed during the inference scheme.
+In \glspl{PPL}, to transform a program variable \texttt{x} in a random variable, one only needed to write \texttt{x = sample(Dist(parameters))}. Then the posterior distribution (given some observations) of \texttt{x} will automatically be performed during the inference scheme.
 The Bayesian setting thus naturally fits the framework of \glspl{PPL}.
 Yet, we believe that there is more  than just a connection between Bayesian inference and \glspl{PPL}, but that there is also a connection between \acrlong{BNP} and High-order \gls{PPL}.
 
 Working with \gls{BNP} models can be impossible because of the constraints of computers.
 A \gls{NRM} $P$ can be written \cite{Kingman:1967kn} as
-$$P = \sum_{k \ge 1}{\tilde{p}_k \delta_{X^\star_k}} $$
-where $\left(\tilde{p}_k, X^\star_k \right)_{k \ge 1}$ is an infinite collection of weights and atoms.
+$$P = \sum_{k \ge 1}{{p}_k \delta_{X^\star_k}} \quad \text{and} \quad \sum_{k \ge 1}{p_k}=1$$
+where $\left({p}_k, X^\star_k \right)_{k \ge 1}$ is an infinite collection of weights and atoms.
 Discrete probability measures with countable support such as \acrlongpl{NRM} cannot be represented in a computer in a naïve manner since a machine has finite memory.
 Other representations of such objects must be used, if one hope to denote them in a program.
 
@@ -22,26 +22,22 @@ Lazy evaluation is often combined with \textit{memoization}, as described in \ci
 Instead of hoping to construct the entire infinite sequence $\left({p}_k, X^\star_k \right)_{k \ge 1}$, we will only ``lazily'' sample $\left({p}_k, X^\star_k \right)$, i.e. when we need them.
 Since we work with homogeneous \glspl{CRM}, the $\{X^\star_k\}_{k \ge 1}$ are independent and identically distributed according to the base distribution. Sampling the $(X^\star_k)_{k \ge 1}$ as we need them is therefore trivial. Yet, how could we lazily sample the $({p}_k)_{k \ge 1}$ ?
 In Subsection \ref{DP}, we presented the stick-breaking process, a generative process for constructing of a size-biased permutation of $({p}_k)_{k \ge 1}$, denoted $(\tilde{p}_k)_{k \ge 1}$.
-In Section \ref{SBS} we explore other generative processes, for more generic \gls{BNP} classes. For now, Let us recall the construction given by \cite{sethuraman94} for the stick-breaking process:
+In Section \ref{SBS} we explore other generative processes, for more generic \gls{BNP} classes. For now, Let us recall the construction given by \cite{sethuraman94} for the stick-breaking process of the \gls{DP}:
 
 
 \begin{gather*}
-V_1 \sim \text{Beta}(1, \alpha) \\
-V_2 \sim \text{Beta}(1, \alpha) \\
-\vdots \\
-V_j \sim \text{Beta}(1, \alpha) \\
-\vdots \\
-\tilde{p}_k = V_k \prod_{j=1}^{k-1}(1-V_j) \ \ k= 1,2,\dots
+V_k \stackrel{iid}{\sim} \text{Beta}(1, \alpha) \, \ k \ge 1 \\
+\tilde{p}_k = V_k \prod_{j=1}^{k-1}(1-V_j)  \, \ k \ge 1
 \end{gather*}
 
 Therefore, $\tilde{p}_k$ can be seen as the probability of the following sequence of outcomes: $k-1$ Bernouilli draws with respective probabilities $V_j \ , j=1,\dots,k-1$, all yield failure, and one last Bernouilli draw with probability $V_k$ yields success.
 How can this be interpreted as a generative process on an infinite set of discrete outcomes ?
 %With this insight so as to sample from a \gls{CRP}, or equivalently from a \gls{DP} with a base distribution on the natural numbers.
-Imagine ``walking'' down the natural numbers in order, flipping a coin with weight $V_k$ (also called stick) for each one; if the coin comes up \texttt{false}, we continue to the next natural number; if the coin comes up \texttt{true}, we stop and return the current natural number. The probability of getting the natural number $k$ is given by $\tilde{p}_k$ defined above. This is formalised by the procedure \texttt{pickStick} in the code sample \ref{code:DP_SB} below.
+Imagine ``walking'' down the natural numbers in order, flipping a coin with probability $V_k$ (called stick or stick length) for each one; if the coin comes up \texttt{false}, we continue to the next natural number; if the coin comes up \texttt{true}, we stop and return the current natural number. The probability of getting the natural number $k$ is given by $\tilde{p}_k$ defined above. This is formalised by the procedure \texttt{pickStick} in the code sample \ref{code:DP_SB} below.
 
 \begin{lstlisting}[caption={\acrlong{DP} stick-breaking representation written in Julia.},captionpos=b,label=code:DP_SB]
 function pickStick(sticks, J) = begin
-  return rand(Bernouilli(sticks(J))) ? J : pickStick(sticks, J+1)
+  return rand(Bernoulli(sticks(J))) ? J : pickStick(sticks, J+1)
 end
 
 function makeSticks($\alpha$) =  begin
@@ -50,13 +46,13 @@ function makeSticks($\alpha$) =  begin
 end
 \end{lstlisting}
 
-The individual $V_k$ are drawn lazily, only generating new ones when we have walked out further than furthest previous time. This is the role of the procedure \texttt{makeSticks} which uses memoization to enforce this property. Even though we started by imagining an infinite set of sticks we only ever construct a finite subset of them. The above construction of the \gls{DP} defines a distribution over the infinite set of natural numbers.
+The individual $V_k$ are drawn lazily, only generating new ones when we have walked out further than the furthest previous time. This is the role of the procedure \texttt{makeSticks} which uses memoization to enforce this property. Even though we started by imagining an infinite set of sticks we only ever construct a finite subset of them. The above construction of the \gls{DP} defines a distribution over the infinite set of natural numbers.
 
-Remark that the function \texttt{pickStick} is written in a special fashion: it is built via a \textit{recursion}. A \textit{recursive} function has one or more base cases for which the function produces a result trivially (without recurring), and one or more recursive cases for which the program recurs (calls itself). For programming languages, allowing recursion means allowing a function to call itself within the program text. Moreover, before calling \texttt{pickStick}, no one knows the integer which will be returned, i.e. the number of recursion calls, since it is a random variable by construction.
+Note that the function \texttt{pickStick} is written in a special fashion: it is built via a \textit{recursion}. A \textit{recursive} function has one or more base cases for which the function produces a result trivially (without recurring), and one or more recursive cases for which the program recurs (calls itself). For programming languages, allowing recursion means allowing a function to call itself within the program text. Moreover, before calling \texttt{pickStick}, the program does not know the integer which will be returned, i.e. the number of recursion calls, since it is a random variable by construction.
 
 Recall that high-order \glspl{PPL} allow complex control flow, including stochastic recursion (stated in Section \ref{PPL_history}). \textit{Stochastic} or \textit{unbounded} recursion simply means that the number of recursive calls (also called \textit{depth} of the recursion) is random or unbounded. Therefore, the \gls{DP} stick-breaking process can be written and executed with such high-order \glspl{PPL}.
 
-\glspl{PPL} are some sort of \textit{simulators}, models need to be written as generative processes. Executing such a model -- as is -- via a \gls{PPL}'s interpreter, is sampling from its prior distribution. Once one can write a model as a generative process, (i.e can sample from the model's prior), the \gls{PPL} can perform inference on the latent variables. Consequently, for \gls{BNP} models, a representation similar to the stick-breaking process for the \gls{DP}, seems to be necessary.
+\glspl{PPL} are some sort of \textit{simulators}, models need to be written as generative processes. Executing such a model -- as is -- via a \gls{PPL}'s interpreter, is sampling from its prior distribution. Once one can write a model as a generative process, (i.e can sample from the model's prior), the \gls{PPL} can perform inference on the latent variables. Consequently, for \gls{BNP} models based on \acrlongpl{RPM}, a representation similar to the stick-breaking process for the \gls{DP}, seems to be necessary.
 
 
 \subsection{Implementation details}
@@ -117,7 +113,7 @@ V_k = 1 - \beta_k(1 - R_k), \ \beta_k \sim \text{Beta}(1-\alpha,\alpha) \\
 \tilde{p}_k = V_k \prod_{j=1}^{k-1}(1-V_j) \ \ ,k= 1,2,\dots
 \end{gather*}
 
-Since the size-biased sequence of weights $(\tilde{p}_k)_{k \ge 1}$ is defined through Equation \ref{eq:Stick_breaking} for stick-breaking processes, it can be generated in the same way than described in the previous Section (\ref{recursion}): drawing Bernouilli's with parameters $V_k$'s until success, then return integer $k$. Stochastic recursion is therefore the crux of the  implementation of stick-breaking processes.
+Since the size-biased sequence of weights $(\tilde{p}_k)_{k \ge 1}$ is defined through Equation \ref{eq:Stick_breaking} for stick-breaking processes, it can be generated in the same way as described in the previous Section \ref{recursion}: drawing Bernoulli's with parameters $V_k$'s until success, then return integer $k$. Stochastic recursion is therefore the crux of the  implementation of stick-breaking processes in \glspl{PPL}.
 
 \subsection{Size-biased generative processes}
 % \subsection{\acrlong{PKP}}
@@ -167,7 +163,7 @@ Similarly to stick-breaking constructions, \acrlongpl{PKP} can therefore be cons
 \paragraph{Practical aspects of \gls{SBS}}
 A useful identity for computing sticks length $(V_k)_{k \ge 1}$ is given by
 \begin{equation} \label{eq:SBS4}
-V_k = \frac{\tilde{J}_k}{T_k} \quad \text{for} \ k=1,\dots
+V_k = \frac{\tilde{J}_k}{T_{k-1}} \quad \text{for} \ k=1,\dots
 \end{equation}
 Consequently, to compute $V_k$, one only needed to sample $\tilde{J}_{k}|T,\tilde{J}_1,\dots,\tilde{J}_{k-1}$, and to update the surplus mass given by $T_1 = T$ and $T_k = T - \tilde{J}_k$ for $k \ge 2$.
 The $(\tilde{p}_k)_{k \ge 1}$ are therefore never computed.
@@ -232,20 +228,20 @@ Discrete Random Probability Measures can be seen through the interesting perspec
 Higher-order procedures such as \texttt{DPmem} (defined above) transform a procedure into one that sometimes reuses its returned values, and sometimes generate new values. These procedures are called \textit{stochastic memoizers} by Goodman et al. \cite{Goodman:2012uq}.
 For instance with the \gls{DP}, setting $\alpha = 0$ recovers a deterministic memoization whereas setting $\alpha \rightarrow \infty$ yields no memoization at all.
 
-\section{Sampler}
+\section{Posterior samplers}
 
 Now that we have detailed and implemented a generative process (i.e. sampling from the prior) for our class of models, we focus in this section on the sampling scheme to use within the \acrlong{PPL}.
-As explained in Section (\ref{IS}), the \acrfull{SMC} algorithm breaks down the overall inference problem into a series of target distributions which get incrementally closer to the distribution of interest. These intermediate target distributions live in smaller spaces than the overall posterior distribution. This class of methods is consequently well suited for the high-dimensional models that we are considering. It is straightforward to prove that by using an \gls{SMC} scheme within a \gls{PPL} with our model, we are indeed rightly targeting the posterior distribution.
+As explained in Section \ref{IS}, the \acrfull{SMC} algorithm breaks down the overall inference problem into a series of target distributions which get incrementally closer to the distribution of interest. These intermediate target distributions live in smaller spaces than the overall posterior distribution. This class of methods is consequently well suited as a generic inference method for the high-dimensional models that we are considering. It is straightforward to prove that by using an \gls{SMC} scheme within a \gls{PPL} with our model, we are indeed rightly targeting the posterior distribution.
 Since, we are interested in models where hyper-parameters are also random variables (see code (\ref{code:IMM})), we focus on \acrlong{PMCMC} methods.
 
-We started by using \acrlong{PG} (see Section (\ref{PMCMC})) targeting the cluster components and assignments with the conditional \gls{SMC} and the hyper-parameters with an \gls{HMC}.
+We started by using \acrlong{PG} (see Section \ref{PMCMC}) targeting the cluster components and assignments with the conditional \gls{SMC} and the hyper-parameters with an \gls{HMC}.
 
 \textcolor{red}{Posterior distribution of hyperparmeters for DP mixture with PG}
 \textcolor{red}{ESS of mixture components for DP mixture, highlight path degeneracy}
 
-Unsurprisingly we observed a big path degeneracy issue. Figure \ref{} shows that the first $X_t$'s ($t$ close to $1$) have way lower \gls{ESS} compared to $X_t$'s at the end of the sequence. This is a well-known issue, which is tackled in \gls{PGAS} and \gls{IPMCMC}.
+Unsurprisingly we observed a big path degeneracy issue. Figure \ref{} shows that the first $X_t$'s ($t$ close to $1$) drastically have lower \gls{ESS} compared to $X_t$'s at the end of the sequence. This is a well-known issue, which is tackled in \gls{PGAS} and \gls{IPMCMC}.
 \gls{PMMH} should bring symmetry in the \gls{ESS} graph (\gls{ESS} for the $y$-axis and $t$ index for the $x$-axis), i.e. all $X_t$'s should have in average the same \gls{ESS}.
-The path degeneracy issue been tackled by the \gls{PGAS} and \gls{IPMCMC} algorithms (see Section (\ref{PMCMC}) for more details).
+The path degeneracy issue been tackled by the \gls{PGAS} and \gls{IPMCMC} algorithms (see Section \ref{PMCMC} for more details).
 We believe that the \gls{PGAS} algorithm is not suited with our representation of infinite mixture models. This is the reason why we are currently working on the implementation of \gls{IPMCMC} \footnote{\url{https://github.com/yebai/Turing.jl/issues/334}} for Turing.
 
 
