@@ -174,6 +174,7 @@ Yet, even if we know the density of the distribution of $\tilde{J}_{k}|T,\tilde{
 We are currently working on a generic way to sample from such as distribution. We could restrict to Lévy measures with tractable intensity -- which can be evaluated pointwise -- thus excluding $\sigma$-Stable \gls{PK}. A simple rejection sampling scheme with proposal $\mathcal{U}(0, T_k)$ might be sufficient.
 Nonetheless, there are particular cases for which we already know how to sample from these distributions. Lomeli et al \cite{Lomeli:2015vd} propose a simple rejection sampling scheme with uniform proposal to tackle the $-\log$Beta \gls{PK} process. Favaro et al \cite{Favaro:2014bo} give an identity from which iid samples can be drawn for a subclass of $\sigma$-Stable \gls{PKP}.
 
+\textcolor{red}{Sampling from -logBeta PKP: graph of the sampled random measure}
 
 \section{Models of interest}
 We focus on infinite mixture models described in Section \ref{mixture_models}.
@@ -227,25 +228,24 @@ Now that we have detailed and implemented a generative process (i.e. sampling fr
 As explained in Section (\ref{IS}), the \acrfull{SMC} algorithm breaks down the overall inference problem into a series of target distributions which get incrementally closer to the distribution of interest. These intermediate target distributions live in smaller spaces than the overall posterior distribution. This class of methods is consequently well suited for the high-dimensional models that we are considering.
 Since, we are interested in models where hyper-parameters are also random variables (see code (\ref{code:IMM})), we focus on \acrlong{PMCMC} methods.
 
-Yet, there is a big path degeneracy issue. The first $X_t$'s ($t$ close to $1$) have way lower \gls{ESS} compared to $X_t$'s at the end of the sequence. This is a well-known issue, which is tackled in \gls{PGAS} and \gls{IPMCMC}.
+We started by using \acrlong{PG} (see Section (\ref{PMCMC})) targeting the cluster components and assignments with the conditional \gls{SMC} and the hyper-parameters with an \gls{HMC}.
 
+\textcolor{red}{Posterior distribution of hyperparmeters for DP mixture with PG}
+\textcolor{red}{ESS of mixture components for DP mixture, highlight path degeneracy}
+
+Unsurprisingly we observed a big path degeneracy issue. Figure \ref{} shows that the first $X_t$'s ($t$ close to $1$) have way lower \gls{ESS} compared to $X_t$'s at the end of the sequence. This is a well-known issue, which is tackled in \gls{PGAS} and \gls{IPMCMC}.
 \gls{PMMH} should bring symmetry in the \gls{ESS} graph (\gls{ESS} for the $y$-axis and $t$ index for the $x$-axis), i.e. all $X_t$'s should have in average the same \gls{ESS}.
+The path degeneracy issue been tackled by the \gls{PGAS} and \gls{IPMCMC} algorithms (see Section (\ref{PMCMC}) for more details).
+We believe that the \gls{PGAS} algorithm is not suited with our representation of infinite mixture models. This is the reason why we are currently working on the implementation of \gls{IPMCMC} \footnote{\url{https://github.com/yebai/Turing.jl/issues/334}} for Turing.
 
-We believe that \gls{PGAS} is not suited with \gls{BNP} models since ...
-This is the reason why I am currently working on the implementation of \gls{IPMCMC} for Turing.
-
-\section{Experimentations}
-
-\textcolor{red}{Sampling from -logBeta PKP}
-
-\textcolor{red}{Posterior distribution of hyperparmeters for DP mixture}
-
-\textcolor{red}{Posterior distribution of mixture components for DP mixture, highlight path degeneracy}
 
 \section{Open questions}
-Some questions are still open on this subject, and we are currently working on these.
+In this section we introduce related open questions on which we are currently working on.
 
-Is a stick-breaking-like Markov Chain necessary and sufficient for doing inference with particle methods?
+%Is a stick-breaking-like Markov Chain necessary and sufficient for doing inference with particle methods?
+
+\paragraph{State representation}
+\textcolor{red}{Develop or delete}
 
 What should be the representation of the state in the PPL (theoretically and efficiently concerned) ?
 
@@ -254,6 +254,10 @@ where $N$ the total number of observations, $k$ is the number of different compo
 
 Should we include the sticks lengths (weights) $\{\tilde{J}_j\}_{j=1}^k$
 
-Other models than infinite mixture models
 
-Better sampler ? Include information about our model to make the sampling more efficient. Other proposal than prior?
+\paragraph{Models}
+For now we focused on infinite mixture models but our approach may be easily extended to other \gls{BNP} models, such as the infinite \acrlong{HMM} \cite{Beal02theinfinite} or latent feature models \cite{Ghahramani:2006tp} since a stick-breaking process for the \acrlong{IBP} has been developed \cite{stick-breaking-ibp}.
+
+\paragraph{Sampler}
+For now we worked on existing samplers (\gls{SMC}, \gls{PG}, \gls{PMMH}, \gls{PGAS} and \gls{IPMCMC}), but we are thinking about developing (or extending) a sampler tailored for a specific model. A generic proposal, different (and hopefully better) than the prior might be developed.
+Moreover, an interesting idea from Del Moral \& Murray \cite{DelMoral:2015jk} extending \gls{SMC} could be used. They introduce a schedule of intermediate weighting and resampling times between observation times, which guide particles towards the final state.
