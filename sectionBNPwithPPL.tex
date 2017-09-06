@@ -155,7 +155,7 @@ V_k := \frac{\tilde{p}_k}{1 - \sum_{j=1}^{k-1}{\tilde{p}_j}} \ \text{for} \ k=1,
 \end{equation}
 
 Indeed, equivalently to Equation (\ref{eq:SBS2}), we have $\tilde{p}_k = V_k \prod_{j=1}^{k-1}{(1-V_j)}$ for all $k \ge 1$, which is of the same form as Equation (\ref{eq:Stick_breaking}) for the usual stick-breaking process.
-However, in general, the stick random variables $(V_k)_{k \ge 1}$ from Equation (\ref{eq:SBS1}), form a sequence of dependent random variables, except for some simple process as the \gls{DP} and \gls{PY}, see Pitman \cite{PitmanRDD} for details.
+In general, the stick random variables $(V_k)_{k \ge 1}$ from Equation (\ref{eq:SBS1}), form a sequence of dependent random variables, except for some simple processes as the \gls{DP} and \gls{PY}, see Pitman \cite{PitmanRDD} for details.
 Similarly to stick-breaking constructions, \acrlongpl{PKP} can therefore be constructed in a generative manner and implemented via (stochastic) recursion.
 
 %(\ref{eq:perman2})
@@ -165,6 +165,13 @@ Similarly to stick-breaking constructions, \acrlongpl{PKP} can therefore be cons
 %where $f_\sigma$ is the density of a $\sigma$-Stable random variable.
 
 \paragraph{Practical aspects of \gls{SBS}}
+A useful identity for computing sticks length $(V_k)_{k \ge 1}$ is given by
+\begin{equation} \label{eq:SBS4}
+V_k = \frac{\tilde{J}_k}{T_k} \quad \text{for} \ k=1,\dots
+\end{equation}
+Consequently, to compute $V_k$, one only needed to sample $\tilde{J}_{k}|T,\tilde{J}_1,\dots,\tilde{J}_{k-1}$, and to update the surplus mass given by $T_1 = T$ and $T_k = T - \tilde{J}_k$ for $k \ge 2$.
+The $(\tilde{p}_k)_{k \ge 1}$ are therefore never computed.
+
 In the \acrlong{SBS} process (described in Section \ref{PKP}), when a random variable $X_i$ takes the value of an atom which has not yet been sampled, a new atom $X^\star_{k+1}$ must be sampled, along with its associated weight $\tilde{J}_{k+1}$. The new atom $X_{k+1}^\star$ is drawn from $H_0$, while its mass is drawn from
 \begin{equation} \label{eq:SBS3}
 \mathbb{P}_{\rho,H_0}(\tilde{J}_{k+1} \in ds_{k+1} | T \in dt_k) = \frac{s_{k+1}}{t_k}\rho(ds_{k+1})\frac{f_\rho(t_k - s_{k+1})}{f_\rho(t_k)}
@@ -172,9 +179,14 @@ In the \acrlong{SBS} process (described in Section \ref{PKP}), when a random var
 
 Yet, even if we know the density of the distribution of $\tilde{J}_{k}|T,\tilde{J}_1,\dots,\tilde{J}_{k-1}$, we do not necessarily know how to sample from it.
 We are currently working on a generic way to sample from such as distribution. We could restrict to Lévy measures with tractable intensity -- which can be evaluated pointwise -- thus excluding $\sigma$-Stable \gls{PK}. A simple rejection sampling scheme with proposal $\mathcal{U}(0, T_k)$ might be sufficient.
-Nonetheless, there are particular cases for which we already know how to sample from these distributions. Lomeli et al \cite{Lomeli:2015vd} propose a simple rejection sampling scheme with uniform proposal to tackle the $-\log$Beta \gls{PK} process. Favaro et al \cite{Favaro:2014bo} give an identity from which iid samples can be drawn for a subclass of $\sigma$-Stable \gls{PKP}.
+Nonetheless, there are particular cases for which we already know how to sample from these distributions. Lomeli et al \cite{Lomeli:2015vd} proposes a simple rejection sampling scheme with uniform proposal to tackle the $-\log$Beta \gls{PK} process (see Figure \ref{fig:logBetaPK}). Favaro et al \cite{Favaro:2014bo} gave an identity from which iid samples can be drawn for a subclass of $\sigma$-Stable \gls{PKP}.
 
-\textcolor{red}{Sampling from -logBeta PKP: graph of the sampled random measure}
+\begin{figure}[h!]
+\centering
+    \includegraphics[width=0.7\linewidth]{logBetaPKRandomMeasure.png} 
+    \caption{$1000$ samples from the $-\log \text{Beta}(1,2)$ \acrlong{PK} random measure.}
+    \label{fig:logBetaPK} 
+\end{figure}
 
 \section{Models of interest}
 We focus on infinite mixture models described in Section \ref{mixture_models}.
@@ -221,8 +233,6 @@ Higher-order procedures such as \texttt{DPmem} (defined above) transform a proce
 For instance with the \gls{DP}, setting $\alpha = 0$ recovers a deterministic memoization whereas setting $\alpha \rightarrow \infty$ yields no memoization at all.
 
 \section{Sampler}
-% calculus for SMC for BNP mixture with fixed parameters
-% fixed parameters are not a assumption, since can be made random then with PMCMC
 
 Now that we have detailed and implemented a generative process (i.e. sampling from the prior) for our class of models, we focus in this section on the sampling scheme to use within the \acrlong{PPL}.
 As explained in Section (\ref{IS}), the \acrfull{SMC} algorithm breaks down the overall inference problem into a series of target distributions which get incrementally closer to the distribution of interest. These intermediate target distributions live in smaller spaces than the overall posterior distribution. This class of methods is consequently well suited for the high-dimensional models that we are considering. It is straightforward to prove that by using an \gls{SMC} scheme within a \gls{PPL} with our model, we are indeed rightly targeting the posterior distribution.
