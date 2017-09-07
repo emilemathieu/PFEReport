@@ -1,16 +1,15 @@
+%!TEX root = internshipReport.tex
+
 \chapter{Mission}
 \section{Themes of research}
 Prof. Yee Whye Teh \footnote{\url{https://www.stats.ox.ac.uk/~teh}} has worked for a long time on inference sampling schemes for \gls{BNP} mixture models \cite{Favaro:2013fl, Favaro:2014kg, Lomeli:2015vd, Lomeli:2017kp}, but also on stick-breaking constructions \cite{stick-breaking-ibp, Favaro:2014bo}.
 He also has recently been interested in \gls{PPL} and consequently in inference schemes within \gls{PPL} for \gls{BNP} models.
-
 This theme requires knowledge in several fields -- Probabilities, Computational Statistics, Programming Languages -- which makes it deeply interesting.
 He proposed me working with him on this topic as part of a 3-years DPhil program, and to start earlier as an intern.
 
 \section{Context}
 In addition to inviting me to work with him, Prof. Yee Whye Teh also opened two postdoctoral positions for working on the same project, which have been filled by Tom Rainforth and Benjamin Bloem-Reddy. 
-
 Tom Rainforth \footnote{\url{http://www.robots.ox.ac.uk/~twgr}} is finishing is third year of DPhil in the Dept. of Engineering Science in Oxford, supervised by Prof. Frank Wood. His interests include  probabilistic programming, Bayesian optimization, probabilistic numerics, sequential Monte Carlo and particle Markov Chain Monte Carlo methods. He will join the group in October, but he has already attended several reading group meetings.
-
 On the other hand, Benjamin Bloem-Reddy \footnote{\url{http://www.stats.ox.ac.uk/~bloemred/}} arrived in May in Oxford and has already started working on the project. He was supervised by Peter Orbanz at Columbia University, and his research were focused on probabilistic and statistical analysis of networks and other discrete data.
 
 \section{Reading group}
@@ -21,7 +20,6 @@ I have been leading the Probabilistic Inference reading group \footnote{\url{htt
 \section{Organisation}
 In this section I develop my current organisation and workflow as a researcher.
 At first, I had much trouble to organise my workflow, I wrote my papers' review and new ideas on flying sheets, papers were saved in my computer's folders, citations for report was time-consuming, my code was locally saved, etc... 
-
 Thus, I worked on a better workflow and after trials and errors, I eventually arrived on what I describe below.
 I aim to modify this process with time, so as to continually enhance my productivity and be able to focus on the interesting part of the job.
 
@@ -31,7 +29,7 @@ I was saving them in a tree-like structure of folders, but with the number of ar
 Moreover, this structure inherently prohibits cross-categories articles which is annoying for a project situated at the intersections of several fields.
 Furthermore, I had no fast way to cite an article, neither in plain format (for markdown \footnote{\url{https://en.wikipedia.org/wiki/Markdown}} files for instance) nor in \emph{BibTeX} format.
 
-Then, I have heard of papers managing library such as Papers3 \footnote{\url{https://www.readcube.com/papers/mac/}} or Mendeley \footnote{\url{https://www.mendeley.com}}.
+Then, I heard of papers managing library such as Papers3 \footnote{\url{https://www.readcube.com/papers/mac/}} or Mendeley \footnote{\url{https://www.mendeley.com}}.
 I have eventually opted for Papers3 but Mendeley is also a popular choice in the academic community.
 These applications features many tools easing the life of a researcher, the main one being from my point of view:
 
@@ -55,7 +53,11 @@ This list is sorted according to what I’d like to work on next, but I continua
 \subsection{Managing projects}
 Then, when an idea has matured enough and I have seriously started working on it, I create a Github \footnote{\url{https://github.com}} repository for the project. Each project has its separated repository. 
 It contains a \texttt{/readme.md} file maintaining a list of todo’s, with also questions (and sometimes answers!) both for myself and collaborators. This makes it transparent how to keep moving forward and what’s blocking the work.
-
 There is also a \texttt{/doc/} folder for all the write-ups, usually in \LaTeX  format.
 The  \texttt{etc/} folder is used for everything not relevant to other directories such as pictures of whiteboards during conversations about the project.
-Finally, the \texttt{/src/} folder is where all code is written. Runnable scripts are written directly in \texttt{/src/} , and classes and utilities are written in \texttt{/src/codebase/}. 
+Finally, the \texttt{/src/} folder is where all code is written. Runnable scripts are written directly in \texttt{/src/} , and classes and utilities are written in \texttt{/src/codebase/}.
+
+\subsection{Writing scientific documents}
+Concerning the writing of scientific documents, \LaTeX is the language of choice. Yet the commonly used editor for OSX -- TeXShop -- is missing some useful features.
+Hopefully, LaTeXTools \footnote{\url{https://github.com/SublimeText/LaTeXTools}}, a LaTeX plugin for Sublime Text \footnote{\url{https://www.sublimetext.com}} has been developed. It has the following useful features; (i) a build command to compile LaTeX, (ii) forward and inverse search with PDF previewers, (iii) fill everything including references, citations, packages, graphics, figures, etc, (iv) smart command completion for a variety of text and math commands, (v) full support for project files and multi-file documents.
+I have gained in productivity since I started using Sublime with this plugin instead of TeXShop.
