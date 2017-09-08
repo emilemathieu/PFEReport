@@ -180,12 +180,12 @@ The underlying measure $\nu = \rho \times H_0$ uniquely characterises the random
 The only intensity measures that are considered herein are those that factorise $\nu(ds, dy) = \rho(ds)H_0(dy)$ for some measure $\rho$ on $\mathbb{R}^+$ absolutely continuous with respect to the Lebesgue measure, and some non-atomic probability measure $H_0$ on $\mathbb{X}$. The corresponding \gls{CRM} is said to be \textit{homogeneous} and write $\text{CRM}(\rho, H_0)$ for the law of $\mu$. Successively, the measure $\rho$ is referred to as the Lévy measure, while $H_0$ is the base distribution.
 Homogeneity implies independence between $\left(J_k \right)_{k\ge1}$ and $\left(X^\star_k \right)_{k\ge1}$, where $\left(X^\star_k \right)_{k\ge1}$ is a sequence of random variables independent and identically distributed according to $H_0$ while the law of $\left(J_k \right)_{k\ge1}$  is governed by $\rho$. Intuitively, the point process $\left(J_k, X^\star_k \right)_{k\ge1}$  is described by a Poisson process over $\mathbb{R}^+ \times \mathbb{X}$ with intensity measure $\nu = \rho \times H_0$, as illustrated in Figure \ref{fig:CRM}.
 
-% \begin{figure}[h!]
-% \centering
-%     \includegraphics[width=0.6\linewidth]{CRM.png} 
-%     \caption{A draw $\sum_{j \ge 1}{J_j \delta_{X_j}}$ from a \gls{CRM}. Each stick denotes an atom in the \gls{CRM}, with mass given by its height $J_j$ and location given by $X_j$. Behind the \gls{CRM} is the density of its Lévy intensity measure $\nu$. Source: \cite{Favaro:2013fl}.}
-%     \label{fig:CRM} 
-% \end{figure}
+\begin{figure}[h!]
+\centering
+    \includegraphics[width=0.6\linewidth]{CRM.png} 
+    \caption{A draw $\sum_{j \ge 1}{J_j \delta_{X_j}}$ from a \gls{CRM}. Each stick denotes an atom in the \gls{CRM}, with mass given by its height $J_j$ and location given by $X_j$. Behind the \gls{CRM} is the density of its Lévy intensity measure $\nu$. Source: \cite{Favaro:2013fl}.}
+    \label{fig:CRM} 
+\end{figure}
 
 It is required that $\mu$ has almost-surely finite total mass, Equation \ref{eq:levy} with $g(y)=1$ shows that the Lévy measure is required to satisfy the property
 $$ \int_{\mathbb{R}^+ \times \mathbb{X}} \left( \  1 - e^{-s} \right) \rho(ds) H_0(dy) = 
@@ -246,12 +246,12 @@ X_i|P \sim P, \\
 Y_i|X_i \sim F(\cdot|X_i),
 \end{gather*}
 
-% \begin{figure}[h!]
-% \centering
-%     \includegraphics[width=0.5\linewidth]{graph_model_intractable.png} 
-%     \caption{\gls{PKP} intractable graphical model: the latent variables are countably infinitely many which makes the model computationally intractable. Source: \cite{LomeliThesis}.} 
-%     \label{fig:graph_model_intractable} 
-% \end{figure}
+\begin{figure}[h!]
+\centering
+    \includegraphics[width=0.5\linewidth]{graph_model_intractable.png} 
+    \caption{\gls{PKP} intractable graphical model: the latent variables are countably infinitely many which makes the model computationally intractable. Source: \cite{LomeliThesis}.} 
+    \label{fig:graph_model_intractable} 
+\end{figure}
 Figure \ref{fig:graph_model_intractable} represents the associated graphical model.
 
 \paragraph{$\sigma$-Stable Poisson-Kingman \glspl{RPM}}
@@ -332,12 +332,12 @@ Constructing \gls{MCMC} schemes for models with one or more Bayesian nonparametr
 There are two main sampling approaches to facilitate simulation in the case of Bayesian nonparametric models: random truncation and marginalisation. These two schemes are known in the literature as conditional and marginal, but hybrid samplers between these two also exist. Each sampler rely on a tailored, thus different, representation of the underlying process. Yet, these samplers are all instances of Gibbs sampler.
 
 \subsection{Marginal Samplers}
-% \begin{figure}[h!]
-% \centering
-%     \includegraphics[width=0.5\linewidth]{graph_model_marginal.png} 
-%     \caption{Marginal sampler’s graphical model. Each node represents a variable used in the augmented representation for the joint distribution. The nodes with dashed lines represent the algorithmic inputs. Source: Maria Lomeli's thesis} 
-%     \label{fig:graph_model_marginal} 
-% \end{figure}
+\begin{figure}[h!]
+\centering
+    \includegraphics[width=0.5\linewidth]{graph_model_marginal.png} 
+    \caption{Marginal sampler’s graphical model. Each node represents a variable used in the augmented representation for the joint distribution. The nodes with dashed lines represent the algorithmic inputs. Source: Maria Lomeli's thesis} 
+    \label{fig:graph_model_marginal} 
+\end{figure}
 
 Marginal samplers bypass the need to represent the infinite-dimensional component by marginalising it out. These schemes have lower storage requirements than conditional samplers because they only store the induced partition, but could potentially have worse mixing properties \cite{LomeliThesis}.
 
@@ -351,12 +351,12 @@ For instance, if the $\sigma$-Stable Poisson-Kingman subclass is picked, then it
 This representation is based on an augmented version of its corresponding exchangeable partition probability function.
 
 \subsection{Conditional Samplers}
-% \begin{figure}[h!]
-% \centering
-%     \includegraphics[width=0.7\linewidth]{graph_model_conditional.png} 
-%     \caption{Conditional sampler’s graphical model. Each node represents a variable used in the augmented representation for the joint distribution. The latent variables represent the number of occupied and unoccupied components. Source: \cite{LomeliThesis}.} 
-%     \label{fig:graph_model_conditional} 
-% \end{figure}
+\begin{figure}[h!]
+\centering
+    \includegraphics[width=0.7\linewidth]{graph_model_conditional.png} 
+    \caption{Conditional sampler’s graphical model. Each node represents a variable used in the augmented representation for the joint distribution. The latent variables represent the number of occupied and unoccupied components. Source: \cite{LomeliThesis}.} 
+    \label{fig:graph_model_conditional} 
+\end{figure}
 
 Conditional samplers replace the infinite-dimensional prior by a finite-dimensional representation chosen according to a truncation level. Since these samplers do not integrate out the infinite-dimensional component, their output provides a more comprehensive representation of the random probability measure.
 Figure \ref{fig:graph_model_conditional} shows such representation or the $\sigma$-Stable Poisson-Kingman family for the conditional slice \gls{MCMC} sampler \cite{FavaroWalker2012}.
@@ -368,12 +368,12 @@ The stick-breaking weights can be sampled either via a stick-breaking representa
 
 
 \subsection{Hybrid Samplers}
-% \begin{figure}[h!]
-% \centering
-%     \includegraphics[width=0.5\linewidth]{graph_model_hybrid.png} 
-%     \caption{PK hybrid sampler’s graphical model. Each node represents a variable used in the augmented representation for the joint distribution. The nodes with dashed lines represent the algorithmic inputs. Source: \cite{LomeliThesis}.} 
-%     \label{fig:graph_model_hybrid} 
-% \end{figure}
+\begin{figure}[h!]
+\centering
+    \includegraphics[width=0.5\linewidth]{graph_model_hybrid.png} 
+    \caption{PK hybrid sampler’s graphical model. Each node represents a variable used in the augmented representation for the joint distribution. The nodes with dashed lines represent the algorithmic inputs. Source: \cite{LomeliThesis}.} 
+    \label{fig:graph_model_hybrid} 
+\end{figure}
 
 An hybrid \gls{MCMC} scheme has been developed \cite{Lomeli:2015vd}, and combines the main strengths of both conditional and marginal \gls{MCMC} samplers.
 

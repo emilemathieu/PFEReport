@@ -76,7 +76,7 @@
 
 First of all, I would like to express my indebtedness appreciation to my departmental supervisor Prof. Yee Whye Teh. His belief in me and his advices played a decisive role in making the execution of my work and thus this report. \\
 
-I also express my deepest thanks to Benjamin Bloem-Reddy, who as a postdoc, oversaw me during this internship and with whom I frequently work. \\
+I also express my deepest thanks to Benjamin Bloem-Reddy, who as a postdoctoral, oversaw me during this internship and with whom I have continuously worked. \\
 
 Moreover, my gratitude goes to Guillaume Obozinski, my school training supervisor, whose guidance has continually shaped my career path since I have been at Ecole des Ponts ParisTech.
 
@@ -93,8 +93,6 @@ In this report, we review well-known \gls{BNP} models with a focus on mixture mo
 
 
 % \chapter{Résumé}
-% \textcolor{red}{translation of abstract in French}
-
 
 \tableofcontents
 \addcontentsline{toc}{chapter}{Table of contents}
@@ -119,10 +117,10 @@ In this report, we review well-known \gls{BNP} models with a focus on mixture mo
 For data science practitioners, statistical inference is typically just one step in a more elaborate analysis workflow. The first stage of this work involves data acquisition, pre-processing and cleaning. This is often followed by several iterations of exploratory model design and testing of inference algorithms. Once a sufficiently robust statistical model and a corresponding inference algorithm have been identified, analysis results must be post-processed, visualized, and in some cases integrated into a wider production system.
 Probabilistic programming systems \cite{Gordon:2014:PP:2593882.2593900,Goodman:2012uq,Mansinghka:2014ty,wood-aistats-2014,Turing} represent generative models as programs written in a specialized language that provides syntax for the definition and conditioning of random variables. The code for such models is generally concise, modular, and easy to modify or extend. Inference can be performed for any probabilistic program using one or more generic inference techniques provided by the system back end. These systems therefore avoid having to design specific inference schemes, which is error-prone and time consuming.
 
-In the previously described data scientist's workflow, model selection is often a difficult step.
-Most scientists address this problem by first fitting several models, with different numbers of clusters or factors, and then selecting one using model comparison metrics \cite{Claeskens:1251912}. Model selection metrics usually include two terms. The first term measures how well the model fits the data. The second term, a complexity penalty, favors simpler models (i.e., ones with fewer components or factors).
+In the previously described data scientist's workflow, model selection is often a particularly difficult step.
+Most scientists address this problem by first fitting several models, with different numbers of clusters or factors, and then selecting one using model comparison metrics \cite{Claeskens:1251912}. Model selection metrics usually include two terms. The first term measures how well the model fits the data. The second term, a complexity penalty, favours simpler models (i.e., ones with fewer components or factors).
 \acrlongpl{BNP} models provide a different approach to this problem. Rather than comparing models that vary in complexity, the \gls{BNP} approach is to fit a single model that can adapt its complexity to the data. Indeed, they allow the complexity to grow as more data are observed, such as when using a model to perform prediction. This is an attractive property for many settings.
-Nonetheless, such models cannot be used out-of the box within \acrlongpl{PPL} since they have by definition at least one infinite dimensional component and computers only have finite memory and computational resources. Consequently, specific representations of these models must be used so as to denote them in probabilistic programming systems. Our work focuses on generative constructions of such models, and on developing efficient algorithms to perform inference within \glspl{PPL}.
+Nonetheless, such models cannot be used out-of the box within \acrlongpl{PPL} since they have by definition at least one infinite dimensional component and computers only have finite memory and computational resources. Consequently, specific representations of these models must be constructed so as to denote them in probabilistic programming systems. Our work focuses on generative constructions of such models, and on developing efficient algorithms to perform inference within \glspl{PPL}.
 
 After giving some background on the Department of Statistics in Chapter 1 we develop on the context and organisation of the project. We then review in Chapter 4, well-known \acrlong{BNP} models, with a focus on infinite mixture models and discrete random probability measures. This chapter also highlights the tailored representations of \gls{BNP} models used by \acrlong{MCMC} samplers in the literature. After that in Chapter 5, we review the design of \acrlongpl{PPL} and describe the framework in which inference schemes can be generically applied for these programs.
 We then recall a generative construction of \acrlongpl{PKP} in Chapter 6, and stress out how it relates with a specific class of \glspl{PPL}. We also implement this generative process, along with a mixture model in an already existing \gls{PPL}, and run experiments to assess the performance of posterior samplers.

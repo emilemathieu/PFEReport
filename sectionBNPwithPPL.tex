@@ -181,7 +181,7 @@ Nonetheless, there are particular cases for which we already know how to sample 
 \begin{figure}[h!]
 \centering
     \includegraphics[width=0.7\linewidth]{logBetaPKRandomMeasure.png} 
-    \caption{$1000$ samples from the $-\log \text{Beta}(1,2)$ \acrlong{PK} random measure.}
+    \caption{Histogram of $1000$ samples from the $-\log \text{Beta}(1,2)$ \acrlong{PK} random measure.}
     \label{fig:logBetaPK} 
 \end{figure}
 
@@ -198,9 +198,9 @@ function DPmem($\alpha$,$H_0$) =    begin
 end
 \end{lstlisting}
 
-We uses this \gls{DP} construction as a prior over mixture components so as to build an infinite mixture model (see code sample \ref{code:IMM}).
+We use this \gls{DP} construction as a prior over mixture components so as to build an infinite mixture model (see code sample \ref{code:IMM}).
 
-The real code of the \gls{DP} stick-breaking process and of the infinite mixture model which has been used for our experiments can be found on Github \footnote{\url{https://github.com/emilemathieu/BNPMixPPL/blob/master/src/codebase/DPMixture2.jl}}.
+The real code of the size-biased processes and the infinite mixture model which has been used for our experiments can be found on Github \footnote{\url{https://github.com/emilemathieu/Turing.jl/tree/feature-328/src/models}}.
 
 \begin{lstlisting}[caption={Nonconjugate infinite mixture model written in Turing.jl.},captionpos=b,label=code:IMM]
 @model InfiniteMixutre(y) = begin
@@ -233,34 +233,42 @@ For instance with the \gls{DP}, setting $\alpha = 0$ recovers a deterministic me
 
 Now that we have detailed and implemented a generative process (i.e. sampling from the prior) for our class of models, we focus in this section on the sampling scheme to use within the \acrlong{PPL}.
 As explained in Section \ref{IS}, the \acrfull{SMC} algorithm breaks down the overall inference problem into a series of target distributions which get incrementally closer to the distribution of interest. These intermediate target distributions live in smaller spaces than the overall posterior distribution. This class of methods is consequently well suited as a generic inference method for the high-dimensional models that we are considering. It is straightforward to prove that by using an \gls{SMC} scheme within a \gls{PPL} with our model, we are indeed rightly targeting the posterior distribution.
-Since, we are interested in models where hyper-parameters are also random variables (see code (\ref{code:IMM})), we focus on \acrlong{PMCMC} methods.
 
-We started by using \acrlong{PG} (see Section \ref{PMCMC}) targeting the cluster components and assignments with the conditional \gls{SMC} and the hyper-parameters with an \gls{HMC}.
+By using \gls{SMC}, our random hyperparameters (see code (\ref{code:IMM})) would also be included in the latent space and sampled at the same time as the mixture components and assignments. This is obviously inefficient and \acrlong{PMCMC} methods should perform better for this random parameters setting.
+We therefore started by using \acrlong{PG} (see Section \ref{PMCMC}) targeting the cluster components and assignments with the conditional \gls{SMC} and the hyper-parameters with an \gls{HMC}.
 
-\textcolor{red}{Posterior distribution of hyperparmeters for DP mixture with PG}
-\textcolor{red}{ESS of mixture components for DP mixture, highlight path degeneracy}
 
-Unsurprisingly we observed a big path degeneracy issue. Figure \ref{} shows that the first $X_t$'s ($t$ close to $1$) drastically have lower \gls{ESS} compared to $X_t$'s at the end of the sequence. This is a well-known issue, which is tackled in \gls{PGAS} and \gls{IPMCMC}.
-\gls{PMMH} should bring symmetry in the \gls{ESS} graph (\gls{ESS} for the $y$-axis and $t$ index for the $x$-axis), i.e. all $X_t$'s should have in average the same \gls{ESS}.
-The path degeneracy issue been tackled by the \gls{PGAS} and \gls{IPMCMC} algorithms (see Section \ref{PMCMC} for more details).
+\begin{figure}[h!]
+  \centering
+  \begin{minipage}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{samples.png}
+    \caption{Samples from the Particle Gibbs sampler (with 50 particles) for the first ($t=1$) and the last ($t=82$) mixture components.}
+    \label{fig:posterior_samples_time}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{ESS3.png}
+    \caption{Normalized \acrfull{ESS} for 30 samples generated via Particle Gibbs with 5 particles. This \gls{ESS} is averaged on 10 runs.}
+    \label{fig:ess}
+  \end{minipage}
+\end{figure}
+
+Unsurprisingly we observe a big path degeneracy issue.
+Figure \ref{fig:posterior_samples_time} shows 100 samples from the posterior distributions of mixture components $X_1$ and $X_{82}$. One can note that samples from $X_1$ are very ``sticky'', compared to samples from  $X_{82}$.
+Figure \ref{fig:ess} highlights this phenomenon, since we can see that the first $X_t$'s drastically have lower \gls{ESS} than the $X_t$'s at the end of the sequence ($t$ close to 82). 
+The higher number of particles is used in the \acrlong{PG} algorithm, the less visible is this issue but the more computationally intensive it is.
+
+This is a well-known issue, which is tackled in the \gls{PGAS} and \gls{IPMCMC} algorithms (see Section \ref{PMCMC} for more details).
+\gls{PMMH} should bring symmetry in the \gls{ESS} graph of Figure \ref{fig:ess}, i.e. all $X_t$'s should have in average the same \gls{ESS}. Yet, it will not fix the path degeneracy issue, and posterior samples will still have low \gls{ESS}.
 We believe that the \gls{PGAS} algorithm is not suited with our representation of infinite mixture models. This is the reason why we are currently working on the implementation of \gls{IPMCMC} \footnote{\url{https://github.com/yebai/Turing.jl/issues/334}} for Turing.
-
+We remind that the code of the size-biased processes and the infinite mixture model can be found on Github \footnote{\url{https://github.com/emilemathieu/Turing.jl/tree/feature-328/src/models}}.
 
 \section{Open questions}
 In this section we introduce related open questions on which we are currently working on.
 
-%Is a stick-breaking-like Markov Chain necessary and sufficient for doing inference with particle methods?
-
 \paragraph{State representation}
-\textcolor{red}{Develop or delete}
-
-What should be the representation of the state in the PPL (theoretically and efficiently concerned) ?
-
-$(\{X_j^\star\}_{j=1}^k, \{z_i\}_{i=1}^N)$ or $\{X_i\}_{i=1}^N$
-where $N$ the total number of observations, $k$ is the number of different component, $\{X_j^\star\}_{j=1}^k$ the (unique) mixture components, and $\{z_i\}_{i=1}^N$ the individual assignments.
-
-Should we include the sticks lengths (weights) $\{\tilde{J}_j\}_{j=1}^k$
-
+We casted this mixture model as a state-space model, but it is not completely clear how should the state be represented from an efficiency perspective. The state at time $t$ could be $(\{X_j^\star\}_{j=1}^k, \{z_i\}_{i=1}^t)$  where $k$ is the number of different component until now, $\{X_j^\star\}_{j=1}^k$ the (unique) mixture components, and $\{z_i\}_{i=1}^N$ the individual assignments. Yet it could also simply be $\{X_i\}_{i=1}^t$.
+Should we also explicitly represent the sticks lengths $\{{Z}_j\}_{j=1}^k$ in the \gls{PPL} model ?
 
 \paragraph{Models}
 For now we focused on infinite mixture models but our approach may be easily extended to other \gls{BNP} models, such as the infinite \acrlong{HMM} \cite{Beal02theinfinite} or latent feature models \cite{Ghahramani:2006tp} since a stick-breaking process for the \acrlong{IBP} has been developed \cite{stick-breaking-ibp}.
