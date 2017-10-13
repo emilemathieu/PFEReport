@@ -28,11 +28,11 @@ This is done by providing a modeling language abstraction layer in which develop
 The first generation of \glspl{PPL} had limitation in the range of models that could be represented and in which inference could be performed.
 BUGS \cite{Bugs} and STAN \cite{Stan} can only work with graphical models.
 Similarly, Factorie \cite{Factorie} and Infer.NET \cite{InferNET} only handle factor graphs.
-These so-called \textit{First-Order} \gls{PPLs}, can only represent finite dimensional model and have bounded loops.
+These so-called \textit{First-Order} \glspl{PPL}, can only represent finite dimensional model and have bounded loops.
 
-On the other hand, \textit{High Order \gls{PPLs}} which arrived a bit before the 2010s, are Turing complete, allow complex control flow, including stochastic recursion, thus can denote infinite dimensional objects.
+On the other hand, \textit{High Order \glspl{PPL}} which arrived a bit before the 2010s, are Turing complete, allow complex control flow, including stochastic recursion, thus can denote infinite dimensional objects.
 %They are easy to program in, natural to express certain models, but it is hard to perform inference in these \glspl{PPL}. 
-Anglican \cite{wood-aistats-2014}, Venture \cite{Mansinghka:2014ty}, Church \cite{Goodman:2012uq} and WebPPL \cite{dippl} are \textit{High Order \gls{PPLs}}.
+Anglican \cite{wood-aistats-2014}, Venture \cite{Mansinghka:2014ty}, Church \cite{Goodman:2012uq} and WebPPL \cite{dippl} are \textit{High Order \glspl{PPL}}.
 
 \begin{figure}[h!]
 \centering
@@ -56,7 +56,11 @@ Probabilistic programs denote probabilistic generative models as programs that i
 \begin{lstlisting}[caption={Example of a Turing.jl model},captionpos=b,label=code:example_turing]
 @model model(y) = begin
   x = sample(Bernoulli(.75))
-  mu = x ? 2 : 0
+  if x == True
+    mu = 2
+  else
+    mu = 0
+  end
   observe(Gaussian(mu, 1), y)
   return x
 end
@@ -368,6 +372,8 @@ Some only for the sake of learning more about sampling schemes and \glspl{PPL}, 
 First, I implemented \footnote{See \url{https://github.com/yebai/Turing.jl/tree/master/src/samplers}} both the \gls{SGLD} \footnote{See for instance, \gls{SGLD} applied to a Bayesian logistic regression at \url{https://github.com/yebai/Turing.jl/blob/master/example-models/sgld-paper/lr_sgld.jl}} and \gls{SGHMC} inference algorithms in Turing.jl \cite{Turing}, a \gls{PPL} based on Julia \cite{Bezanson:2017gd} and developed at the University of Cambridge.
 Then, I implemented \footnote{See \url{https://github.com/blei-lab/edward/pull/728}} the Dual Averaging extension \cite{NUTS} of \gls{HMC} for Edward \cite{Edward}, a \gls{PPL} built on top of Tensorflow \cite{Tensorflow} by Blei's group \footnote{\url{http://www.cs.columbia.edu/~blei/}} at Columbia University.
 
-More recently, I have worked on \gls{PMCMC} methods for Turing. \Gls{PMMH} \footnote{\url{https://github.com/yebai/Turing.jl/pull/339}} is implemented but not merged yet, and I am currently working on \gls{PGAS} and \gls{IPMCMC}. Consequently I became a \textit{Collaborator} of the Turing's repository.
+I have also implemented other inference algorithms for Turing, that I described in Section \ref{sec:posterior_sampler}. Thanks to my contributions, I am now officially a \textit{Collaborator} of Turing's repository.
 
-I have also written a stick-breaking representation of the Dirichlet Process which inherits the Distribution.jl \footnote{\url{https://github.com/JuliaStats/Distributions.jl}} type so as to be easily used in Turing.
+% More recently, I have worked on \gls{PMCMC} methods for Turing. \Gls{PMMH} \footnote{\url{https://github.com/yebai/Turing.jl/pull/339}} is implemented but not merged yet, and I am currently working on \gls{PGAS} and \gls{IPMCMC}. Consequently I became a \textit{Collaborator} of the Turing's repository.
+
+% I have also written a stick-breaking representation of the Dirichlet Process which inherits the Distribution.jl \footnote{\url{https://github.com/JuliaStats/Distributions.jl}} type so as to be easily used in Turing.

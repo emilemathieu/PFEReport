@@ -326,7 +326,7 @@ Let $\Pi_n$ be the exchangeable random partition of $[n] := \{1, \dots, n\}$ ind
 where $(c_l)_{l \in [k]}$ denotes a particular partition of $[n]$ with $k$ blocks, $c_1,\dots , c_k$, ordered by increasing least element and $|c_l|$ is the cardinality of block $c_l$.
 \end{proposition}
 
-\section{MCMC Inference}
+\section{MCMC Inference} \label{BNP_MCMC}
 Constructing \gls{MCMC} schemes for models with one or more Bayesian nonparametric components is an active research area since dealing with the infinite dimensional component $P$ forbids the direct use of standard simulation-based methods. These methods usually require a finite-dimensional representation. The general idea for designing inference schemes is to find finite dimensional representations to be able to store the model in a computer with finite capacity.
 
 There are two main sampling approaches to facilitate simulation in the case of Bayesian nonparametric models: random truncation and marginalisation. These two schemes are known in the literature as conditional and marginal, but hybrid samplers between these two also exist. Each sampler rely on a tailored, thus different, representation of the underlying process. Yet, these samplers are all instances of Gibbs sampler.
@@ -335,7 +335,7 @@ There are two main sampling approaches to facilitate simulation in the case of B
 \begin{figure}[h!]
 \centering
     \includegraphics[width=0.5\linewidth]{graph_model_marginal.png} 
-    \caption{Marginal sampler’s graphical model. Each node represents a variable used in the augmented representation for the joint distribution. The nodes with dashed lines represent the algorithmic inputs. Source: Maria Lomeli's thesis} 
+    \caption{Marginal sampler’s graphical model. Each node represents a variable used in the augmented representation for the joint distribution. The nodes with dashed lines represent the algorithmic inputs. Source: \cite{LomeliThesis}} 
     \label{fig:graph_model_marginal} 
 \end{figure}
 

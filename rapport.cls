@@ -110,7 +110,7 @@
     mathescape       = true,
     keywordstyle     = \color{codered},
     %numberstyle      = \tiny\color{codeblue},
-    emph={Bernoulli,Gaussian,Beta,Gamma,Normal,sample,observe,SMC,model,pickStick,makeSticks,DPmem,augmentedProc,rand,DP,InfiniteMixutre,sqrt,tzeros},
+    emph={Bernoulli,Gaussian,Beta,Gamma,Normal,sample,observe,SMC,model,pickStick,makeSticks,DPmem,augmentedDP,rand,DP,InfiniteMixutre,sqrt,tzeros},
     emphstyle={\color{codeblue}},
     % keyword highlighting
     classoffset=1, % starting new class
@@ -130,6 +130,7 @@
       {1}{{{\color{codeblue}1}}}1
       {0}{{{\color{codeblue}0}}}1
       {2}{{{\color{codeblue}2}}}1
+      {3}{{{\color{codeblue}3}}}1
       {5}{{{\color{codeblue}5}}}1
       {7}{{{\color{codeblue}7}}}1
   ,
